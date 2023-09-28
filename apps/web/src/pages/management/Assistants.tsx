@@ -47,10 +47,10 @@ export default function Assistants(): JSX.Element {
         IIC3585-1 Diseño Avanzado de Aplicaciones Web
       </h2>
       <hr className="w-3/4 border-input border-1" />
-      <h3 className="text-xl font-medium text-center">Gestionar Estudiantes</h3>
+      <h3 className="text-xl font-medium text-center">Gestionar Ayudantes</h3>
       <div className="flex flex-col w-full">
         <h3 className="text-xl font-medium">Añadir</h3>
-        <div className="flex flex-row justify-center items-center">
+        <div className="flex flex-row justify-center items-center relative">
           <Input
             placeholder="ejemplo@uc.cl"
             className="my-4"
@@ -58,7 +58,7 @@ export default function Assistants(): JSX.Element {
           />
           <Button variant={"rounded"}>Añadir</Button>
         </div>
-        <ScrollArea className="my-6">
+        <ScrollArea className="my-6 shadow-b-inner p-4">
           <div className="flex flex-col space-y-4 max-h-96">
             {assistants.map((assistant, i) => (
               <CheckboxSelect

@@ -1,5 +1,6 @@
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 interface CheckboxSelectProps extends React.ComponentPropsWithoutRef<"div"> {
   index?: number;
@@ -14,11 +15,11 @@ const CheckboxSelect = React.forwardRef(function CheckboxSelect(
 ) {
   return (
     <div
-      className={
-        "font-medium rounded-full border border-input px-4 py-2 flex items-center space-x-2 cursor-pointer transition-all select-none hover:bg-input " +
-        (checked ? "border-primary bg-input shadow " : "") +
+      className={cn(
+        "font-medium rounded-full border border-input px-4 py-2 flex items-center space-x-2 cursor-pointer transition-all select-none hover:bg-input",
+        checked ? "border-primary bg-input shadow" : "",
         className
-      }
+      )}
       onClick={() => toggleChecked()}
       ref={ref}
     >

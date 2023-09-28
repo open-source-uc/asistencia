@@ -3,11 +3,11 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -76,7 +76,11 @@ module.exports = {
         "2xs": "16rem",
         "3xs": "12rem",
       },
+      boxShadow: {
+        "t-inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05);",
+        "b-inner": "inset 0 -2px 4px 0 rgb(0 0 0 / 0.05);",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};

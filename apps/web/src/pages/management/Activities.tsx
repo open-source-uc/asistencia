@@ -7,6 +7,7 @@ export default function Activities(): JSX.Element {
         IIC3585-1 Diseño Avanzado de Aplicaciones Web
       </h2>
       <hr className="w-3/4 border-input border-1" />
+      <h3 className="text-xl font-medium text-center">Gestionar Actividades</h3>
       <Button>Click me</Button>
     </div>
   );
