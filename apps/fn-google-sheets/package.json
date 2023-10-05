@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "dev": "clasp push --watch",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@google/clasp": "^2.4.2",
+    "@types/google-apps-script": "^1.0.72",
+    "typescript": "^5.2.2"
+  }
+}
