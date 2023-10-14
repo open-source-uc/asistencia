@@ -53,11 +53,11 @@ export default function OrgDetails(): JSX.Element {
         IIC3585-1 Diseño Avanzado de Aplicaciones Web
       </h2>
       <hr className="w-3/4 border-input border-1" />
-      <div className="w-full flex flex-row flex-wrap justify-center items-center space-y-6 md:space-x-4 md:space-y-0 space-x-0">
+      <div className="w-full flex flex-row flex-wrap justify-center items-center md:space-x-4 space-x-0">
         {links.map((link, i) => (
           <Button
             key={i}
-            className="w-full md:w-56 flex flex-col h-auto justify-center py-6"
+            className="w-full md:w-56 flex flex-col h-auto justify-center py-6 my-3"
             onClick={() => {
               navigate(link.path);
             }}

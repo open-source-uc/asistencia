@@ -24,10 +24,10 @@ const links = [
 
 export function Sidebar({ className }: { className?: string }) {
   const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(true);
   return (
     <>
-      <div className={cn(dropdownOpen ? "w-96" : "w-16", "min-h-screen")}></div>
+      <div className={cn(dropdownOpen ? "!w-96" : "!w-16", "min-h-screen")}></div>
       <div
         className={cn(
           dropdownOpen ? "w-96" : "w-16",

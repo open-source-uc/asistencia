@@ -1,45 +1,42 @@
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import CheckboxSelect from "@/components/checkbox-select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { RemoveDialog } from "@/components/remove-dialog";
+import {
+  DataTable,
+  SelectColumn,
+  SortingColumn,
+  IRowSelection,
+} from "@/components/data-table";
 
-const assistants = [
-  "alfredo.medina@uc.cl",
-  "benjavicente@uc.cl",
-  "cparedesr@uc.cl",
-  "ignacio.porte@uc.cl",
-  "alfredo.medina@uc.cl",
-  "benjavicente@uc.cl",
-  "cparedesr@uc.cl",
-  "ignacio.porte@uc.cl",
-  "alfredo.medina@uc.cl",
-  "benjavicente@uc.cl",
-  "cparedesr@uc.cl",
-  "ignacio.porte@uc.cl",
+const data: IAssistant[] = [
+  { email: "ken99@yahoo.com" },
+  { email: "Abe45@gmail.com" },
+  { email: "Monserrat44@gmail.com" },
+  { email: "Silas22@gmail.com" },
+  { email: "carmella@hotmail.com" },
+  { email: "alfredo.medina@uc.cl" },
+  { email: "benjavicente@uc.cl" },
+  { email: "cparedesr@uc.cl" },
+  { email: "ignacio.porte@uc.cl" },
+  { email: "alfredo.medina@uc.cl" },
+  { email: "benjavicente@uc.cl" },
+  { email: "cparedesr@uc.cl" },
+  { email: "ignacio.porte@uc.cl" },
 ];
 
+type IAssistant = {
+  email: string;
+};
+
+const columns = [SelectColumn, SortingColumn("Email", "email")];
+
 export default function Assistants(): JSX.Element {
-  const [selectAllChecked, setSelectAllChecked] = useState(false);
-  const [checkedAssistants, setCheckedAssistants] = useState<number[]>([]);
+  const [checkedAssistants, setCheckedAssistants] = useState<IRowSelection>({});
 
-  const toggleChecked = (index: number) => {
-    if (checkedAssistants.includes(index)) {
-      setCheckedAssistants(
-        checkedAssistants.filter((assistant) => assistant !== index)
-      );
-    } else {
-      setCheckedAssistants([...checkedAssistants, index]);
-    }
+  const removeAssistant = (assistants: IRowSelection) => {
+    console.log("removed", assistants);
   };
-
-  useEffect(() => {
-    if (selectAllChecked) {
-      setCheckedAssistants(assistants.map((_, i) => i));
-    } else {
-      setCheckedAssistants([]);
-    }
-  }, [selectAllChecked]);
 
   return (
     <div className="space-y-6 flex flex-col items-center px-4">
@@ -58,32 +55,14 @@ export default function Assistants(): JSX.Element {
           />
           <Button variant={"rounded"}>Añadir</Button>
         </div>
-        <ScrollArea className="my-6 shadow-b-inner p-4">
-          <div className="flex flex-col space-y-4 max-h-96">
-            {assistants.map((assistant, i) => (
-              <CheckboxSelect
-                key={i}
-                index={i + 1}
-                text={assistant}
-                className="font-normal"
-                checked={checkedAssistants.includes(i)}
-                toggleChecked={() => {
-                  toggleChecked(i);
-                }}
-              />
-            ))}
-          </div>
-        </ScrollArea>
-        <div className="flex flex-row justify-between">
-          <CheckboxSelect
-            text="Seleccionar todos"
-            checked={selectAllChecked}
-            className="justify-center"
-            toggleChecked={() => {
-              setSelectAllChecked(!selectAllChecked);
-            }}
-          />
-          <Button variant={"roundedoutline"}>Remover</Button>
+        <DataTable
+          data={data}
+          columns={columns}
+          rowSelection={checkedAssistants}
+          setRowSelection={setCheckedAssistants}
+        />
+        <div className="flex flex-row justify-end items-center my-4">
+          <RemoveDialog onRemove={() => removeAssistant(checkedAssistants)} />
         </div>
       </div>
     </div>
