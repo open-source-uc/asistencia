@@ -8,11 +8,24 @@ import Activities from "@/pages/management/Activities";
 import Assistants from "@/pages/management/Assistants";
 import Students from "@/pages/management/Students";
 import Home from "@/pages/Home";
+import LandingPage from "./pages/LandingPage";
+import NotFound from "./pages/404";
+import { useUserSession } from "./hooks/useUserSession";
 
 export default function App(): JSX.Element {
+  const { userSession } = useUserSession();
+
+  if (userSession.isValid)
+    return (
+      <Routes>
+        <Route path={`/`} element={<LandingPage />} />
+        <Route path={`*`} element={<NotFound />} />
+      </Routes>
+    );
+
   return (
     <div className="flex flex-row min-h-screen">
-      <Sidebar/>
+      <Sidebar />
       <div className="flex flex-col items-center w-full py-16">
         <Routes>
           <Route path={`/`} element={<Home />} />
@@ -23,6 +36,7 @@ export default function App(): JSX.Element {
           <Route path={`/orgs/:orgId/assistants`} element={<Assistants />} />
           <Route path={`/orgs/:orgId/students`} element={<Students />} />
           <Route path={`/settings`} element={<Settings />} />
+          <Route path={`*`} element={<NotFound />} />
         </Routes>
       </div>
     </div>

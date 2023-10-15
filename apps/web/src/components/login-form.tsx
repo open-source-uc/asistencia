@@ -11,18 +11,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-// import { useUserSession } from "@/hooks/useUserSession";
+import { useUserSession } from "@/hooks/useUserSession";
 
 const formSchema = z.object({
-  name: z.string(),
-  code: z.string(),
-  year: z.number(),
-  semester: z.string(),
-  section: z.string(),
+  email: z.string().email(),
+  password: z.string().min(8),
 });
 
 interface IField {
-  name: "name" | "code" | "year" | "semester" | "section";
+  name: "email" | "password";
   label: string;
   placeholder: string;
   type: string;
@@ -30,55 +27,46 @@ interface IField {
 
 const FORM_FIELDS: IField[] = [
   {
-    name: "name",
-    label: "Nombre",
-    placeholder: "Nombre Organización",
-    type: "text",
+    name: "email",
+    label: "Correo",
+    placeholder: "ejemplo@uc.cl",
+    type: "email",
   },
   {
-    name: "code",
-    label: "Código",
-    placeholder: "Código Organización",
-    type: "text",
-  },
-  {
-    name: "year",
-    label: "Año",
-    placeholder: "Año",
-    type: "number",
-  },
-  {
-    name: "semester",
-    label: "Semestre",
-    placeholder: "Semestre",
-    type: "text",
-  },
-  {
-    name: "section",
-    label: "Sección",
-    placeholder: "Sección",
-    type: "text",
+    name: "password",
+    label: "Contraseña",
+    placeholder: "Mínimo 8 caracteres",
+    type: "password",
   },
 ];
 
-export default function OrgNew() {
+export default function LoginForm() {
+  const { setUserSession } = useUserSession();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      code: "",
-      year: new Date().getFullYear(),
-      semester: "",
-      section: "",
+      email: "",
+      password: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await fetch(`${import.meta.env.VITE_API_URL}/courses`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
       method: "POST",
       body: JSON.stringify(values),
     }).then(async (res) => {
-      console.log(res);
+      const data = await res.json();
+      if (data.detail) {
+        console.log(data.detail);
+        return;
+      }
+      setUserSession({
+        name: data.name,
+        email: data.email,
+        token: data.token,
+        isValid: true,
+      });
     });
   }
 
@@ -86,9 +74,8 @@ export default function OrgNew() {
     <div className="bg-white border-2 border-primary p-12 rounded-xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div>[TEMPORAL]</div>
           <span className="text-xl font-bold text-center mb-12">
-            Nueva Organización
+            Iniciar Sesión
           </span>
           {FORM_FIELDS.map((form_field: IField, i: number) => (
             <FormField
@@ -112,7 +99,7 @@ export default function OrgNew() {
             />
           ))}
           <Button type="submit" className="w-64">
-            Crear Organización
+            Iniciar Sesión
           </Button>
         </form>
       </Form>

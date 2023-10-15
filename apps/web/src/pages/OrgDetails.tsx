@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { useActivities } from "@/hooks/useActivities";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { postRequest } from "@/lib/api-requests";
 import { CalendarIcon, UserCheckIcon, UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,24 +26,16 @@ const links = [
   },
 ];
 
-const activities = Array.from({ length: 10 }, (_, i) => ({
-  name: `Actividad ${i + 1}`,
-  date: `${(i + 1).toString().padStart(2, "0")}/09`,
-})).reverse();
-
 export default function OrgDetails(): JSX.Element {
   const navigate = useNavigate();
   const { orgId } = useParams();
   const [currActivity, setCurrActivity] = useState(0);
+  const { activities } = useActivities(orgId);
   const [inputState, setInputState] = useState("");
 
   const handleTakeAttendance = () => {
     if (inputState === "") return;
-    postRequest(`${import.meta.env.VITE_API_URL}`, {
-      participant: inputState,
-      activity_id: currActivity,
-      taken_by_id: 2,
-    });
+    console.log(inputState);
     setInputState("");
   };
 
@@ -81,7 +73,7 @@ export default function OrgDetails(): JSX.Element {
               key={i}
               onClick={() => setCurrActivity(i)}
             >
-              <span className="w-16">{activity.date}</span>
+              <span className="w-16">{activity.planned_date}</span>
               <span>{activity.name}</span>
             </div>
           ))}
