@@ -1,11 +1,18 @@
 import React, { createContext, useState } from "react";
 
 export interface UserSession {
-  name: string;
+  id: string;
   email: string;
-  token: string;
-  isValid: boolean;
+  access_token: string;
+  isLoggedIn: boolean;
 }
+
+const initialState: UserSession = {
+  id: "",
+  email: "",
+  access_token: "",
+  isLoggedIn: false,
+};
 
 export interface UserSessionContextProps {
   userSession: UserSession;
@@ -13,24 +20,14 @@ export interface UserSessionContextProps {
 }
 
 export const UserSessionContext = createContext<UserSessionContextProps>({
-  userSession: {
-    name: "",
-    email: "",
-    token: "",
-    isValid: false,
-  },
+  userSession: initialState,
   setUserSession: () => {},
 });
 
 export const UserSessionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [userSession, setUserSession] = useState<UserSession>({
-    name: "",
-    email: "",
-    token: "",
-    isValid: false,
-  });
+  const [userSession, setUserSession] = useState<UserSession>(initialState);
 
   return (
     <UserSessionContext.Provider

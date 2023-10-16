@@ -21,7 +21,7 @@ export default function LandingPage(): JSX.Element {
         Tu aplicación para gestionar una toma de asistencia eficiente en tu sala
         de clases.
       </p>
-      <div className="flex flex-row items-start justify-center w-full space-x-6 my-12">
+      <div className="flex flex-row items-stretch justify-center w-full space-x-6 my-12">
         <RegisterForm />
         <LoginForm />
       </div>

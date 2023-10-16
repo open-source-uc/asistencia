@@ -1,19 +1,62 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
+
+export interface IActivityField {
+  slug: string;
+  date: Date;
+  event_type: number;
+}
+
+export interface IActivity extends IActivityField {
+  id: string;
+  course_id: string;
+}
 
 export const useActivities = (orgId: string | undefined) => {
-  const [activities, setActivities] = useState([]);
+  const [activities, setActivities] = useState<IActivity[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/courses/${orgId}/activities`
+      setIsLoading(true);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/courses/${orgId}/activities/`,
+        {
+          headers: {
+            Accept: "application/json",
+          },
+        }
       );
-      const data = await res.json();
-      console.log(data);
-      setActivities(data);
+      setActivities(
+        res.data.map(
+          (activity: IActivity) => (activity.date = new Date(activity.date))
+        )
+      );
+      setIsLoading(false);
     };
     if (orgId) fetchData();
   }, [orgId]);
 
-  return { activities };
+  const createActivity = async (values: IActivityField): Promise<void> => {
+    const body = {
+      slug: values.slug,
+      date: values.date.toISOString(),
+      event_type: values.event_type,
+      course_id: orgId,
+    };
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/courses/${orgId}/activities/`,
+      body,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+    console.log(res.data);
+    const data = { ...res.data, date: new Date(res.data.date) };
+    if (res.status !== 200) setActivities([...activities, data]);
+  };
+
+  return { activities, isLoading, createActivity };
 };

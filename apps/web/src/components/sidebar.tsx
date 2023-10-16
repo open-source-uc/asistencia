@@ -53,7 +53,7 @@ export function Sidebar({ className }: { className?: string }) {
                 navigate("/");
               }}
             >
-              Attendance UC
+              AttendanceUC
             </Button>
           )}
         </div>

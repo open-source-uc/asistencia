@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -41,7 +42,7 @@ const FORM_FIELDS: IField[] = [
 ];
 
 export default function LoginForm() {
-  const { setUserSession } = useUserSession();
+  const { logIn } = useUserSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,26 +53,11 @@ export default function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-      method: "POST",
-      body: JSON.stringify(values),
-    }).then(async (res) => {
-      const data = await res.json();
-      if (data.detail) {
-        console.log(data.detail);
-        return;
-      }
-      setUserSession({
-        name: data.name,
-        email: data.email,
-        token: data.token,
-        isValid: true,
-      });
-    });
+    logIn(values.email, values.password);
   }
 
   return (
-    <div className="bg-white border-2 border-primary p-12 rounded-xl">
+    <div className="bg-white border-2 border-primary p-12 rounded-xl flex flex-col justify-center">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <span className="text-xl font-bold text-center mb-12">
@@ -94,6 +80,14 @@ export default function LoginForm() {
                     />
                   </FormControl>
                   <FormMessage />
+                  {field.name === "password" && (
+                    <FormDescription className="my-0 py-0 w-64">
+                      Olvidaste tu contraseña?{" "}
+                      <span className="text-primary font-medium cursor-pointer">
+                        Recupérala aquí
+                      </span>
+                    </FormDescription>
+                  )}
                 </FormItem>
               )}
             />

@@ -12,17 +12,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useUserSession } from "@/hooks/useUserSession";
+import { useState } from "react";
 
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  repeatPassword: z
-    .string()
-    .min(8)
-    .refine((data) => data === formSchema.password, {
-      message: "Las contraseñas deben ser iguales",
-    }),
-});
+const formSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    repeatPassword: z.string().min(8),
+  })
+  .refine((data) => data.password === data.repeatPassword, {
+    message: "Las contraseñas deben ser iguales",
+    path: ["repeatPassword"],
+  });
 
 interface IField {
   name: "email" | "password" | "repeatPassword";
@@ -53,7 +54,8 @@ const FORM_FIELDS: IField[] = [
 ];
 
 export default function RegisterForm() {
-  const { setUserSession } = useUserSession();
+  const { signUp } = useUserSession();
+  const [error, setError] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,30 +67,10 @@ export default function RegisterForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
-      method: "POST",
-      body: JSON.stringify({
-        email: values.email,
-        password: values.password,
-        is_active: true,
-        is_superuser: false,
-        is_verified: false,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        if (data.detail) {
-          console.log(data.detail);
-        } else {
-          setUserSession({
-            name: data.name,
-            email: data.email,
-            token: data.id,
-            isValid: true,
-          });
-        }
-      });
+    signUp(values.email, values.password).catch((error) => {
+      console.log(error);
+      setError("Ocurrió un error al registrarse.");
+    });
   }
 
   return (
@@ -119,6 +101,7 @@ export default function RegisterForm() {
               )}
             />
           ))}
+          <FormMessage>{error}</FormMessage>
           <Button type="submit" className="w-64">
             Registrarse
           </Button>

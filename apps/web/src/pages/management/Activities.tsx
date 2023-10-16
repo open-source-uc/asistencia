@@ -1,5 +1,11 @@
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import {
+  IActivityField,
+  IActivity,
+  useActivities,
+} from "@/hooks/useActivities";
+import { useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RemoveDialog } from "@/components/remove-dialog";
 import {
@@ -11,14 +17,7 @@ import {
 } from "@/components/data-table";
 import { DatePicker } from "@/components/date-picker";
 import { ColumnDef } from "@tanstack/react-table";
-
-interface IActivity {
-  id: number;
-  slug: string;
-  name: string;
-  planned_date: string;
-  grade: string;
-}
+import LoadingSpinner from "@/components/loading-spinner";
 
 const MockUpactivities = [
   {
@@ -46,36 +45,33 @@ const MockUpactivities = [
 
 const columns: ColumnDef<IActivity>[] = [
   SelectColumn,
-  SortingColumn("Fecha", "planned_date"),
-  GenericColumn("Nombre", "name"),
-  GenericColumn("Ponderación", "grade"),
+  SortingColumn("Fecha", "date"),
+  GenericColumn("Slug", "slug"),
+  GenericColumn("Tipo", "event_type"),
 ];
 
 export default function Activities(): JSX.Element {
-  const [activities, setActivities] = useState<IActivity[]>(MockUpactivities);
+  // const [activities, setActivities] = useState<IActivity[]>(MockUpactivities);
+  const { orgId } = useParams();
+  const { activities, isLoading, createActivity } = useActivities(orgId);
   const [checkedActivities, setCheckedActivities] = useState<IRowSelection>({});
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<IActivityField>({
     date: new Date(),
-    name: "",
-    grade: "",
+    slug: "",
+    event_type: 1,
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const removeActivities = (activities: IRowSelection) => {
     console.log("removed", activities);
   };
 
   const addActivity = () => {
-    console.log("added", formData);
-    setActivities([
-      ...activities,
-      {
-        id: activities.length + 1,
-        slug: formData.name,
-        name: formData.name,
-        planned_date: formData.date.toLocaleDateString(),
-        grade: formData.grade,
-      },
-    ]);
+    if (formData.slug === "") return;
+    createActivity(formData);
   };
 
   return (
@@ -95,37 +91,32 @@ export default function Activities(): JSX.Element {
               className="my-4"
             />
             <Input
-              placeholder="Nombre"
+              name="slug"
+              placeholder="Slug"
               className="my-4"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              value={formData.slug}
+              onChange={handleChange}
             />
             <Input
-              placeholder="Ponderación"
+              name="event_type"
+              placeholder="Tipo de Actividad"
               className="my-4"
-              value={formData.grade}
-              onChange={(e) => {
-                let value = e.target.value;
-                if (parseFloat(value) > 1) value = "1";
-                if (parseFloat(value) < 0) value = "0";
-                setFormData({ ...formData, grade: value });
-              }}
               type="number"
-              step={0.01}
-              min={0}
-              max={1}
+              value={formData.event_type}
+              onChange={handleChange}
             />
             <Button onClick={addActivity}>Añadir</Button>
           </div>
         </div>
-        <DataTable
-          data={activities}
-          columns={columns}
-          rowSelection={checkedActivities}
-          setRowSelection={setCheckedActivities}
-        />
+        {isLoading && <LoadingSpinner />}
+        {!isLoading && (
+          <DataTable
+            data={activities}
+            columns={columns}
+            rowSelection={checkedActivities}
+            setRowSelection={setCheckedActivities}
+          />
+        )}
       </div>
       <div className="flex flex-row justify-end items-center">
         <RemoveDialog onRemove={() => removeActivities(checkedActivities)} />

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
+import { requestOrgs } from "@/hooks/useOrgs";
 // import { useUserSession } from "@/hooks/useUserSession";
 
 const formSchema = z.object({
@@ -62,6 +63,7 @@ const FORM_FIELDS: IField[] = [
 ];
 
 export default function OrgNew() {
+  const { createOrg } = requestOrgs();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -74,10 +76,7 @@ export default function OrgNew() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await fetch(`${import.meta.env.VITE_API_URL}/courses`, {
-      method: "POST",
-      body: JSON.stringify(values),
-    }).then(async (res) => {
+    await createOrg(values).then((res) => {
       console.log(res);
     });
   }

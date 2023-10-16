@@ -1,18 +1,17 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
-import { GenericColumn } from "@/components/data-table";
+import { useStudents } from "@/hooks/useStudents";
+import { useParams } from "react-router-dom";
+import { SortingColumn } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
-
-interface IStudent {
-  name: string;
-}
+import LoadingSpinner from "@/components/loading-spinner";
 
 // Array(8) [[ "Nombres", "Sección", "Curriculo", "Carrera", "EMail", "RUN", "Número de alumno\r" ], ...]
 
-const columns = [GenericColumn("Nombre", "name")];
+const columns = [SortingColumn("Nombre", "attendance_id")];
 
 export default function Students(): JSX.Element {
-  const [students, setStudents] = useState<IStudent[]>([]);
+  // const [students, setStudents] = useState<IStudent[]>([]);
+  const { orgId } = useParams();
+  const { students, setStudents, isLoading } = useStudents(orgId);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -21,7 +20,7 @@ export default function Students(): JSX.Element {
         const response = await fetch(URL.createObjectURL(file));
         const text = await response.text();
         const _data = text.split("\n").map((line) => line.split(","));
-        setStudents(parseArray(_data));
+        setStudents(parseArray(_data, orgId || ""));
       } catch (error) {
         console.error(error);
       }
@@ -51,15 +50,16 @@ export default function Students(): JSX.Element {
             />
           </label>
         </div>
-        <ScrollArea className="my-6 md:w-1/2">
-          <DataTable columns={columns} data={students} />
-        </ScrollArea>
+        <div className="my-6 w-1/2">
+          {isLoading && <LoadingSpinner />}
+          {!isLoading && <DataTable columns={columns} data={students} />}
+        </div>
       </div>
     </div>
   );
 }
 
-const parseArray = (array: string[][]) => {
+const parseArray = (array: string[][], course_id: string, id = "blala") => {
   const headerColumnNames = ["nombres", "nombre", "names", "name"];
   const runColumnNames = ["run", "rut"];
   const headerIndex = array[0].findIndex((column: string) =>
@@ -83,6 +83,6 @@ const parseArray = (array: string[][]) => {
     const name = repeatedNames.includes(row[headerIndex])
       ? `${row[headerIndex]} (${row[runIndex]})`
       : row[headerIndex];
-    return { name: `${name}` };
+    return { attendance_id: `${name}`, id, course_id };
   });
 };

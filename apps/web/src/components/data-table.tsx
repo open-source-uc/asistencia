@@ -74,7 +74,7 @@ export const SortingColumn = (
     );
   },
   cell: ({ row }: { row: RowProps }) => (
-    <div className="lowercase">{row.getValue(accessorKey)}</div>
+    <div>{row.getValue(accessorKey)}</div>
   ),
 });
 

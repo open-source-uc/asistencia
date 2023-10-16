@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useActivities } from "@/hooks/useActivities";
+import { useOrg, useOrgs } from "@/hooks/useOrgs";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -29,8 +30,9 @@ const links = [
 export default function OrgDetails(): JSX.Element {
   const navigate = useNavigate();
   const { orgId } = useParams();
-  const [currActivity, setCurrActivity] = useState(0);
+  // const { org } = useOrg(orgId);
   const { activities } = useActivities(orgId);
+  const [currActivity, setCurrActivity] = useState(0);
   const [inputState, setInputState] = useState("");
 
   const handleTakeAttendance = () => {
@@ -73,24 +75,21 @@ export default function OrgDetails(): JSX.Element {
               key={i}
               onClick={() => setCurrActivity(i)}
             >
-              <span className="w-16">{activity.planned_date}</span>
-              <span>{activity.name}</span>
+              <span className="w-16">
+                {activity.date?.toLocaleDateString()}
+              </span>
+              <span>{activity.slug}</span>
             </div>
           ))}
         </ScrollArea>
       </div>
       <div className="flex flex-row w-full relative">
         <Input
-          variant={"rounded"}
           placeholder="Nombre Apellido"
           value={inputState}
           onChange={(e) => setInputState(e.target.value)}
         />
-        <Button
-          variant={"rounded"}
-          className="w-64"
-          onClick={handleTakeAttendance}
-        >
+        <Button className="w-64" onClick={handleTakeAttendance}>
           Tomar Asistencia
         </Button>
       </div>
