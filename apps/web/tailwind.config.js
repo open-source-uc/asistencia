@@ -85,8 +85,33 @@ module.exports = {
         "t-inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05);",
         "b-inner": "inset 0 -2px 4px 0 rgb(0 0 0 / 0.05);",
         "inner-sm": "inset 0 1px 2px 0 rgb(0 0 0 / 0.05);",
-        "inner-md": "inset 0 4px 6px -1px rgb(0 0 0 / 0.1), inset 0 2px 4px -1px rgb(0 0 0 / 0.06);",
-        "inner-xl": "inset 0 20px 25px -5px rgb(0 0 0 / 0.1), inset 0 10px 10px -5px rgb(0 0 0 / 0.04);",
+        "inner-md":
+          "inset 0 4px 6px -1px rgb(0 0 0 / 0.1), inset 0 2px 4px -1px rgb(0 0 0 / 0.06);",
+        "inner-xl":
+          "inset 0 20px 25px -5px rgb(0 0 0 / 0.1), inset 0 10px 10px -5px rgb(0 0 0 / 0.04);",
+      },
+      keyframes: {
+        formShow: {
+          "0%": {
+            opacity: 0,
+            zIndex: 1,
+          },
+          "49.99%": {
+            opacity: 0,
+            zIndex: 1,
+          },
+          "50%": {
+            opacity: 1,
+            zIndex: 5,
+          },
+          "100%": {
+            opacity: 1,
+            zIndex: 5,
+          },
+        },
+      },
+      animation: {
+        formShow: "formShow 0.6s ease-in-out",
       },
     },
   },

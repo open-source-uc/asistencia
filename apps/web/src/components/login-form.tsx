@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,7 @@ const FORM_FIELDS: IField[] = [
 
 export default function LoginForm() {
   const { logIn } = useUserSession();
+  const [error, setError] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,11 +55,14 @@ export default function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    logIn(values.email, values.password);
+    logIn(values.email, values.password).catch((error) => {
+      console.log(error);
+      setError("Ocurrió un error inesperado.");
+    });
   }
 
   return (
-    <div className="bg-white border-2 border-primary p-12 rounded-xl flex flex-col justify-center">
+    <div className="bg-white p-12 rounded-xl flex flex-col justify-center h-[512px]">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <span className="text-xl font-bold text-center mb-12">
@@ -92,6 +97,7 @@ export default function LoginForm() {
               )}
             />
           ))}
+          <FormMessage className="my-4 w-64">{error}</FormMessage>
           <Button type="submit" className="w-64">
             Iniciar Sesión
           </Button>

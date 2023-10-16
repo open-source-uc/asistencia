@@ -9,12 +9,12 @@ export const useUserSession = (): {
   userSession: UserSession;
   setUserSession: (userSession: UserSession) => void;
   logOut: () => void;
-  logIn: (email: string, password: string) => void;
+  logIn: (email: string, password: string) => Promise<unknown>;
   signUp: (email: string, password: string) => Promise<unknown>;
 } => {
   const { userSession, setUserSession } = useContext(UserSessionContext);
-  const logIn = (email: string, password: string) => {
-    axios
+  const logIn = async (email: string, password: string) => {
+    return axios
       .post(
         `${import.meta.env.VITE_API_URL}/auth/jwt/login`,
         {
@@ -41,9 +41,6 @@ export const useUserSession = (): {
           isLoggedIn: true,
         });
       })
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
   const signUp = async (email: string, password: string) => {

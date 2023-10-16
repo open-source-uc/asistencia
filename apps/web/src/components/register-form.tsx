@@ -74,9 +74,9 @@ export default function RegisterForm() {
   }
 
   return (
-    <div className="bg-white border-2 border-primary p-12 rounded-xl">
+    <div className="bg-white p-12 rounded-xl h-[512px]">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} >
           <span className="text-xl font-bold text-center mb-12">
             Registrarse
           </span>
@@ -86,7 +86,7 @@ export default function RegisterForm() {
               control={form.control}
               name={form_field.name}
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="my-4">
                   <FormLabel>{form_field.label}</FormLabel>
                   <FormControl>
                     <Input
@@ -101,8 +101,8 @@ export default function RegisterForm() {
               )}
             />
           ))}
-          <FormMessage>{error}</FormMessage>
-          <Button type="submit" className="w-64">
+          <FormMessage className="my-4 w-64">{error}</FormMessage>
+          <Button type="submit" className="w-64 my-4">
             Registrarse
           </Button>
         </form>
