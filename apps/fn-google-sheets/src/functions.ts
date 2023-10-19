@@ -19,28 +19,45 @@ function asRow(row: AnySheetsInput, errorMsg = "Debe ser una fila") {
   throw new Error(errorMsg);
 }
 
-const ENDPOINT_URL = "<origin>/api/sheets";
+const ENDPOINT_URL = "http://attendance.cparedesr.com/api/sheets/check_assistance";
 
 /**
  * Ve la asistencia de los participantes en las actividades
+ * @param courseId Id del curso
+ * @param participants Lista de participantes
+ * @param activities Lista de actividades
+ * @param _variableInput Variable cualquiera de entrada, para forzar una actualización
  * @customfunction
  */
-function ASSISTANCE(participants: AnySheetsInput, activities: AnySheetsInput) {
-  const flattenParticipants = asColumn(participants);
-  const flattenActivities = asRow(activities);
+function ASSISTANCE(courseId: string, participants: AnySheetsInput, activities: AnySheetsInput, _variableInput?: any) {
+  const flattenParticipants = asColumn(participants).map((e) => e?.toString() ?? "");
+  const flattenActivities = asRow(activities).map((e) => e?.toString() ?? "");
 
   try {
-    // Real request
     const response = UrlFetchApp.fetch(ENDPOINT_URL, {
       method: "post",
       contentType: "application/json",
       payload: JSON.stringify({
-        activitiesSlugs: flattenActivities,
-        usersIds: flattenParticipants,
+        activities_slugs: flattenActivities,
+        students_ids: flattenParticipants,
+        course_id: courseId,
       }),
     });
-    const data = response.getContentText();
-    return JSON.parse(data);
+    const body = response.getContentText();
+    const data = JSON.parse(body);
+
+    const matrix: string[][] = [];
+    for (const student of flattenParticipants) {
+      const row: string[] = [];
+      matrix.push(row);
+      if (student in data) {
+        const studentActivities = data[student];
+        for (const activity of flattenActivities) {
+          row.push(activity in studentActivities ? studentActivities[activity] : "");
+        }
+      }
+    }
+    return matrix;
   } catch (error) {
     return `Ha fallado la llamada a la API (${error})`;
   }
@@ -50,10 +67,10 @@ function ASSISTANCE(participants: AnySheetsInput, activities: AnySheetsInput) {
  * Ping endpoint
  * @customfunction
  */
-function PING() {
+function HEALTH_ASSISTANCE_BACKEND() {
   try {
-    const response = UrlFetchApp.fetch(ENDPOINT_URL + "/ping");
-    return JSON.parse(response.getContentText());
+    const response = UrlFetchApp.fetch(ENDPOINT_URL + "/health_check");
+    return response.getResponseCode() === 200 ? "OK" : "ERROR";
   } catch (error) {
     return error;
   }
