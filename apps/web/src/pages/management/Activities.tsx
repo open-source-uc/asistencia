@@ -12,7 +12,7 @@ import {
   DataTable,
   SelectColumn,
   GenericColumn,
-  SortingColumn,
+  DateColumn,
   IRowSelection,
 } from "@/components/data-table";
 import { DatePicker } from "@/components/date-picker";
@@ -45,14 +45,14 @@ const MockUpactivities = [
 
 const columns: ColumnDef<IActivity>[] = [
   SelectColumn,
-  SortingColumn("Fecha", "date"),
+  DateColumn("Fecha", "date"),
   GenericColumn("Slug", "slug"),
   GenericColumn("Tipo", "event_type"),
 ];
 
 export default function Activities(): JSX.Element {
-  // const [activities, setActivities] = useState<IActivity[]>(MockUpactivities);
   const { orgId } = useParams();
+  // const [activities, setActivities] = useState<IActivity[]>(MockUpactivities);
   const { activities, isLoading, createActivity } = useActivities(orgId);
   const [checkedActivities, setCheckedActivities] = useState<IRowSelection>({});
   const [formData, setFormData] = useState<IActivityField>({
@@ -84,7 +84,7 @@ export default function Activities(): JSX.Element {
       <div className="flex flex-col w-full">
         <div className="border border-slate-200 rounded-lg p-4 mb-4">
           <h3 className="text-lg font-medium">Añadir</h3>
-          <div className="flex flex-row justify-center items-center relative space-x-4">
+          <div className="flex flex-row justify-center items-center relative md:space-x-4 flex-wrap">
             <DatePicker
               date={formData.date}
               setDate={(date: Date) => setFormData({ ...formData, date })}

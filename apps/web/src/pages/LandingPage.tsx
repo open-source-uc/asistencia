@@ -26,10 +26,10 @@ export default function LandingPage(): JSX.Element {
         leftComponent={<LoginForm />}
         rightComponent={<RegisterForm />}
       />
-      <div className="flex flex-col justify-center items-center mb-4 bg-gradient-to-b from-miku-1 to-miku-2 text-miku-foreground rounded-xl p-4 px-6 shadow-inner-md">
-        <h3 className="text-xl font-bold text-center my-4">
-          Dependiendo de tu rol en AttendanceUC, puedes
-        </h3>
+      <h3 className="text-2xl font-bold text-center my-4">
+        Dependiendo de tu rol en AttendanceUC, puedes
+      </h3>
+      <div className="flex flex-col justify-center items-center mb-4 bg-gradient-to-b from-miku-1 to-miku-2 text-miku-foreground rounded-xl p-4 px-6 shadow-inner-md shadow-xl">
         {features.map((feature, i) => (
           <div className="flex w-full items-center my-4" key={i}>
             <ArrowRight className="w-6 h-6 mr-2" />

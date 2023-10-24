@@ -28,9 +28,14 @@ export const useActivities = (orgId: string | undefined) => {
         }
       );
       setActivities(
-        res.data.map(
-          (activity: IActivity) => (activity.date = new Date(activity.date))
-        )
+        res.data
+          .map((activity: IActivity) => ({
+            ...activity,
+            date: new Date(activity.date),
+          }))
+          .sort((a: IActivity, b: IActivity) => {
+            return  b.date.getTime() - a.date.getTime();
+          })
       );
       setIsLoading(false);
     };
@@ -50,6 +55,7 @@ export const useActivities = (orgId: string | undefined) => {
       {
         headers: {
           Accept: "application/json",
+          "Content-Type": "application/json",
         },
       }
     );

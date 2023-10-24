@@ -21,7 +21,9 @@ export default function InteractiveForms({
   };
 
   return (
-    <div className="relative flex flex-row items-stretch justify-center my-12 bg-gradient-to-r from-miku-1 to-miku-2 rounded-2xl p-2 flex-wrap">
+    <div
+      className="relative flex flex-row items-stretch justify-center my-12 bg-gradient-to-r from-miku-1 to-miku-2 rounded-2xl p-2 flex-wrap shadow-xl"
+    >
       <div className="relative flex flex-col justify-center">
         <div
           className={cn(
@@ -55,7 +57,7 @@ export default function InteractiveForms({
             activeForm,
             toggleSide,
             otherSide: "left",
-            label: "¿No tienes una cuenta?",
+            label: "¿Aún no tienes una cuenta?",
             buttonContent: "Regístrate",
           }}
         />

@@ -50,13 +50,9 @@ export const SelectColumn = {
   enableHiding: false,
 };
 
-export const SortingColumn = (
-  header: string,
-  accessorKey: string,
-) => ({
+export const SortingColumn = (header: string, accessorKey: string) => ({
   accessorKey,
   header: ({ column }: { column: any }) => {
-    
     return (
       <Button
         variant="ghost"
@@ -73,9 +69,35 @@ export const SortingColumn = (
       </Button>
     );
   },
-  cell: ({ row }: { row: RowProps }) => (
-    <div>{row.getValue(accessorKey)}</div>
-  ),
+  cell: ({ row }: { row: RowProps }) => <div>{row.getValue(accessorKey)}</div>,
+});
+
+export const DateColumn = (header: string, accessorKey: string) => ({
+  accessorKey,
+  sortType: "datetime",
+  header: ({ column }: { column: any }) => {
+    return (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        {header}
+        <ArrowUpIcon
+          className={cn(
+            "ml-2 h-4 w-4 transform transition-all",
+            column.getIsSorted() === "asc" ? "" : "rotate-180"
+          )}
+          size={16}
+        />
+      </Button>
+    );
+  },
+  cell: ({ row }: { row: RowProps }) => {
+    const date = new Date(row.getValue(accessorKey))
+      .toISOString()
+      .split("T")[0];
+    return <div>{date}</div>;
+  },
 });
 
 export const GenericColumn = (header: string, accessorKey: string) => ({

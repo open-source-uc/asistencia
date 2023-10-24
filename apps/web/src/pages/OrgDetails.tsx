@@ -75,7 +75,7 @@ export default function OrgDetails(): JSX.Element {
               key={i}
               onClick={() => setCurrActivity(i)}
             >
-              <span className="w-16">
+              <span className="w-32">
                 {activity.date?.toLocaleDateString()}
               </span>
               <span>{activity.slug}</span>
