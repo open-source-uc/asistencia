@@ -9,13 +9,12 @@ export function Sidebar({ className }: { className?: string }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
   return (
-    <div className="hidden md:flex">
+    <div className={className}>
       <div className={cn(isOpen ? "w-64" : "!w-16", "min-h-screen")}></div>
       <div
         className={cn(
           isOpen ? "w-96" : "w-16",
-          "fixed bg-primary text-primary-foreground max-w-2xs min-h-screen py-6",
-          className
+          "fixed bg-primary text-primary-foreground max-w-2xs min-h-screen py-6"
         )}
       >
         <div className="flex flex-row flex-start items-center mb-2">

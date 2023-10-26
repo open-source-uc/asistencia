@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useActivities } from "@/hooks/useActivities";
 import { useOrg, useOrgs } from "@/hooks/useOrgs";
+import { useAttendances } from "@/hooks/useAttendances";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { CalendarIcon, UserCheckIcon, UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import LoadingSpinner from "@/components/loading-spinner";
 
 const links = [
   {
@@ -31,13 +33,14 @@ export default function OrgDetails(): JSX.Element {
   const navigate = useNavigate();
   const { orgId } = useParams();
   // const { org } = useOrg(orgId);
-  const { activities } = useActivities(orgId);
+  const { activities, isLoading } = useActivities(orgId);
+  const { takeAttendance, message } = useAttendances(orgId);
   const [currActivity, setCurrActivity] = useState(0);
   const [inputState, setInputState] = useState("");
 
   const handleTakeAttendance = () => {
     if (inputState === "") return;
-    console.log(inputState);
+    takeAttendance(activities[currActivity].slug, inputState);
     setInputState("");
   };
 
@@ -64,6 +67,7 @@ export default function OrgDetails(): JSX.Element {
       <div className="py-6 space-y-4 w-full">
         <h3 className="text-xl font-medium text-center">Tomar Asistencia</h3>
         <ScrollArea className="h-96 border border-input-500 shadow-inner">
+          {isLoading && <LoadingSpinner className="my-6"/>}
           {activities.map((activity, i) => (
             <div
               className={cn(
@@ -85,7 +89,7 @@ export default function OrgDetails(): JSX.Element {
       </div>
       <div className="flex flex-row w-full relative">
         <Input
-          placeholder="Nombre Apellido"
+          placeholder="Identificador de Estudiante"
           value={inputState}
           onChange={(e) => setInputState(e.target.value)}
         />
@@ -93,6 +97,14 @@ export default function OrgDetails(): JSX.Element {
           Tomar Asistencia
         </Button>
       </div>
+      <span
+        className={cn(
+          message.type === "error" ? "text-red-500" : "text-primary",
+          "animate-fade-in-up"
+        )}
+      >
+        {message.message}
+      </span>
     </div>
   );
 }

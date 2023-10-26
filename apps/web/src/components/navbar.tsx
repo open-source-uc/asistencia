@@ -10,12 +10,11 @@ export function NavBar({ className }: { className?: string }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="flex md:hidden flex-col">
+    <div className={className}>
       <div
         className={cn(
           isOpen ? "h-56" : "h-16",
-          "fixed bg-primary text-primary-foreground w-full flex flex-col justify-start items-start py-3 shadow-md z-10 overflow-hidden",
-          className
+          "fixed bg-primary text-primary-foreground w-full flex flex-col justify-start items-start py-3 shadow-md z-10 overflow-hidden"
         )}
       >
           <div className="flex flex-row justify-start items-center w-full">
@@ -38,7 +37,7 @@ export function NavBar({ className }: { className?: string }) {
               AttendanceUC
             </Button>
           </div>
-          <div className="space-y-2 pt-3">
+          <div className="space-y-2 pt-3 w-full">
             {BARTABS.map((link, i) => (
               <Button
                 key={i}

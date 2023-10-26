@@ -81,6 +81,9 @@ module.exports = {
         "2xs": "16rem",
         "3xs": "12rem",
       },
+      height: {
+        "57": "14.25rem",
+      },
       boxShadow: {
         "t-inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05);",
         "b-inner": "inset 0 -2px 4px 0 rgb(0 0 0 / 0.05);",

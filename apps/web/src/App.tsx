@@ -26,9 +26,9 @@ export default function App(): JSX.Element {
 
   return (
     <div className="flex flex-row min-h-screen">
-      <NavBar />
-      <Sidebar />
-      <div className="flex flex-col items-center w-full py-16 mt-8 md:mt-0 px-4 md:px-0">
+      <NavBar className="flex lg:hidden flex-col" />
+      <Sidebar className="hidden lg:flex" />
+      <div className="flex flex-col items-center w-full py-16 mt-8 px-4 lg:mt-0 lg:px-0">
         <Routes>
           <Route path={`/`} element={<Home />} />
           <Route path={`/orgs`} element={<Orgs />} />

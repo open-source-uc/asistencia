@@ -45,9 +45,8 @@ export const useActivities = (orgId: string | undefined) => {
   const createActivity = async (values: IActivityField): Promise<void> => {
     const body = {
       slug: values.slug,
-      date: values.date.toISOString(),
+      date: values.date.toISOString().replace("T", " ").replace("Z", ""),
       event_type: values.event_type,
-      course_id: orgId,
     };
     const res = await axios.post(
       `${import.meta.env.VITE_API_URL}/courses/${orgId}/activities/`,
@@ -61,7 +60,7 @@ export const useActivities = (orgId: string | undefined) => {
     );
     console.log(res.data);
     const data = { ...res.data, date: new Date(res.data.date) };
-    if (res.status !== 200) setActivities([...activities, data]);
+    if (res.status === 200) setActivities([data, ...activities]);
   };
 
   return { activities, isLoading, createActivity };
