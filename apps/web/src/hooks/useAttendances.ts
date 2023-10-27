@@ -1,13 +1,13 @@
 import { useState } from "react";
 import axios from "axios";
 
-interface IMessage {
+interface Message {
   message: string;
   type: "success" | "error";
 }
 
 export const useAttendances = (orgId: string | undefined) => {
-  const [message, setMessage] = useState<IMessage>({
+  const [message, setMessage] = useState<Message>({
     message: "",
     type: "success",
   });

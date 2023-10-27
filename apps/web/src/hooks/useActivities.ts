@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export interface IActivityField {
+export interface ActivityField {
   slug: string;
   date: Date;
   event_type: number;
 }
 
-export interface IActivity extends IActivityField {
+export interface Activity extends ActivityField {
   id: string;
   course_id: string;
 }
 
 export const useActivities = (orgId: string | undefined) => {
-  const [activities, setActivities] = useState<IActivity[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -29,11 +29,11 @@ export const useActivities = (orgId: string | undefined) => {
       );
       setActivities(
         res.data
-          .map((activity: IActivity) => ({
+          .map((activity: Activity) => ({
             ...activity,
             date: new Date(activity.date),
           }))
-          .sort((a: IActivity, b: IActivity) => {
+          .sort((a: Activity, b: Activity) => {
             return  b.date.getTime() - a.date.getTime();
           })
       );
@@ -42,7 +42,7 @@ export const useActivities = (orgId: string | undefined) => {
     if (orgId) fetchData();
   }, [orgId]);
 
-  const createActivity = async (values: IActivityField): Promise<void> => {
+  const createActivity = async (values: ActivityField): Promise<void> => {
     const body = {
       slug: values.slug,
       date: values.date.toISOString().replace("T", " ").replace("Z", ""),

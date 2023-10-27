@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-interface IStudent {
+interface Student {
   id: string;
   attendance_id: string;
   course_id: string;
@@ -11,11 +11,11 @@ interface IStudent {
 export const useStudents = (
   orgId: string | undefined
 ): {
-  students: IStudent[];
+  students: Student[];
   isLoading: boolean;
-  setStudents: React.Dispatch<React.SetStateAction<IStudent[]>>;
+  setStudents: React.Dispatch<React.SetStateAction<Student[]>>;
 } => {
-  const [students, setStudents] = useState<IStudent[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

@@ -16,7 +16,7 @@ import { useUserSession } from "@/hooks/useUserSession";
 export default function App(): JSX.Element {
   const { userSession } = useUserSession();
 
-  if (userSession.isLoggedIn)
+  if (!userSession.isLoggedIn)
     return (
       <Routes>
         <Route path={`/`} element={<LandingPage />} />

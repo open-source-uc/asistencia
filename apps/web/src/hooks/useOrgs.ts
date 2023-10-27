@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export interface IOrgField {
+export interface OrgField {
   name: string;
   code: string;
   year: number;
@@ -11,13 +11,13 @@ export interface IOrgField {
   section: string;
 }
 
-export interface IOrg extends IOrgField {
+export interface Org extends OrgField {
   id: string;
   enabled: boolean;
 }
 
 export const useOrgs = (): {
-  orgs: IOrg[];
+  orgs: Org[];
   isLoading: boolean;
 } => {
   const { getOrgs } = requestOrgs();
@@ -38,7 +38,7 @@ export const useOrgs = (): {
 
 // export const useOrg = (
 //   orgId: string | undefined
-// ): { org: IOrg | null; isLoading: boolean } => {
+// ): { org: Org | null; isLoading: boolean } => {
 //   const { getOrgById } = requestOrgs();
 //   const [isLoading, setIsLoading] = useState(false);
 //   const [org, setOrg] = useState(null);
@@ -60,7 +60,7 @@ export const useOrgs = (): {
 export const requestOrgs = (): {
   getOrgs: () => Promise<any>;
   // getOrgById: (id: string) => Promise<any>;
-  createOrg: (values: IOrgField) => Promise<any>;
+  createOrg: (values: OrgField) => Promise<any>;
 } => {
   const getOrgs = async () => {
     const res = await axios.get(`${import.meta.env.VITE_API_URL}/courses/`, {
@@ -78,7 +78,7 @@ export const requestOrgs = (): {
   //   return res.data;
   // };
 
-  const createOrg = async (values: IOrgField) => {
+  const createOrg = async (values: OrgField) => {
     return await axios
       .post(
         `${import.meta.env.VITE_API_URL}/courses/`,

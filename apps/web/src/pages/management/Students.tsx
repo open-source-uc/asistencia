@@ -9,7 +9,7 @@ import LoadingSpinner from "@/components/loading-spinner";
 const columns = [SortingColumn("Nombre", "attendance_id")];
 
 export default function Students(): JSX.Element {
-  // const [students, setStudents] = useState<IStudent[]>([]);
+  // const [students, setStudents] = useState<Student[]>([]);
   const { orgId } = useParams();
   const { students, setStudents, isLoading } = useStudents(orgId);
 

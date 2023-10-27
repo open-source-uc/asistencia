@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
-  IActivityField,
-  IActivity,
+  ActivityField,
+  Activity,
   useActivities,
 } from "@/hooks/useActivities";
 import { useParams } from "react-router-dom";
@@ -19,7 +19,7 @@ import { DatePicker } from "@/components/date-picker";
 import { ColumnDef } from "@tanstack/react-table";
 import LoadingSpinner from "@/components/loading-spinner";
 
-const columns: ColumnDef<IActivity>[] = [
+const columns: ColumnDef<Activity>[] = [
   SelectColumn,
   DateColumn("Fecha", "date"),
   GenericColumn("Slug", "slug"),
@@ -30,7 +30,7 @@ export default function Activities(): JSX.Element {
   const { orgId } = useParams();
   const { activities, isLoading, createActivity } = useActivities(orgId);
   const [checkedActivities, setCheckedActivities] = useState<IRowSelection>({});
-  const [formData, setFormData] = useState<IActivityField>({
+  const [formData, setFormData] = useState<ActivityField>({
     date: new Date(),
     slug: "",
     event_type: 1,
