@@ -19,8 +19,9 @@ function asRow(row: AnySheetsInput, errorMsg = "Debe ser una fila") {
   throw new Error(errorMsg);
 }
 
-const ENDPOINT_URL = "http://attendance.cparedesr.com/api/sheets/check_assistance";
+const BASE_URL = "http://attendance.cparedesr.com/api/";
 
+const ASSISTANCE_URL = "sheets/check_assistance";
 /**
  * Ve la asistencia de los participantes en las actividades
  * @param courseId Id del curso
@@ -34,7 +35,7 @@ function ASSISTANCE(courseId: string, participants: AnySheetsInput, activities: 
   const flattenActivities = asRow(activities).map((e) => e?.toString() ?? "");
 
   try {
-    const response = UrlFetchApp.fetch(ENDPOINT_URL, {
+    const response = UrlFetchApp.fetch(BASE_URL + ASSISTANCE_URL, {
       method: "post",
       contentType: "application/json",
       payload: JSON.stringify({
@@ -44,20 +45,14 @@ function ASSISTANCE(courseId: string, participants: AnySheetsInput, activities: 
       }),
     });
     const body = response.getContentText();
-    const data = JSON.parse(body);
-
-    const matrix: string[][] = [];
-    for (const student of flattenParticipants) {
-      const row: string[] = [];
-      matrix.push(row);
-      if (student in data) {
-        const studentActivities = data[student];
-        for (const activity of flattenActivities) {
-          row.push(activity in studentActivities ? studentActivities[activity] : "");
-        }
-      }
-    }
-    return matrix;
+    const data: Record<string, Record<string, any>> = JSON.parse(body);
+    return flattenParticipants.map((student) =>
+      flattenActivities.map((activity) => {
+        if (!(student in data)) return "";
+        if (!(activity in data[student])) return "";
+        return true;
+      })
+    );
   } catch (error) {
     return `Ha fallado la llamada a la API (${error})`;
   }
@@ -69,7 +64,7 @@ function ASSISTANCE(courseId: string, participants: AnySheetsInput, activities: 
  */
 function HEALTH_ASSISTANCE_BACKEND() {
   try {
-    const response = UrlFetchApp.fetch(ENDPOINT_URL + "/health_check");
+    const response = UrlFetchApp.fetch(BASE_URL + "health_check");
     return response.getResponseCode() === 200 ? "OK" : "ERROR";
   } catch (error) {
     return error;
