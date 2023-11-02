@@ -144,24 +144,24 @@ export const useUserSession = (): {
     });
   };
 
-  const requestVerifyToken = async (email: string) => {
-    return (
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/request-verify-token`,
-        {
-          email,
-        }
-      )
-    ).data;
-  };
+  // const requestVerifyToken = async (email: string) => {
+  //   return (
+  //     await axios.post(
+  //       `${import.meta.env.VITE_API_URL}/auth/request-verify-token`,
+  //       {
+  //         email,
+  //       }
+  //     )
+  //   ).data;
+  // };
 
-  const verifyToken = async (token: string) => {
-    return (
-      await axios.post(`${import.meta.env.VITE_API_URL}/auth/verify`, {
-        token,
-      })
-    ).data;
-  };
+  // const verifyToken = async (token: string) => {
+  //   return (
+  //     await axios.post(`${import.meta.env.VITE_API_URL}/auth/verify`, {
+  //       token,
+  //     })
+  //   ).data;
+  // };
 
   return {
     userSession,

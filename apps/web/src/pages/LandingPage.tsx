@@ -1,44 +1,73 @@
-import { ArrowRight } from "lucide-react";
-import LoginForm from "@/components/login-form";
-import RegisterForm from "@/components/register-form";
-import InteractiveForms from "@/components/interactive-forms";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import LoginForm from "@/components/auth/login-form";
+import RegisterForm from "@/components/auth/register-form";
+import RecoverPassword from "@/components/auth/recover-password";
 
-const features = [
-  "Crear organizaciones, que representan tus cursos",
-  "Agregar ayudantes o profesores a tus organizaciones, para poder gestionarlas",
-  "Agregar estudiantes a tus organizaciones, para poder tomarles asistencia ",
-  "Crear Actividades, los que forman parte de tus cursos, y que se pueden tomar asistencia en ellos",
-  "Tomar asistencia en tus actividades de una forma ágil y rápida, para saber quienes asistieron y quienes no",
-];
+const PAGE_STATE = {
+  login: {
+    buttonText: "Regístrate",
+    label: "¿Aún no tienes una cuenta?",
+  },
+  register: {
+    buttonText: "Inicia sesión",
+    label: "¿Ya tienes una cuenta?",
+  },
+  recover: {
+    buttonText: "Volver al inicio",
+    label: "",
+  },
+};
 
 export default function LandingPage(): JSX.Element {
+  const [activeForm, setActiveForm] = useState<
+    "login" | "register" | "recover"
+  >("login");
+  const handleToggle = () => {
+    if (activeForm === "login") setActiveForm("register");
+    else setActiveForm("login");
+  };
   return (
-    <div className="flex flex-col items-center w-full bg-secondary text-secondary-foreground p-16 h-full anima">
-      <h2 className="text-4xl font-bold text-center">
-        Bienvenido a AttendanceUC
-      </h2>
+    <div className="flex lg:flex-row flex-col w-full items-center justify-center bg-gradient-to-b from-miku-1 to-miku-2 text-miku-foreground py-16 lg:h-screen">
+      <div className="flex lg:w-1/2 space-y-6 justify-center">
+        <div className="flex flex-col lg:w-96 p-6 lg:p-0">
+          <h2 className="text-4xl font-bold">Bienvenido a AttendanceUC</h2>
 
-      <p className="mt-6">
-        Tu aplicación para gestionar una toma de asistencia eficiente en tu sala
-        de clases.
-      </p>
-      <InteractiveForms
-        leftComponent={<LoginForm />}
-        rightComponent={<RegisterForm />}
-      />
-      <h3 className="text-2xl font-bold text-center my-4">
-        Dependiendo de tu rol en AttendanceUC, puedes
-      </h3>
-      <div className="flex flex-col justify-center items-center mb-4 bg-gradient-to-b from-miku-1 to-miku-2 text-miku-foreground rounded-xl p-4 px-6 shadow-inner-md shadow-xl">
-        {features.map((feature, i) => (
-          <div className="flex w-full items-center my-4" key={i}>
-            <ArrowRight className="w-6 h-6 mr-2" />
-            <p>{feature}</p>
-          </div>
-        ))}
+          <p className="mt-6">
+            Tu aplicación para gestionar una toma de asistencia eficiente en tu
+            sala de clases.
+          </p>
+        </div>
       </div>
-      <div className="border-2 border-secondary rounded-xl p-4 px-6 my-4">
-        Para tomar asistencia en tus actividades, puedes usar...
+      <div className="bg-white p-12 flex flex-col justify-center h-screen text-foreground w-full lg:w-1/2">
+        {activeForm === "login" && <LoginForm />}
+        {activeForm === "register" && <RegisterForm />}
+        {activeForm === "recover" && <RecoverPassword />}
+        {activeForm === "login" && (
+          <div className="text-sm my-4">
+            Olvidaste tu contraseña?{" "}
+            <span
+              className="text-primary font-medium cursor-pointer"
+              onClick={() => setActiveForm("recover")}
+            >
+              Recupérala aquí
+            </span>
+          </div>
+        )}
+        <Separator className="my-8 w-full" />
+        <div className="flex flex-row space-x-4 items-center text-sm">
+          {activeForm !== "recover" && (
+            <span>{PAGE_STATE[activeForm].label}</span>
+          )}
+          <Button
+            variant={"outline"}
+            className="text-sm h-auto w-auto p-2 px-4"
+            onClick={handleToggle}
+          >
+            {PAGE_STATE[activeForm].buttonText}
+          </Button>
+        </div>
       </div>
     </div>
   );

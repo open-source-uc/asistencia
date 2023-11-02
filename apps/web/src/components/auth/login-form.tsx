@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -11,19 +12,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { requestOrgs } from "@/hooks/useOrgs";
-// import { useUserSession } from "@/hooks/useUserSession";
+import { useUserSession } from "@/hooks/useUserSession";
 
 const formSchema = z.object({
-  name: z.string(),
-  code: z.string(),
-  year: z.number(),
-  semester: z.string(),
-  section: z.string(),
+  email: z.string().email(),
+  password: z.string().min(8),
 });
 
 interface IField {
-  name: "name" | "code" | "year" | "semester" | "section";
+  name: "email" | "password";
   label: string;
   placeholder: string;
   type: string;
@@ -31,62 +28,51 @@ interface IField {
 
 const FORM_FIELDS: IField[] = [
   {
-    name: "name",
-    label: "Nombre",
-    placeholder: "Nombre Organización",
-    type: "text",
+    name: "email",
+    label: "Correo",
+    placeholder: "ejemplo@uc.cl",
+    type: "email",
   },
   {
-    name: "code",
-    label: "Código",
-    placeholder: "Código Organización",
-    type: "text",
-  },
-  {
-    name: "year",
-    label: "Año",
-    placeholder: "Año",
-    type: "number",
-  },
-  {
-    name: "semester",
-    label: "Semestre",
-    placeholder: "Semestre",
-    type: "text",
-  },
-  {
-    name: "section",
-    label: "Sección",
-    placeholder: "Sección",
-    type: "text",
+    name: "password",
+    label: "Contraseña",
+    placeholder: "Mínimo 8 caracteres",
+    type: "password",
   },
 ];
 
-export default function OrgNew() {
-  const { createOrg } = requestOrgs();
+export default function LoginForm() {
+  const { logIn } = useUserSession();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      code: "",
-      year: new Date().getFullYear(),
-      semester: "",
-      section: "",
+      email: "",
+      password: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await createOrg(values).then((res) => {
-      console.log(res);
-    });
+    setIsLoading(true);
+    logIn(values.email, values.password).then(
+      () => {
+        setIsLoading(false);
+      },
+      (error) => {
+        setIsLoading(false);
+        console.log(error);
+        setError("Ocurrió un error inesperado.");
+      }
+    );
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-3/4">
-        <div>[TEMPORAL]</div>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <span className="text-xl font-bold text-center mb-12">
-          Nueva Organización
+          Iniciar Sesión
         </span>
         {FORM_FIELDS.map((form_field: IField, i: number) => (
           <FormField
@@ -109,8 +95,9 @@ export default function OrgNew() {
             )}
           />
         ))}
-        <Button type="submit" className="w-64">
-          Crear Organización
+        <FormMessage className="my-4 w-full">{error}</FormMessage>
+        <Button type="submit" className="w-64" isLoading={isLoading}>
+          Iniciar Sesión
         </Button>
       </form>
     </Form>

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { useAssistants } from "@/hooks/useAssistants";
+// import { useParams } from "react-router-dom";
+// import { useAssistants } from "@/hooks/useAssistants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RemoveDialog } from "@/components/remove-dialog";
@@ -34,7 +34,7 @@ type IAssistant = {
 const columns = [SelectColumn, SortingColumn("Email", "email")];
 
 export default function Assistants(): JSX.Element {
-  const { orgId } = useParams();
+  // const { orgId } = useParams();
   // const {assistants, isLoading} = useAssistants(orgId);
   const [checkedAssistants, setCheckedAssistants] = useState<IRowSelection>({});
 

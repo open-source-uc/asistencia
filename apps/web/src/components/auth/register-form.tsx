@@ -55,6 +55,7 @@ const FORM_FIELDS: IField[] = [
 
 export default function RegisterForm() {
   const { signUp } = useUserSession();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,46 +68,49 @@ export default function RegisterForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    signUp(values.email, values.password).catch((error) => {
-      console.log(error);
-      setError("Ocurrió un error al registrarse.");
-    });
+    setIsLoading(true);
+    signUp(values.email, values.password).then(
+      () => {
+        setIsLoading(false);
+      },
+      (error) => {
+        setIsLoading(false);
+        console.log(error);
+        setError("Ocurrió un error al registrarse.");
+      }
+    );
   }
 
   return (
-    <div className="bg-white p-12 rounded-xl h-[512px]">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} >
-          <span className="text-xl font-bold text-center mb-12">
-            Registrarse
-          </span>
-          {FORM_FIELDS.map((form_field: IField, i: number) => (
-            <FormField
-              key={i}
-              control={form.control}
-              name={form_field.name}
-              render={({ field }) => (
-                <FormItem className="my-4">
-                  <FormLabel>{form_field.label}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={form_field.placeholder}
-                      type={form_field.type}
-                      className="w-64"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-          <FormMessage className="my-4 w-64">{error}</FormMessage>
-          <Button type="submit" className="w-64 my-4">
-            Registrarse
-          </Button>
-        </form>
-      </Form>
-    </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <span className="text-xl font-bold text-center mb-12">Registrarse</span>
+        {FORM_FIELDS.map((form_field: IField, i: number) => (
+          <FormField
+            key={i}
+            control={form.control}
+            name={form_field.name}
+            render={({ field }) => (
+              <FormItem className="my-4">
+                <FormLabel>{form_field.label}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={form_field.placeholder}
+                    type={form_field.type}
+                    className="w-full"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
+        <FormMessage className="my-4 w-full">{error}</FormMessage>
+        <Button type="submit" className="w-64 my-4" isLoading={isLoading}>
+          Registrarse
+        </Button>
+      </form>
+    </Form>
   );
 }
