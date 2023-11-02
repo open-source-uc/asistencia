@@ -9,6 +9,7 @@ const inputVariants = cva(
       variant: {
         default: "",
         rounded: "rounded-full",
+        blackFocus: "focus-visible:ring-black",
       },
     },
     defaultVariants: {
