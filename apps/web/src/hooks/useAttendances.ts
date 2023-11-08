@@ -19,8 +19,9 @@ export const useAttendances = (orgId: string) => {
     studentCode: string
   ): Promise<void> => {
     try {
+      const studentId = await Promise.resolve(clientHash(studentCode, orgId));
       const body = {
-        student_attendance_id: clientHash(studentCode, orgId),
+        student_attendance_id: studentId,
       };
       await axios.post(
         `${

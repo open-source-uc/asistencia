@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { handlerAssistants, useAssistants } from "@/hooks/useAssistants";
+import { useAssistants } from "@/hooks/useAssistants";
+import InputPills from "@/components/input-pills";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { RemoveDialog } from "@/components/remove-dialog";
 import {
   DataTable,
@@ -19,22 +19,32 @@ const columns = [
   GenericColumn("Rol", "role"),
 ];
 
+interface Value {
+  pills: Set<string>;
+  lastInputState: string;
+}
+const initInputValue: Value = {
+  pills: new Set(),
+  lastInputState: "",
+};
+
 export default function Assistants(): JSX.Element {
   const { orgId } = useParams();
-  const { assistants, isLoading, createAssistantByOrg } = useAssistants(orgId);
+  const { assistants, isLoading, addMultipleAssistantsToOrg } =
+    useAssistants(orgId);
   const [checkedAssistants, setCheckedAssistants] = useState<IRowSelection>({});
-  const [inputState, setInputState] = useState("");
+  const [inputState, setInputState] = useState<Value>(initInputValue);
   const [error, setError] = useState("");
 
   const removeAssistant = (assistants: IRowSelection) => {
     console.log("removed", assistants);
   };
-  const addAssistant = () => {
-    if (inputState === "") return;
-    createAssistantByOrg(inputState).catch(() => {
-      setError("No se ha podido añadir el ayudante");
+
+  const addAssistants = () => {
+    if (inputState.pills.size === 0) return;
+    addMultipleAssistantsToOrg(Array.from(inputState.pills)).catch(() => {
+      setError("Ha ocurrido un error al añadir los ayudantes");
     });
-    setInputState("");
   };
 
   return (
@@ -42,14 +52,13 @@ export default function Assistants(): JSX.Element {
       <h3 className="text-xl font-medium text-center">Gestionar Ayudantes</h3>
       <div className="flex flex-col w-full">
         <h3 className="text-xl font-medium">Añadir</h3>
-        <div className="flex flex-row justify-center items-center relative mt-4">
-          <Input
-            placeholder="ejemplo@uc.cl"
-            variant={"rounded"}
-            onChange={(e) => setInputState(e.target.value)}
-            value={inputState}
+        <div className="flex flex-row justify-center items-end relative mt-4">
+          <InputPills
+            onChange={(value: Value) => {
+              setInputState(value);
+            }}
           />
-          <Button variant={"rounded"} onClick={addAssistant}>
+          <Button onClick={addAssistants} className="h-16">
             Añadir
           </Button>
         </div>

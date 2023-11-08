@@ -9,9 +9,11 @@ const sha512 = async (str: string): Promise<string> => {
     });
 };
 
-const clientHash = async (code: string, courseId: string): Promise<string> => {
-  const hash = await sha512(`${sha512(`${code}${courseId}`)}${courseId}`);
-  return hash;
+const clientHash = async (
+  code: string,
+  courseId: string
+): Promise<string> => {
+  return await sha512(`${await sha512(`${code}${courseId}`)}${courseId}`);
 };
 
 export { sha512, clientHash };

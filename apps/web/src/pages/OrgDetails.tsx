@@ -18,7 +18,7 @@ const links = [
     path: "./assistants",
   },
   {
-    name: "Gestionar Alumnos",
+    name: "Gestionar Estudiantes",
     icon: UserIcon,
     path: "./students",
   },

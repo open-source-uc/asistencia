@@ -30,7 +30,7 @@ export const useAssistants = (orgId: string | undefined) => {
       });
   };
 
-  const createAssistantByOrg = async (
+  const addAssistantToOrg = async (
     userEmail: string,
     role: "admin" | "assistant" | "default" = "default"
   ): Promise<Assistant | undefined> => {
@@ -52,9 +52,16 @@ export const useAssistants = (orgId: string | undefined) => {
         }
       )
       .then((res) => {
-        setAssistants([...assistants, res.data]);
         return res.data;
       });
+  };
+
+  const addMultipleAssistantsToOrg = async (
+    userEmails: string[]
+  ): Promise<void> => {
+    return await Promise.all(
+      userEmails.map((userEmail) => addAssistantToOrg(userEmail))
+    ).then(async () => setAssistants(await getAssistantsByOrg()));
   };
 
   useEffect(() => {
@@ -66,5 +73,10 @@ export const useAssistants = (orgId: string | undefined) => {
     fetchData();
   }, []);
 
-  return { assistants, isLoading, createAssistantByOrg };
+  return {
+    assistants,
+    isLoading,
+    addAssistantToOrg,
+    addMultipleAssistantsToOrg,
+  };
 };
