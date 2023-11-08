@@ -5,6 +5,7 @@ import { SortingColumn } from "@/components/data-table";
 import { DataTable } from "@/components/data-table";
 import LoadingSpinner from "@/components/loading-spinner";
 import { Button } from "@/components/ui/button";
+import UploadFile from "@/components/upload-file";
 
 // Array(8) [[ "Nombres", "Sección", "Curriculo", "Carrera", "EMail", "RUN", "Número de alumno\r" ], ...]
 
@@ -44,22 +45,7 @@ export default function Students(): JSX.Element {
     <div className="space-y-6 flex flex-col items-center w-full">
       <h3 className="text-xl font-medium text-center">Gestionar Estudiantes</h3>
       <div className="flex flex-row items-center flex-wrap w-full justify-evenly bg-slate-50 rounded-xl">
-        <div className="flex items-center justify-center h-96">
-          <label className="rounded-xl flex flex-col items-center justify-center h-64 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4">
-              <p className="mb-2 text-sm text-slate-500 font-semibold">
-                Arrastra y suelta tu archivo .csv
-              </p>
-              <p className="text-xs text-slate-500">CSV, XLS</p>
-            </div>
-            <input
-              type="file"
-              className="hidden"
-              accept=".csv"
-              onChange={(e) => handleFileChange(e)}
-            />
-          </label>
-        </div>
+        <UploadFile onChange={handleFileChange} />
         <div className="my-6 w-1/2 flex flex-col">
           <span className="text-sm text-slate-500 font-semibold mb-3">
             Vista previa
@@ -72,6 +58,7 @@ export default function Students(): JSX.Element {
                   uploadedStudents.map((student) => student.attendance_id)
                 );
             }}
+            isLoading={isLoading}
             className="w-full"
           >
             Añadir Estudiantes

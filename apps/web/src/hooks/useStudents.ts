@@ -69,6 +69,7 @@ export const useStudents = (
       course_id: orgId,
       attendance_codes: studentIds,
     };
+    setIsLoading(true);
     await axios
       .post(
         `${import.meta.env.VITE_API_URL}/courses/${orgId}/students/`,
@@ -81,12 +82,16 @@ export const useStudents = (
           },
         }
       )
-      .then((res) =>
+      .then((res) => {
         setStudents([
           ...students,
           ...formatDataToStudent(res.data.attendance_codes),
-        ])
-      );
+        ]);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   return { students, isLoading, setStudents, createStudents };
