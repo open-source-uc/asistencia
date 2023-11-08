@@ -1,10 +1,6 @@
 import { useState } from "react";
-import {
-  ActivityField,
-  Activity,
-  useActivities,
-} from "@/hooks/useActivities";
-import { useParams } from "react-router-dom";
+import { ActivityField, Activity, useActivities } from "@/hooks/useActivities";
+import { useLocation, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RemoveDialog } from "@/components/remove-dialog";
@@ -22,7 +18,7 @@ import LoadingSpinner from "@/components/loading-spinner";
 const columns: ColumnDef<Activity>[] = [
   SelectColumn,
   DateColumn("Fecha", "date"),
-  GenericColumn("Slug", "slug"),
+  GenericColumn("Nombre", "slug"),
   GenericColumn("Tipo", "event_type"),
 ];
 
@@ -51,10 +47,6 @@ export default function Activities(): JSX.Element {
 
   return (
     <div className="space-y-6 flex flex-col items-center px-4">
-      <h2 className="text-2xl font-bold text-center">
-        IIC3585-1 Diseño Avanzado de Aplicaciones Web
-      </h2>
-      <hr className="w-3/4 border-input border-1" />
       <h3 className="text-xl font-medium text-center">Gestionar Actividades</h3>
       <div className="flex flex-col w-full">
         <div className="border border-slate-200 rounded-lg p-4 mb-4">

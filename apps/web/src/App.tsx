@@ -1,4 +1,5 @@
-import { Route, Routes } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/sidebar";
 import Settings from "@/pages/Settings";
 import Orgs from "@/pages/Orgs";
@@ -32,11 +33,8 @@ export default function App(): JSX.Element {
         <Routes>
           <Route path={`/`} element={<Home />} />
           <Route path={`/orgs`} element={<Orgs />} />
-          <Route path={`/orgs/:orgId`} element={<OrgDetails />} />
           <Route path={`/orgs/new`} element={<OrgNew />} />
-          <Route path={`/orgs/:orgId/activities`} element={<Activities />} />
-          <Route path={`/orgs/:orgId/assistants`} element={<Assistants />} />
-          <Route path={`/orgs/:orgId/students`} element={<Students />} />
+          <Route path={`/orgs/:orgId/*`} element={<OrgGeneral />} />
           <Route path={`/settings`} element={<Settings />} />
           <Route path={`*`} element={<NotFound />} />
         </Routes>
@@ -44,3 +42,26 @@ export default function App(): JSX.Element {
     </div>
   );
 }
+
+const OrgGeneral = (): JSX.Element => {
+  const location = useLocation();
+  const [name, setName] = useState("");
+  useEffect(() => {
+    if (location.state && location.state.orgName) {
+      setName(location.state.orgName);
+    }
+  }, [location]);
+
+  return (
+    <div className="space-y-6 flex flex-col items-center px-4">
+      <h2 className="text-2xl font-bold text-center">{name}</h2>
+      <hr className="w-3/4 border-input border-1" />
+      <Routes>
+        <Route path={`/`} element={<OrgDetails />} />
+        <Route path={`activities`} element={<Activities />} />
+        <Route path={`assistants`} element={<Assistants />} />
+        <Route path={`students`} element={<Students />} />
+      </Routes>
+    </div>
+  );
+};

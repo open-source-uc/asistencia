@@ -4,7 +4,7 @@ import {
   UserSessionContext,
   UserSession,
   User,
-} from "@/components/auth/user-session-context";
+} from "@/components/contexts/user-session-context";
 import axios from "axios";
 
 interface UserEdit {

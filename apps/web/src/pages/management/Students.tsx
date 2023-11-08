@@ -11,7 +11,8 @@ const columns = [SortingColumn("Nombre", "attendance_id")];
 export default function Students(): JSX.Element {
   // const [students, setStudents] = useState<Student[]>([]);
   const { orgId } = useParams();
-  const { students, setStudents, isLoading } = useStudents(orgId);
+  const { students, setStudents, isLoading, createStudents } =
+    useStudents(orgId);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -20,7 +21,10 @@ export default function Students(): JSX.Element {
         const response = await fetch(URL.createObjectURL(file));
         const text = await response.text();
         const _data = text.split("\n").map((line) => line.split(","));
-        setStudents(parseArray(_data, orgId || ""));
+        const attendanceCodes = parseArray2(_data, orgId || "");
+        console.log(attendanceCodes);
+        createStudents(attendanceCodes);
+        // setStudents(parseArray2(_data, orgId || ""));
       } catch (error) {
         console.error(error);
       }
@@ -28,10 +32,6 @@ export default function Students(): JSX.Element {
   };
   return (
     <div className="space-y-6 flex flex-col items-center w-full">
-      <h2 className="text-2xl font-bold text-center">
-        IIC3585-1 Diseño Avanzado de Aplicaciones Web
-      </h2>
-      <hr className="w-3/4 border-input border" />
       <h3 className="text-xl font-medium text-center">Gestionar Estudiantes</h3>
       <div className="flex flex-row items-center flex-wrap w-full justify-evenly">
         <div className="flex items-center justify-center h-96">
@@ -85,4 +85,19 @@ const parseArray = (array: string[][], course_id: string, id = "blala") => {
       : row[headerIndex];
     return { attendance_id: `${name}`, id, course_id };
   });
+};
+
+const parseArray2 = (array: string[][]) => {
+  const studentCode = ["número de alumno"];
+  const studentCodeIndex = array[0].findIndex((column: string) =>
+    studentCode.includes(column.toLowerCase().replace(/\r/g, ""))
+  );
+  console.log(array[0]);
+  console.log(studentCodeIndex);
+  array.shift();
+  const studentCodes = array
+    .map((row) => row[studentCodeIndex])
+    .filter((code) => code !== "" && code !== undefined)
+    .map((code) => code.replace(/\r/g, ""));
+  return studentCodes;
 };
