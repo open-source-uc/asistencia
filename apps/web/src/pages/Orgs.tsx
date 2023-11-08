@@ -1,12 +1,13 @@
+import { useUserSession } from "@/hooks/useUserSession";
 import { useOrgs } from "@/hooks/useOrgs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/loading-spinner";
 
 export default function Orgs(): JSX.Element {
-  const { orgs, isLoading } = useOrgs();
+  const { userSession } = useUserSession();
+  const { orgs, isLoading } = useOrgs(userSession.access_token);
   const navigate = useNavigate();
-
 
   return (
     <div className="space-y-6 flex flex-col items-center">
@@ -20,10 +21,12 @@ export default function Orgs(): JSX.Element {
               key={i}
               className="justify-center w-full"
               onClick={() => {
-                navigate(`/orgs/${course.id}`);
+                navigate(`/orgs/${course.id}`, {
+                  state: { orgName: course.name },
+                });
               }}
             >
-              {course.name} {course.code}-{course.section}-{course.year}
+              {course.name}
             </Button>
           ))}
         </div>

@@ -1,4 +1,6 @@
+import { useUserSession } from "./useUserSession";
 import { useState } from "react";
+import { clientHash } from "@/lib/hashFunctions";
 import axios from "axios";
 
 interface Message {
@@ -6,19 +8,20 @@ interface Message {
   type: "success" | "error";
 }
 
-export const useAttendances = (orgId: string | undefined) => {
+export const useAttendances = (orgId: string) => {
+  const { userSession } = useUserSession();
   const [message, setMessage] = useState<Message>({
     message: "",
     type: "success",
   });
   const takeAttendance = async (
     activitySlug: string,
-    studentName: string
+    studentCode: string
   ): Promise<void> => {
-    if (!orgId) return;
     try {
+      const studentId = await Promise.resolve(clientHash(studentCode, orgId));
       const body = {
-        student_attendance_id: studentName,
+        student_attendance_id: studentId,
       };
       await axios.post(
         `${
@@ -29,6 +32,7 @@ export const useAttendances = (orgId: string | undefined) => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
+            Authorization: `Bearer ${userSession.access_token}`,
           },
         }
       );

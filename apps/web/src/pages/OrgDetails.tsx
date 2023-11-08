@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useActivities } from "@/hooks/useActivities";
 // import { useOrg, useOrgs } from "@/hooks/useOrgs";
@@ -18,7 +18,7 @@ const links = [
     path: "./assistants",
   },
   {
-    name: "Gestionar Alumnos",
+    name: "Gestionar Estudiantes",
     icon: UserIcon,
     path: "./students",
   },
@@ -32,7 +32,6 @@ const links = [
 export default function OrgDetails(): JSX.Element {
   const navigate = useNavigate();
   const { orgId } = useParams();
-  // const { org } = useOrg(orgId);
   const { activities, isLoading } = useActivities(orgId);
   const { takeAttendance, message } = useAttendances(orgId);
   const [currActivity, setCurrActivity] = useState(0);
@@ -46,12 +45,8 @@ export default function OrgDetails(): JSX.Element {
 
   return (
     <div className="space-y-6 flex flex-col items-center px-4">
-      <h2 className="text-2xl font-bold text-center">
-        IIC3585-1 Diseño Avanzado de Aplicaciones Web
-      </h2>
-      <hr className="w-3/4 border-input border-1" />
       <div className="w-full flex flex-row flex-wrap justify-center items-center md:space-x-4 space-x-0">
-        {links.map((link, i) => (
+        {links.map((link, i: number) => (
           <Button
             key={i}
             className="w-full md:w-56 flex flex-col h-auto justify-center py-6 my-3"
@@ -67,7 +62,7 @@ export default function OrgDetails(): JSX.Element {
       <div className="py-6 space-y-4 w-full">
         <h3 className="text-xl font-medium text-center">Tomar Asistencia</h3>
         <ScrollArea className="h-96 border border-input-500 shadow-inner">
-          {isLoading && <LoadingSpinner className="my-6"/>}
+          {isLoading && <LoadingSpinner className="my-6" />}
           {activities.map((activity, i) => (
             <div
               className={cn(

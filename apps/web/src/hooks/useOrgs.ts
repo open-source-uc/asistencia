@@ -5,10 +5,6 @@ import axios from "axios";
 
 export interface OrgField {
   name: string;
-  code: string;
-  year: number;
-  semester: string;
-  section: string;
 }
 
 export interface Org extends OrgField {
@@ -16,11 +12,13 @@ export interface Org extends OrgField {
   enabled: boolean;
 }
 
-export const useOrgs = (): {
+export const useOrgs = (
+  authToken: string
+): {
   orgs: Org[];
   isLoading: boolean;
 } => {
-  const { getOrgs } = requestOrgs();
+  const { getOrgs } = handlerOrgs(authToken);
   const [orgs, setOrgs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,47 +34,27 @@ export const useOrgs = (): {
   return { orgs, isLoading };
 };
 
-// export const useOrg = (
-//   orgId: string | undefined
-// ): { org: Org | null; isLoading: boolean } => {
-//   const { getOrgById } = requestOrgs();
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [org, setOrg] = useState(null);
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       if (orgId) {
-//         setIsLoading(true);
-//         const data = await getOrgById(orgId);
-//         setOrg(data);
-//         setIsLoading(false);
-//       }
-//       console.log("request2");
-//     };
-//     fetchData();
-//   }, [orgId]);
-//   return { org, isLoading };
-// };
-
-export const requestOrgs = (): {
+export const handlerOrgs = (
+  authToken: string
+): {
   getOrgs: () => Promise<any>;
-  // getOrgById: (id: string) => Promise<any>;
   createOrg: (values: OrgField) => Promise<any>;
 } => {
   const getOrgs = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/courses/`, {
-      headers: {
-        Accept: "application/json",
-      },
-    });
-    return res.data;
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/courses/`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      return res.data;
+    } catch (error) {
+      console.log(error);
+    }
+    return [];
   };
-
-  // const getOrgById = async (id: string) => {
-  //   const res = await axios.get(
-  //     `${import.meta.env.VITE_API_URL}/courses/${id}`
-  //   );
-  //   return res.data;
-  // };
 
   const createOrg = async (values: OrgField) => {
     return await axios
@@ -84,18 +62,16 @@ export const requestOrgs = (): {
         `${import.meta.env.VITE_API_URL}/courses/`,
         {
           ...values,
-          enabled: true,
+          archived: false,
         },
         {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
           },
         }
       )
-      .then((res) => {
-        console.log(res.data);
-      })
       .catch((err) => {
         console.log(err);
       });

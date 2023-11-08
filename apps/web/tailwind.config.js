@@ -76,13 +76,16 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-
+      minWidth: {
+        lg: "32rem",
+        xl: "40rem",
+      },
       maxWidth: {
         "2xs": "16rem",
         "3xs": "12rem",
       },
       height: {
-        "57": "14.25rem",
+        57: "14.25rem",
       },
       boxShadow: {
         "t-inner": "inset 0 2px 4px 0 rgb(0 0 0 / 0.05);",
