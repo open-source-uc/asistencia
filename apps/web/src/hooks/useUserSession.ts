@@ -175,7 +175,7 @@ export const useUserSession = (): {
   };
 };
 
-export const useSuperUser= (
+export const useSuperUser = (
   access_token: string
 ): {
   getUser: (userId: string) => Promise<unknown>;

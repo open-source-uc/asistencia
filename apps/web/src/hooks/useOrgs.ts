@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
+import { useUserSession } from "./useUserSession";
 import axios from "axios";
 
 export interface OrgField {
@@ -12,13 +13,12 @@ export interface Org extends OrgField {
   enabled: boolean;
 }
 
-export const useOrgs = (
-  authToken: string
-): {
+export const useOrgs = (): {
   orgs: Org[];
   isLoading: boolean;
 } => {
-  const { getOrgs } = handlerOrgs(authToken);
+  const { userSession } = useUserSession();
+  const { getOrgs } = handlerOrgs(userSession.access_token);
   const [orgs, setOrgs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 

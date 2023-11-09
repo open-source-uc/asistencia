@@ -4,9 +4,12 @@ import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { MenuIcon } from "lucide-react";
 import { BARTABS } from "@/constants/barTabs";
+import { LogOutIcon } from "lucide-react";
+import { useUserSession } from "@/hooks/useUserSession";
 
 export function Sidebar({ className }: { className?: string }) {
   const navigate = useNavigate();
+  const { logOut } = useUserSession();
   const [isOpen, setIsOpen] = useState(true);
   return (
     <div className={className}>
@@ -54,6 +57,17 @@ export function Sidebar({ className }: { className?: string }) {
             </Button>
           ))}
         </div>
+        <Button
+          variant="ghost"
+          className="w-full justify-start py-6 text-red-500 bottom-0 absolute hover:bg-red-500 hover:text-white"
+          onClick={() => {
+            logOut();
+            navigate("/");
+          }}
+        >
+          <LogOutIcon />
+          {isOpen && <span className="ml-6">Cerrar Sesión</span>}
+        </Button>
       </div>
     </div>
   );

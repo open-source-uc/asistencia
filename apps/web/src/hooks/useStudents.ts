@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useUserSession } from "./useUserSession";
 import { clientHash } from "@/lib/hashFunctions";
@@ -16,7 +17,7 @@ interface RequestObject {
 }
 
 export const useStudents = (
-  orgId: string
+  orgId: string = ""
 ): {
   students: Student[];
   isLoading: boolean;

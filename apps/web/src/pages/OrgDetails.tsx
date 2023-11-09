@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useActivities } from "@/hooks/useActivities";
-// import { useOrg, useOrgs } from "@/hooks/useOrgs";
 import { useAttendances } from "@/hooks/useAttendances";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";

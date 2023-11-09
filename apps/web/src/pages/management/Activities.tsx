@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ActivityField, Activity, useActivities } from "@/hooks/useActivities";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RemoveDialog } from "@/components/remove-dialog";
