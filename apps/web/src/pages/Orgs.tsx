@@ -1,12 +1,10 @@
-import { useUserSession } from "@/hooks/useUserSession";
 import { useOrgs } from "@/hooks/useOrgs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/loading-spinner";
 
 export default function Orgs(): JSX.Element {
-  const { userSession } = useUserSession();
-  const { orgs, isLoading } = useOrgs(userSession.access_token);
+  const { orgs, isLoading } = useOrgs();
   const navigate = useNavigate();
 
   return (

@@ -8,7 +8,7 @@ interface Message {
   type: "success" | "error";
 }
 
-export const useAttendances = (orgId: string) => {
+export const useAttendances = (orgId: string = "") => {
   const { userSession } = useUserSession();
   const [message, setMessage] = useState<Message>({
     message: "",

@@ -16,9 +16,13 @@ import { useState } from "react";
 
 const formSchema = z
   .object({
-    email: z.string().email(),
-    password: z.string().min(8),
-    repeatPassword: z.string().min(8),
+    email: z.string().email("El correo debe ser válido"),
+    password: z
+      .string()
+      .min(8, "La contraseña debe tener al menos 8 caracteres"),
+    repeatPassword: z
+      .string()
+      .min(8, "La contraseña debe tener al menos 8 caracteres"),
   })
   .refine((data) => data.password === data.repeatPassword, {
     message: "Las contraseñas deben ser iguales",

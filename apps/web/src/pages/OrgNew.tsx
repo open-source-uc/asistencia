@@ -16,7 +16,7 @@ import { handlerOrgs } from "@/hooks/useOrgs";
 import { useUserSession } from "@/hooks/useUserSession";
 
 const formSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, "El nombre es requerido"),
 });
 
 interface IField {
@@ -51,6 +51,7 @@ export default function OrgNew() {
     setIsLoading(true);
     await createOrg(values).then(() => {
       setIsLoading(false);
+      form.reset();
     });
   }
 

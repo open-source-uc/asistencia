@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useUserSession } from "./useUserSession";
@@ -13,7 +14,7 @@ export interface Activity extends ActivityField {
   course_id: string;
 }
 
-export const useActivities = (orgId: string | undefined) => {
+export const useActivities = (orgId: string = "") => {
   const { userSession } = useUserSession();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,12 +49,15 @@ export const useActivities = (orgId: string | undefined) => {
 
   const createActivity = async (values: ActivityField): Promise<void> => {
     const body = {
-      course_activity: {
-        slug: values.slug,
-        date: values.date.toISOString().replace("T", " ").replace("Z", ""),
-        event_type: values.event_type,
-      },
-      allowed_roles: ["admin", "assistant", "default"],
+      // course_activity: {
+      //   slug: values.slug,
+      //   date: values.date.toISOString().replace("T", " ").replace("Z", ""),
+      //   event_type: values.event_type,
+      // },
+      // allowed_roles: ["admin", "assistant", "default"],
+      slug: values.slug,
+      date: values.date.toISOString().replace("T", " ").replace("Z", ""),
+      event_type: values.event_type,
     };
     const res = await axios.post(
       `${import.meta.env.VITE_API_URL}/courses/${orgId}/activities/`,
@@ -62,6 +66,7 @@ export const useActivities = (orgId: string | undefined) => {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
+          Authorization: `Bearer ${userSession.access_token}`,
         },
       }
     );

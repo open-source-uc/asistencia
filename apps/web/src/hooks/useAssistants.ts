@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useUserSession } from "./useUserSession";
@@ -9,7 +10,7 @@ interface Assistant {
   active: boolean;
 }
 
-export const useAssistants = (orgId: string | undefined) => {
+export const useAssistants = (orgId: string = "") => {
   const { userSession } = useUserSession();
   const [assistants, setAssistants] = useState<Assistant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
