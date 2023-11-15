@@ -1,7 +1,6 @@
-import { useUserSession } from "./useUserSession";
 import { useState } from "react";
 import { clientHash } from "@/lib/hashFunctions";
-import axios from "axios";
+import client from "@/api/client";
 
 interface Message {
   message: string;
@@ -9,7 +8,6 @@ interface Message {
 }
 
 export const useAttendances = (orgId: string = "") => {
-  const { userSession } = useUserSession();
   const [message, setMessage] = useState<Message>({
     message: "",
     type: "success",
@@ -23,18 +21,9 @@ export const useAttendances = (orgId: string = "") => {
       const body = {
         student_attendance_id: studentId,
       };
-      await axios.post(
-        `${
-          import.meta.env.VITE_API_URL
-        }/courses/${orgId}/activities/${activitySlug}/attendances/`,
-        body,
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userSession.access_token}`,
-          },
-        }
+      await client.post(
+        `/courses/${orgId}/activities/${activitySlug}/attendances/`,
+        body
       );
       setMessage({
         message: "Asistencia registrada correctamente",

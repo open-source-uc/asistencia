@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import {
-  initialStateUserSession,
   UserSessionContext,
   UserSession,
   User,
 } from "@/components/contexts/user-session-context";
-import axios from "axios";
+import { initialStateUserSession } from "@/components/contexts/user-session-storage";
+import client from "@/api/client";
 
 interface UserEdit {
   email?: string;
@@ -31,9 +31,9 @@ export const useUserSession = (): {
   const { userSession, setUserSession } = useContext(UserSessionContext);
 
   const logIn = async (email: string, password: string) => {
-    return axios
+    return client
       .post(
-        `${import.meta.env.VITE_API_URL}/auth/jwt/login`,
+        `/auth/jwt/login`,
         {
           grant_type: "",
           username: email,
@@ -44,7 +44,6 @@ export const useUserSession = (): {
         },
         {
           headers: {
-            Accept: "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
           },
         }
@@ -68,8 +67,8 @@ export const useUserSession = (): {
   };
 
   const signUp = async (email: string, password: string) => {
-    return axios
-      .post(`${import.meta.env.VITE_API_URL}/auth/register`, {
+    return client
+      .post(`/auth/register`, {
         email,
         password,
       })
@@ -89,8 +88,8 @@ export const useUserSession = (): {
   // https://fastapi-users.github.io/fastapi-users/10.1/usage/routes/
 
   const forgotPassword = async (email: string) => {
-    return axios
-      .post(`${import.meta.env.VITE_API_URL}/auth/forgot-password`, {
+    return client
+      .post(`/auth/forgot-password`, {
         email,
       })
       .then((res) => {
@@ -102,8 +101,8 @@ export const useUserSession = (): {
     newPassword: string,
     forgotPasswordToken: string
   ) => {
-    return axios
-      .post(`${import.meta.env.VITE_API_URL}/auth/reset-password`, {
+    return client
+      .post(`/auth/reset-password`, {
         token: forgotPasswordToken,
         password: newPassword,
       })
@@ -113,9 +112,8 @@ export const useUserSession = (): {
   };
 
   const getUser = async (access_token: string): Promise<User | null> => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/me`, {
+    const res = await client.get(`/users/me`, {
       headers: {
-        Accept: "application/json",
         Authorization: `Bearer ${access_token}`,
       },
     });
@@ -124,16 +122,7 @@ export const useUserSession = (): {
   };
 
   const editUser = async (body: UserEdit) => {
-    const res = await axios.patch(
-      `${import.meta.env.VITE_API_URL}/users/me`,
-      body,
-      {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${userSession.access_token}`,
-        },
-      }
-    );
+    const res = await client.patch(`/users/me`, body);
     if (!res.data) return null;
     setUserSession({
       ...userSession,
@@ -146,18 +135,15 @@ export const useUserSession = (): {
 
   // const requestVerifyToken = async (email: string) => {
   //   return (
-  //     await axios.post(
-  //       `${import.meta.env.VITE_API_URL}/auth/request-verify-token`,
-  //       {
-  //         email,
-  //       }
-  //     )
+  //     await client.post(`/auth/request-verify-token`, {
+  //       email,
+  //     })
   //   ).data;
   // };
 
   // const verifyToken = async (token: string) => {
   //   return (
-  //     await axios.post(`${import.meta.env.VITE_API_URL}/auth/verify`, {
+  //     await client.post(`/auth/verify`, {
   //       token,
   //     })
   //   ).data;
@@ -175,42 +161,23 @@ export const useUserSession = (): {
   };
 };
 
-export const useSuperUser = (
-  access_token: string
-): {
+export const useSuperUser = (): {
   getUser: (userId: string) => Promise<unknown>;
   editUser: (userId: string, body: UserEdit) => Promise<unknown>;
   deleteUser: (userId: string) => Promise<unknown>;
 } => {
-  const authHeaders = {
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${access_token}`,
-    },
-  };
-
   const getUser = async (userId: string) => {
-    const res = await axios.get(
-      `${import.meta.env.VITE_API_URL}/users/${userId}`,
-      authHeaders
-    );
+    const res = await client.get(`/users/${userId}`);
     if (!res.data) return null;
     return res.data;
   };
   const editUser = async (userId: string, body: UserEdit) => {
-    const res = await axios.patch(
-      `${import.meta.env.VITE_API_URL}/users/${userId}`,
-      body,
-      authHeaders
-    );
+    const res = await client.patch(`/users/${userId}`, body);
     if (!res.data) return null;
     return res.data;
   };
   const deleteUser = async (userId: string) => {
-    const res = await axios.delete(
-      `${import.meta.env.VITE_API_URL}/users/${userId}`,
-      authHeaders
-    );
+    const res = await client.delete(`/users/${userId}`);
     if (!res.data) return null;
     return res.data;
   };

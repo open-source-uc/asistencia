@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { useUserSession } from "./useUserSession";
-import axios from "axios";
+import client from "@/api/client";
 
 export interface OrgField {
   name: string;
@@ -17,8 +16,7 @@ export const useOrgs = (): {
   orgs: Org[];
   isLoading: boolean;
 } => {
-  const { userSession } = useUserSession();
-  const { getOrgs } = handlerOrgs(userSession.access_token);
+  const { getOrgs } = handlerOrgs();
   const [orgs, setOrgs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,21 +32,13 @@ export const useOrgs = (): {
   return { orgs, isLoading };
 };
 
-export const handlerOrgs = (
-  authToken: string
-): {
+export const handlerOrgs = (): {
   getOrgs: () => Promise<any>;
   createOrg: (values: OrgField) => Promise<any>;
 } => {
   const getOrgs = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/courses/`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const res = await client.get(`/courses/`);
       return res.data;
     } catch (error) {
       console.log(error);
@@ -57,21 +47,11 @@ export const handlerOrgs = (
   };
 
   const createOrg = async (values: OrgField) => {
-    return await axios
-      .post(
-        `${import.meta.env.VITE_API_URL}/courses/`,
-        {
-          ...values,
-          archived: false,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      )
+    return await client
+      .post(`/courses/`, {
+        ...values,
+        archived: false,
+      })
       .catch((err) => {
         console.log(err);
       });
