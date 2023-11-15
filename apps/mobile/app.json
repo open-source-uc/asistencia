@@ -1,0 +1,68 @@
+{
+  "expo": {
+    "name": "test",
+    "slug": "asistencia",
+    "scheme": "uc-attendance",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "react-native-nfc-manager",
+        {
+          "nfcPermission": "Custom permission message",
+          "selectIdentifiers": [
+            "A0000002471001"
+          ],
+          "systemCodes": [
+            "8008"
+          ],
+          "includeNdefEntitlement": true
+        }
+      ],
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access camera."
+        }
+      ],
+      "expo-router"
+    ],
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.NFC",
+        "android.permission.CAMERA"
+      ],
+      "package": "com.ignacio.porte.test"
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3382a185-4e73-43e9-b63a-02a49c90f47c"
+      }
+    },
+    "owner": "open-source-asistencia"
+  }
+}
