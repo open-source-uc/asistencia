@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { useUserSession } from "./useUserSession";
+import client from "@/api/client";
 
 export interface ActivityField {
   slug: string;
@@ -15,23 +14,13 @@ export interface Activity extends ActivityField {
 }
 
 export const useActivities = (orgId: string = "") => {
-  const { userSession } = useUserSession();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/courses/${orgId}/activities/`,
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userSession.access_token}`,
-          },
-        }
-      );
+      const res = await client.get(`/courses/${orgId}/activities/`);
       setActivities(
         res.data
           .map((activity: Activity) => ({
@@ -59,17 +48,7 @@ export const useActivities = (orgId: string = "") => {
       date: values.date.toISOString().replace("T", " ").replace("Z", ""),
       event_type: values.event_type,
     };
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/courses/${orgId}/activities/`,
-      body,
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userSession.access_token}`,
-        },
-      }
-    );
+    const res = await client.post(`/courses/${orgId}/activities/`, body);
     console.log(res.data);
     const data = { ...res.data, date: new Date(res.data.date) };
     if (res.status === 200) setActivities([data, ...activities]);

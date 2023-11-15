@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { useUserSession } from "./useUserSession";
+import client from "@/api/client";
 
 interface Assistant {
   id: string;
@@ -11,19 +10,13 @@ interface Assistant {
 }
 
 export const useAssistants = (orgId: string = "") => {
-  const { userSession } = useUserSession();
   const [assistants, setAssistants] = useState<Assistant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const getAssistantsByOrg = async () => {
-    return await axios
-      .get(`${import.meta.env.VITE_API_URL}/user_courses/${orgId}`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userSession.access_token}`,
-        },
-      })
+    return await client
+      .get(`/user_courses/${orgId}`)
       .then((res) => {
+        console.log(res.data);
         return res.data;
       })
       .catch(() => {
@@ -35,23 +28,13 @@ export const useAssistants = (orgId: string = "") => {
     userEmail: string,
     role: "admin" | "assistant" | "default" = "default"
   ): Promise<Assistant | undefined> => {
-    return await axios
-      .post(
-        `${import.meta.env.VITE_API_URL}/user_courses/?course_id=${orgId}`,
-        {
-          course_id: orgId,
-          user_email: userEmail,
-          role: role,
-          active: true,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userSession.access_token}`,
-          },
-        }
-      )
+    return await client
+      .post(`/user_courses/?course_id=${orgId}`, {
+        course_id: orgId,
+        user_email: userEmail,
+        role: role,
+        active: true,
+      })
       .then((res) => {
         return res.data;
       });

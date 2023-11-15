@@ -1,4 +1,9 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
+import {
+  getUserSessionStorage,
+  setUserSessionStorage,
+  removeUserSessionStorage,
+} from "./user-session-storage";
 
 export interface User {
   id: string;
@@ -13,31 +18,29 @@ export interface UserSession extends User {
   isLoggedIn: boolean;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const initialStateUserSession: UserSession = {
-  id: "",
-  email: "",
-  access_token: "",
-  is_active: false,
-  is_superuser: false,
-  is_verified: false,
-  isLoggedIn: false,
-};
-
 export interface UserSessionContextProps {
   userSession: UserSession;
   setUserSession: React.Dispatch<React.SetStateAction<UserSession>>;
 }
 
 export const UserSessionContext = createContext<UserSessionContextProps>({
-  userSession: initialStateUserSession,
+  userSession: getUserSessionStorage(),
   setUserSession: () => {},
 });
 
 export const UserSessionProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [userSession, setUserSession] = useState<UserSession>(initialStateUserSession);
+  const initialState = getUserSessionStorage();
+  const [userSession, setUserSession] = useState<UserSession>(initialState);
+
+  useEffect(() => {
+    if (userSession.isLoggedIn) {
+      setUserSessionStorage(userSession);
+    } else {
+      removeUserSessionStorage();
+    }
+  }, [userSession]);
 
   return (
     <UserSessionContext.Provider
