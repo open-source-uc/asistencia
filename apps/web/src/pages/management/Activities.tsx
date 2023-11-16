@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Activity, useActivities } from "@/hooks/useActivities";
 import { useParams } from "react-router-dom";
 import { RemoveDialog } from "@/components/remove-dialog";

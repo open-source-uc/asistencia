@@ -41,7 +41,11 @@ export default function Assistants(): JSX.Element {
   };
 
   const addAssistants = () => {
-    if (inputState.pills.size === 0 && inputState.lastInputState === "") return;
+    if (
+      (inputState.pills.size === 0 && inputState.lastInputState === "") ||
+      error !== ""
+    )
+      return;
     const emails = new Set(inputState.pills);
     if (inputState.lastInputState !== "") emails.add(inputState.lastInputState);
     addMultipleAssistantsToOrg(Array.from(emails))
@@ -61,13 +65,19 @@ export default function Assistants(): JSX.Element {
             onChange={(value: Value) => {
               setInputState(value);
             }}
+            pattern={/[^@\s]+@[^@\s]+/g} // pattern for emails
+            onPatternError={(error: boolean) => {
+              setError(error ? "Email inválido" : "");
+            }}
           />
           <Button onClick={addAssistants} className="h-16">
             Añadir
           </Button>
         </div>
         {error !== "" && (
-          <span className="text-red-500 text-sm ml-2 mt-2">{error}</span>
+          <span className="text-red-500 text-sm ml-2 mt-2 font-medium">
+            {error}
+          </span>
         )}
 
         <div className="mt-6">

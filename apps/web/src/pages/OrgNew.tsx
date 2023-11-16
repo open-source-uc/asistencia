@@ -13,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { handlerOrgs } from "@/hooks/useOrgs";
-import { useUserSession } from "@/hooks/useUserSession";
 
 const formSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -36,9 +35,8 @@ const FORM_FIELDS: IField[] = [
 ];
 
 export default function OrgNew() {
-  const { userSession } = useUserSession();
   const [isLoading, setIsLoading] = useState(false);
-  const { createOrg } = handlerOrgs(userSession.access_token);
+  const { createOrg } = handlerOrgs();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
