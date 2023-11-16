@@ -15,7 +15,7 @@ export function DatePicker({
   ...props
 }: {
   date?: Date;
-  setDate: (date: Date) => void;
+  setDate: (value: Date) => void;
   [key: string]: unknown;
 }) {
   return (
@@ -30,8 +30,7 @@ export function DatePicker({
           {...props}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? date.toLocaleDateString()
-           : <span>Fecha</span>}
+          {date ? date.toLocaleDateString() : <span>Fecha</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">

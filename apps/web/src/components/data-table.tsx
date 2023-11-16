@@ -93,9 +93,7 @@ export const DateColumn = (header: string, accessorKey: string) => ({
     );
   },
   cell: ({ row }: { row: RowProps }) => {
-    const date = new Date(row.getValue(accessorKey))
-      .toISOString()
-      .split("T")[0];
+    const date = new Date(row.getValue(accessorKey)).toLocaleDateString();
     return <div>{date}</div>;
   },
 });
@@ -103,9 +101,7 @@ export const DateColumn = (header: string, accessorKey: string) => ({
 export const GenericColumn = (header: string, accessorKey: string) => ({
   accessorKey,
   header,
-  cell: ({ row }: { row: RowProps }) => (
-    <div className="capitalize">{row.getValue(accessorKey)}</div>
-  ),
+  cell: ({ row }: { row: RowProps }) => <div>{row.getValue(accessorKey)}</div>,
 });
 
 export interface IRowSelection {

@@ -37,7 +37,11 @@ export default function InputPills({ onChange }: InputPillsProps): JSX.Element {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmRemove(false);
-    if (e.target.value.includes(" ")) {
+    if (
+      e.target.value.includes(" ") ||
+      e.target.value.includes(",") ||
+      e.target.value.includes(";")
+    ) {
       addPill();
       return;
     }

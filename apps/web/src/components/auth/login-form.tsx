@@ -19,14 +19,14 @@ const formSchema = z.object({
   password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
 });
 
-interface IField {
+interface Field {
   name: "email" | "password";
   label: string;
   placeholder: string;
   type: string;
 }
 
-const FORM_FIELDS: IField[] = [
+const FORM_FIELDS: Field[] = [
   {
     name: "email",
     label: "Correo",
@@ -74,7 +74,7 @@ export default function LoginForm() {
         <span className="text-xl font-bold text-center mb-12">
           Iniciar Sesión
         </span>
-        {FORM_FIELDS.map((form_field: IField, i: number) => (
+        {FORM_FIELDS.map((form_field: Field, i: number) => (
           <FormField
             key={i}
             control={form.control}

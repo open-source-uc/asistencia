@@ -60,6 +60,7 @@ export default function Students(): JSX.Element {
             }}
             isLoading={isLoading}
             className="w-full"
+            disabled={uploadedStudents.length === 0}
           >
             Añadir Estudiantes
           </Button>
