@@ -12,57 +12,69 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { handlerOrgs } from "@/hooks/useOrgs";
 import { useUserSession } from "@/hooks/useUserSession";
 
 const formSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido"),
+  email: z.string().email("El correo debe ser válido"),
+  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
 });
 
-interface IField {
-  name: "name";
+interface Field {
+  name: "email" | "password";
   label: string;
   placeholder: string;
   type: string;
 }
 
-const FORM_FIELDS: IField[] = [
+const FORM_FIELDS: Field[] = [
   {
-    name: "name",
-    label: "Nombre",
-    placeholder: "Nombre Organización",
-    type: "text",
+    name: "email",
+    label: "Correo",
+    placeholder: "ejemplo@uc.cl",
+    type: "email",
+  },
+  {
+    name: "password",
+    label: "Contraseña",
+    placeholder: "Mínimo 8 caracteres",
+    type: "password",
   },
 ];
 
-export default function OrgNew() {
-  const { userSession } = useUserSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const { createOrg } = handlerOrgs(userSession.access_token);
+export default function LoginForm() {
+  const { logIn } = useUserSession();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      email: "",
+      password: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     setIsLoading(true);
-    await createOrg(values).then(() => {
-      setIsLoading(false);
-      form.reset();
-    });
+    logIn(values.email, values.password).then(
+      () => {
+        setIsLoading(false);
+      },
+      (error) => {
+        setIsLoading(false);
+        console.log(error);
+        setError("Ocurrió un error inesperado.");
+      }
+    );
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-3/4">
-        <div>[TEMPORAL]</div>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <span className="text-xl font-bold text-center mb-12">
-          Nueva Organización
+          Iniciar Sesión
         </span>
-        {FORM_FIELDS.map((form_field: IField, i: number) => (
+        {FORM_FIELDS.map((form_field: Field, i: number) => (
           <FormField
             key={i}
             control={form.control}
@@ -83,8 +95,9 @@ export default function OrgNew() {
             )}
           />
         ))}
+        <FormMessage className="my-4 w-full">{error}</FormMessage>
         <Button type="submit" className="w-64" isLoading={isLoading}>
-          Crear Organización
+          Iniciar Sesión
         </Button>
       </form>
     </Form>

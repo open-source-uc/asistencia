@@ -3,11 +3,14 @@ import ReactDOM from "react-dom/client";
 import App from "@/App";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
+import { UserSessionProvider } from "./components/contexts/user-session-context";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <UserSessionProvider>
       <BrowserRouter>
-         <App />
+        <App />
       </BrowserRouter>
+    </UserSessionProvider>
   </React.StrictMode>
 );

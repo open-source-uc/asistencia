@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
+import { useActivities } from "@/hooks/useActivities";
+import { useAttendances } from "@/hooks/useAttendances";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { postRequest } from "@/lib/api-requests";
 import { CalendarIcon, UserCheckIcon, UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import LoadingSpinner from "@/components/loading-spinner";
 
 const links = [
   {
@@ -15,7 +17,7 @@ const links = [
     path: "./assistants",
   },
   {
-    name: "Gestionar Alumnos",
+    name: "Gestionar Estudiantes",
     icon: UserIcon,
     path: "./students",
   },
@@ -26,38 +28,27 @@ const links = [
   },
 ];
 
-const activities = Array.from({ length: 10 }, (_, i) => ({
-  name: `Actividad ${i + 1}`,
-  date: `${(i + 1).toString().padStart(2, "0")}/09`,
-})).reverse();
-
 export default function OrgDetails(): JSX.Element {
   const navigate = useNavigate();
   const { orgId } = useParams();
+  const { activities, isLoading } = useActivities(orgId);
+  const { takeAttendance, message } = useAttendances(orgId);
   const [currActivity, setCurrActivity] = useState(0);
   const [inputState, setInputState] = useState("");
 
   const handleTakeAttendance = () => {
     if (inputState === "") return;
-    postRequest(`${import.meta.env.VITE_API_URL}`, {
-      participant: inputState,
-      activity_id: currActivity,
-      taken_by_id: 2,
-    });
+    takeAttendance(activities[currActivity].slug, inputState);
     setInputState("");
   };
 
   return (
     <div className="space-y-6 flex flex-col items-center px-4">
-      <h2 className="text-2xl font-bold text-center">
-        IIC3585-1 Diseño Avanzado de Aplicaciones Web
-      </h2>
-      <hr className="w-3/4 border-input border-1" />
-      <div className="w-full flex flex-row flex-wrap justify-center items-center space-y-6 md:space-x-4 md:space-y-0 space-x-0">
-        {links.map((link, i) => (
+      <div className="w-full flex flex-row flex-wrap justify-center items-center md:space-x-4 space-x-0">
+        {links.map((link, i: number) => (
           <Button
             key={i}
-            className="w-full md:w-56 flex flex-col h-auto justify-center py-6"
+            className="w-full md:w-56 flex flex-col h-auto justify-center py-6 my-3"
             onClick={() => {
               navigate(link.path);
             }}
@@ -70,6 +61,7 @@ export default function OrgDetails(): JSX.Element {
       <div className="py-6 space-y-4 w-full">
         <h3 className="text-xl font-medium text-center">Tomar Asistencia</h3>
         <ScrollArea className="h-96 border border-input-500 shadow-inner">
+          {isLoading && <LoadingSpinner className="my-6" />}
           {activities.map((activity, i) => (
             <div
               className={cn(
@@ -81,27 +73,32 @@ export default function OrgDetails(): JSX.Element {
               key={i}
               onClick={() => setCurrActivity(i)}
             >
-              <span className="w-16">{activity.date}</span>
-              <span>{activity.name}</span>
+              <span className="w-32">
+                {activity.date?.toLocaleDateString()}
+              </span>
+              <span>{activity.slug}</span>
             </div>
           ))}
         </ScrollArea>
       </div>
       <div className="flex flex-row w-full relative">
         <Input
-          variant={"rounded"}
-          placeholder="Nombre Apellido"
+          placeholder="Identificador de Estudiante"
           value={inputState}
           onChange={(e) => setInputState(e.target.value)}
         />
-        <Button
-          variant={"rounded"}
-          className="w-64"
-          onClick={handleTakeAttendance}
-        >
+        <Button className="w-64" onClick={handleTakeAttendance}>
           Tomar Asistencia
         </Button>
       </div>
+      <span
+        className={cn(
+          message.type === "error" ? "text-red-500" : "text-primary",
+          "animate-fade-in-up"
+        )}
+      >
+        {message.message}
+      </span>
     </div>
   );
 }
