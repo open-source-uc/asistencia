@@ -41,10 +41,14 @@ export default function Assistants(): JSX.Element {
   };
 
   const addAssistants = () => {
-    if (inputState.pills.size === 0) return;
-    addMultipleAssistantsToOrg(Array.from(inputState.pills)).catch(() => {
-      setError("Ha ocurrido un error al añadir los ayudantes");
-    });
+    if (inputState.pills.size === 0 && inputState.lastInputState === "") return;
+    const emails = new Set(inputState.pills);
+    if (inputState.lastInputState !== "") emails.add(inputState.lastInputState);
+    addMultipleAssistantsToOrg(Array.from(emails))
+      .then()
+      .catch(() => {
+        setError("Ha ocurrido un error al añadir los ayudantes");
+      });
   };
 
   return (
