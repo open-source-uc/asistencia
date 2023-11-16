@@ -7,6 +7,10 @@ const formatInput = (input: string) => {
   return input.replace(" ", "").replace(",", "").replace(";", "");
 };
 
+const followsPattern = (pattern: RegExp, input: string) => {
+  return input.match(pattern) !== null;
+};
+
 interface Value {
   pills: Set<string>;
   lastInputState: string;
@@ -14,15 +18,26 @@ interface Value {
 
 interface InputPillsProps {
   onChange: (value: Value) => void;
+  pattern?: RegExp;
+  onPatternError?: (error: boolean) => void;
 }
 
-export default function InputPills({ onChange }: InputPillsProps): JSX.Element {
+export default function InputPills({
+  onChange,
+  pattern = /.*?/, // default pattern that accepts all strings
+  onPatternError,
+}: InputPillsProps): JSX.Element {
   const [lastInputState, setLastInputState] = useState("");
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [pills, setPills] = useState<Set<string>>(new Set());
+  const [patternError, setPatternError] = useState<boolean>(false);
 
   const addPill = () => {
-    if (lastInputState === "") return;
+    if (!followsPattern(pattern, lastInputState)) {
+      setPatternError(true);
+      return;
+    }
+    setPatternError(false);
     setPills((prev) => new Set(prev).add(formatInput(lastInputState)));
     setLastInputState("");
   };
@@ -37,15 +52,15 @@ export default function InputPills({ onChange }: InputPillsProps): JSX.Element {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmRemove(false);
-    if (
-      e.target.value.includes(" ") ||
-      e.target.value.includes(",") ||
-      e.target.value.includes(";")
-    ) {
+    const text = e.target.value;
+    if (text.includes(" ") || text.includes(",") || text.includes(";")) {
       addPill();
       return;
     }
-    setLastInputState(e.target.value);
+    setLastInputState(text);
+    if (patternError && followsPattern(pattern, text)) {
+      setPatternError(false);
+    }
   };
 
   useEffect(() => {
@@ -54,6 +69,12 @@ export default function InputPills({ onChange }: InputPillsProps): JSX.Element {
       lastInputState,
     });
   }, [pills, lastInputState]);
+
+  useEffect(() => {
+    if (onPatternError) {
+      onPatternError(patternError);
+    }
+  }, [patternError]);
 
   return (
     <div className="flex flex-col w-full">
@@ -96,6 +117,7 @@ export default function InputPills({ onChange }: InputPillsProps): JSX.Element {
                 addPill();
               }
             }}
+            spellCheck={false}
             onKeyUp={(e) => {
               if (
                 e.key === "Backspace" &&
