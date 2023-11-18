@@ -114,13 +114,14 @@ export function DataTable({
   searchColumn = null,
   rowSelection = {},
   setRowSelection = () => {},
+  className = "",
 }: {
   data: unknown[];
   columns: ColumnDef<any>[];
   searchColumn?: string | null;
-
   rowSelection?: IRowSelection;
   setRowSelection?: React.Dispatch<React.SetStateAction<IRowSelection>>;
+  className?: string;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -140,7 +141,7 @@ export function DataTable({
   });
 
   return (
-    <div className="w-full">
+    <div className={"flex flex-col space-y-4"}>
       {searchColumn && (
         <div className="flex items-center py-4">
           <Input
@@ -155,7 +156,7 @@ export function DataTable({
           />
         </div>
       )}
-      <div className="rounded-md border">
+      <div className={cn("rounded-md border", className)}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

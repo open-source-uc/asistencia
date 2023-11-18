@@ -1,41 +1,62 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStudents } from "@/hooks/useStudents";
 import { useParams } from "react-router-dom";
-import { SortingColumn } from "@/components/data-table";
-import { DataTable } from "@/components/data-table";
+import { SortingColumn, DataTable } from "@/components/data-table";
 import LoadingSpinner from "@/components/loading-spinner";
 import { Button } from "@/components/ui/button";
 import UploadFile from "@/components/upload-file";
-
-// Array(8) [[ "Nombres", "Sección", "Curriculo", "Carrera", "EMail", "RUN", "Número de alumno\r" ], ...]
+import Stepper from "@/components/stepper";
+import { type ColumnDef } from "@tanstack/react-table";
+import { Combobox } from "@/components/ui/combobox";
+import { Separator } from "@/components/ui/separator";
 
 interface Student {
   attendance_id: string;
 }
 
-const columns = [SortingColumn("Código", "attendance_id")];
+const columnsSelectedColumn = [SortingColumn("Identificador", "attendance_id")];
+
 const columnsHash = [SortingColumn("Hash Estudiante", "attendance_id")];
+
+interface UploadedData {
+  array: { [key: string]: string }[];
+  headers: string[];
+  columns: ColumnDef<unknown>[];
+}
 
 export default function Students(): JSX.Element {
   // const [students, setStudents] = useState<Student[]>([]);
   const { orgId } = useParams();
-  const { students, isLoading, createStudents } = useStudents(orgId || "");
-  const [uploadedStudents, setUploadedStudents] = useState<Student[]>([]);
+  const { students, isLoading, createStudents } = useStudents(orgId);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isLoadingUpload, setIsLoadingUpload] = useState(false);
+  const [uploadedData, setUploadedData] = useState<UploadedData>({
+    array: [],
+    headers: [],
+    columns: [],
+  });
+  const [selectedColumn, setSelectedColumn] = useState<string>("");
+  const [studentCodes, setStudentCodes] = useState<Student[]>([]);
+  useEffect(() => {
+    if (selectedColumn !== "") {
+      const studentCodes = uploadedData.array.map((row) => ({
+        attendance_id: row[selectedColumn],
+      }));
+      setStudentCodes(studentCodes);
+    }
+  }, [selectedColumn, uploadedData]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLoadingUpload(true);
     if (e.target.files) {
       try {
         const file = e.target.files[0];
         const response = await fetch(URL.createObjectURL(file));
         const text = await response.text();
-        const _data = text.split("\n").map((line) => line.split(","));
-        const attendanceCodes = parseArray2(_data);
-        setUploadedStudents(
-          attendanceCodes.map((code) => ({ attendance_id: code, id: "" }))
-        );
-        // console.log(attendanceCodes);
-        // createStudents(attendanceCodes);
-        // setStudents(parseArray(_data, orgId || ""));
+        const { array, headers, columns } = parseCSV(text);
+        setUploadedData({ array, headers, columns });
+        setCurrentStep(1);
+        setIsLoadingUpload(false);
       } catch (error) {
         console.error(error);
       }
@@ -44,28 +65,125 @@ export default function Students(): JSX.Element {
   return (
     <div className="space-y-6 flex flex-col items-center w-full">
       <h3 className="text-xl font-medium text-center">Gestionar Estudiantes</h3>
-      <div className="flex flex-row items-center flex-wrap w-full justify-evenly bg-slate-50 rounded-xl">
-        <UploadFile onChange={handleFileChange} />
-        <div className="my-6 w-1/2 flex flex-col">
-          <span className="text-sm text-slate-500 font-semibold mb-3">
-            Vista previa
-          </span>
-          <DataTable columns={columns} data={uploadedStudents} />
-          <Button
-            onClick={() => {
-              if (uploadedStudents.length > 0)
-                createStudents(
-                  uploadedStudents.map((student) => student.attendance_id)
-                );
-            }}
-            isLoading={isLoading}
-            className="w-full"
-            disabled={uploadedStudents.length === 0}
-          >
-            Añadir Estudiantes
-          </Button>
+      <div className="flex flex-col p-6 bg-slate-50">
+        <span className="text-md font-medium mb-6">
+          Importar estudiantes desde un archivo
+        </span>
+        <div className="flex flex-col items-center">
+          <div className="flex flex-col lg:flex-row lg:space-y-0 space-y-4 justify-center items-center">
+            <Stepper
+              steps={["Subir CSV", "Elegir Columna", "Añadir"]}
+              currentStep={currentStep}
+              className="mx-4"
+            />
+            <div className="flex flex-row space-x-4 ml-4">
+              <Button
+                onClick={() => {
+                  if (currentStep > 0) {
+                    setCurrentStep(currentStep - 1);
+                  }
+                }}
+                disabled={currentStep === 0}
+                variant={"outline"}
+              >
+                Anterior
+              </Button>
+              <Button
+                variant={"noshadow"}
+                onClick={() => {
+                  if (currentStep < 2) {
+                    setCurrentStep(currentStep + 1);
+                  }
+                }}
+                disabled={currentStep === 2}
+              >
+                Siguiente
+              </Button>
+            </div>
+          </div>
+          <Separator className="my-8 w-3/4" />
         </div>
+        {isLoadingUpload && (
+          <div className="h-96 flex items-center">
+            <LoadingSpinner />
+          </div>
+        )}
+        {!isLoadingUpload && (
+          <div>
+            {currentStep === 0 && (
+              <div className="flex items-center justify-center">
+                <UploadFile onChange={handleFileChange} />
+              </div>
+            )}
+            {currentStep === 1 && (
+              <div className="flex flex-col items-center space-y-4 w-full">
+                <div className="flex flex-col lg:flex-row lg:space-y-0 space-y-4 justify-center items-center space-x-6">
+                  <span className="lg:w-96 w-64">
+                    Selecciona la columna que deseas utilizar para medir la
+                    asistencia de los estudiantes.
+                  </span>
+                  <Combobox
+                    placeholder="Seleccionar columna"
+                    searchPlaceholder="Buscar columna..."
+                    items={uploadedData.headers.map((header) => ({
+                      label: header,
+                      value: header,
+                    }))}
+                    value={selectedColumn}
+                    onChange={(value) => {
+                      setSelectedColumn(value);
+                    }}
+                  />
+                </div>
+                <span className="text-sm text-slate-500 font-semibold mb-3">
+                  Datos originales
+                </span>
+                <DataTable
+                  className="bg-white xl:w-full lg:max-w-2xl max-w-xs"
+                  columns={uploadedData.columns}
+                  data={uploadedData.array}
+                />
+              </div>
+            )}
+            {currentStep === 2 && (
+              <div className="flex flex-col lg:flex-row lg:space-y-0 space-y-4 justify-around items-center w-full space-x-6">
+                <div className="my-6 flex flex-col">
+                  <span className="text-sm text-slate-500 font-semibold mb-3">
+                    Vista previa
+                  </span>
+                  <DataTable
+                    columns={columnsSelectedColumn}
+                    data={studentCodes}
+                    className="bg-white lg:w-auto w-64"
+                  />
+                </div>
+                <div className="lg:w-96 w-64 flex flex-col space-y-4 items-center">
+                  <span>
+                    Si no estás seguro de que los datos sean correctos , puedes
+                    volver atrás y elegir otra columna.
+                  </span>
+                  <Button
+                    className="w-64"
+                    onClick={() => {
+                      if (studentCodes.length > 0)
+                        createStudents(
+                          studentCodes.map((student) => student.attendance_id)
+                        );
+                    }}
+                    isLoading={isLoading}
+                    disabled={studentCodes.length === 0}
+                  >
+                    Añadir Estudiantes
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
+      <h3 className="text-xl font-medium text-center">
+        Estudiantes Registrados
+      </h3>
       <div className="my-6 max-w-2xl">
         {isLoading && <LoadingSpinner />}
         {!isLoading && <DataTable columns={columnsHash} data={students} />}
@@ -74,43 +192,22 @@ export default function Students(): JSX.Element {
   );
 }
 
-const parseArray = (array: string[][], course_id: string, id = "blala") => {
-  const headerColumnNames = ["nombres", "nombre", "names", "name"];
-  const runColumnNames = ["run", "rut"];
-  const headerIndex = array[0].findIndex((column: string) =>
-    headerColumnNames.includes(column.toLowerCase())
-  );
-
-  const runIndex = array[0].findIndex((column: string) =>
-    runColumnNames.includes(column.toLowerCase())
-  );
-
-  if (headerIndex === -1) throw new Error("Names column not found");
-
-  array.shift(); // remove the header
-  const names = array.map((row) => row[headerIndex]);
-  const repeatedNames = names.filter(
-    (name, index) => names.indexOf(name) !== index
-  );
-
-  array = array.filter((row) => row[headerIndex] !== "");
-  return array.map((row) => {
-    const name = repeatedNames.includes(row[headerIndex])
-      ? `${row[headerIndex]} (${row[runIndex]})`
-      : row[headerIndex];
-    return { attendance_id: `${name}`, id, course_id };
+const parseCSV = (csv: string): UploadedData => {
+  const lines = csv.split("\n").filter((line) => line !== "");
+  const headers = lines[0].split(",");
+  const columns = headers.map((header) => SortingColumn(header, header));
+  // make array of objects with headers as keys
+  const array = lines.slice(1).map((line) => {
+    const obj: { [key: string]: string } = {};
+    const currentline = line.split(",");
+    headers.forEach((header: string, i: number) => {
+      obj[header] = currentline[i].replace(/\r/g, "");
+    });
+    return obj;
   });
-};
-
-const parseArray2 = (array: string[][]) => {
-  const studentCode = ["número de alumno"];
-  const studentCodeIndex = array[0].findIndex((column: string) =>
-    studentCode.includes(column.toLowerCase().replace(/\r/g, ""))
-  );
-  array.shift();
-  const studentCodes = array
-    .map((row) => row[studentCodeIndex])
-    .filter((code) => code !== "" && code !== undefined)
-    .map((code) => code.replace(/\r/g, ""));
-  return studentCodes;
+  return {
+    array,
+    headers,
+    columns,
+  };
 };
