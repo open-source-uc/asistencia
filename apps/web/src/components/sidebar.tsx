@@ -13,7 +13,7 @@ export function Sidebar({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(true);
   return (
     <div className={className}>
-      <div className={cn(isOpen ? "w-64" : "!w-16", "min-h-screen")}></div>
+      <div className={cn(isOpen ? "w-64" : "w-16", "min-h-screen")}></div>
       <div
         className={cn(
           isOpen ? "w-96" : "w-16",

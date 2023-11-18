@@ -16,7 +16,7 @@ export const useAssistants = (orgId: string = "") => {
     return await client
       .get(`/user_courses/${orgId}`)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         return res.data;
       })
       .catch(() => {

@@ -81,7 +81,7 @@ export default function InputPills({
       <div className="flex flex-row justify-center items-end relative mt-4">
         <div
           className={cn(
-            "w-full flex flex-row flex-wrap items-center min-w-lg max-w-lg min-w-lg transition-all",
+            "flex flex-row flex-wrap items-center lg:min-w-lg lg:max-w-lg transition-all",
             "border border-slate-300 p-2",
             "focus-within:border-primary focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50"
           )}
@@ -109,7 +109,7 @@ export default function InputPills({
             </div>
           ))}
           <input
-            className="focus:outline-none inline-flex h-12 text-sm px-2 placeholder:text-muted-foreground w-32 flex-auto"
+            className="focus:outline-none inline-flex h-12 text-sm px-2 placeholder:text-muted-foreground lg:w-32 flex-auto"
             placeholder="ejemplo@ejemplo.com"
             onChange={handleChange}
             onKeyDown={(e) => {
