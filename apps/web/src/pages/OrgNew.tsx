@@ -56,7 +56,7 @@ export default function OrgNew() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-3/4">
-        <div>[TEMPORAL]</div>
+        {/* <div>[TEMPORAL]</div> */}
         <span className="text-xl font-bold text-center mb-12">
           Nueva Organización
         </span>

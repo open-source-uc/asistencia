@@ -11,18 +11,27 @@ const followsPattern = (pattern: RegExp, input: string) => {
   return input.match(pattern) !== null;
 };
 
+function arequalSets(a: Set<string>, b: Set<string>) {
+  if (a === b) return true;
+  if (a.size !== b.size) return false;
+  for (const value of a) if (!b.has(value)) return false;
+  return true;
+}
+
 interface Value {
   pills: Set<string>;
   lastInputState: string;
 }
 
 interface InputPillsProps {
+  value?: Value;
   onChange: (value: Value) => void;
   pattern?: RegExp;
   onPatternError?: (error: boolean) => void;
 }
 
 export default function InputPills({
+  value,
   onChange,
   pattern = /.*?/, // default pattern that accepts all strings
   onPatternError,
@@ -69,6 +78,17 @@ export default function InputPills({
       lastInputState,
     });
   }, [pills, lastInputState]);
+
+  useEffect(() => {
+    if (
+      value &&
+      (!arequalSets(value.pills, pills) ||
+        value.lastInputState !== lastInputState)
+    ) {
+      setPills(value.pills);
+      setLastInputState(value.lastInputState);
+    }
+  }, [value]);
 
   useEffect(() => {
     if (onPatternError) {
