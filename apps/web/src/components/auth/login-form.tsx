@@ -85,6 +85,7 @@ export default function LoginForm() {
                 <FormControl>
                   <Input
                     placeholder={form_field.placeholder}
+                    aria-label={form_field.name}
                     type={form_field.type}
                     className="w-full"
                     {...field}
@@ -96,7 +97,12 @@ export default function LoginForm() {
           />
         ))}
         <FormMessage className="my-4 w-full">{error}</FormMessage>
-        <Button type="submit" className="w-64" isLoading={isLoading}>
+        <Button
+          type="submit"
+          className="w-64"
+          isLoading={isLoading}
+          aria-label="submit"
+        >
           Iniciar Sesión
         </Button>
       </form>
