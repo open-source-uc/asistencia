@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useStudents } from "@/hooks/useStudents";
 import { useParams } from "react-router-dom";
 import { SortingColumn, DataTable } from "@/components/data-table";
