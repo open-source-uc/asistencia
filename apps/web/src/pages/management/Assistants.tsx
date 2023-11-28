@@ -68,6 +68,7 @@ export default function Assistants(): JSX.Element {
         <h3 className="text-xl font-medium">Añadir</h3>
         <div className="flex flex-row justify-center items-end relative mt-4">
           <InputPills
+            placeholder="ejemplo@ejemplo.com"
             onChange={(value: Value) => {
               setInputState(value);
             }}
@@ -79,7 +80,7 @@ export default function Assistants(): JSX.Element {
           />
           <Button
             onClick={addAssistants}
-            className="h-16"
+            className="h-16 w-64"
             isLoading={isLoadingUpload}
           >
             Añadir
