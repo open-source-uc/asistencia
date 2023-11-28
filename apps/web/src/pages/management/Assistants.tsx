@@ -33,6 +33,7 @@ export default function Assistants(): JSX.Element {
   const { assistants, isLoading, addMultipleAssistantsToOrg } =
     useAssistants(orgId);
   const [checkedAssistants, setCheckedAssistants] = useState<IRowSelection>({});
+  const [isLoadingUpload, setIsLoadingUpload] = useState(false);
   const [inputState, setInputState] = useState<Value>(initInputValue);
   const [error, setError] = useState("");
 
@@ -46,12 +47,17 @@ export default function Assistants(): JSX.Element {
       error !== ""
     )
       return;
+    setIsLoadingUpload(true);
     const emails = new Set(inputState.pills);
     if (inputState.lastInputState !== "") emails.add(inputState.lastInputState);
     addMultipleAssistantsToOrg(Array.from(emails))
-      .then()
+      .then(() => {
+        setInputState(initInputValue);
+        setIsLoadingUpload(false);
+      })
       .catch(() => {
         setError("Ha ocurrido un error al añadir los ayudantes");
+        setIsLoadingUpload(false);
       });
   };
 
@@ -62,15 +68,21 @@ export default function Assistants(): JSX.Element {
         <h3 className="text-xl font-medium">Añadir</h3>
         <div className="flex flex-row justify-center items-end relative mt-4">
           <InputPills
+            placeholder="ejemplo@ejemplo.com"
             onChange={(value: Value) => {
               setInputState(value);
             }}
+            value={inputState}
             pattern={/[^@\s]+@[^@\s]+/g} // pattern for emails
             onPatternError={(error: boolean) => {
               setError(error ? "Email inválido" : "");
             }}
           />
-          <Button onClick={addAssistants} className="h-16">
+          <Button
+            onClick={addAssistants}
+            className="h-16 w-64"
+            isLoading={isLoadingUpload}
+          >
             Añadir
           </Button>
         </div>

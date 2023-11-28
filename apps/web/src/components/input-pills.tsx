@@ -11,20 +11,31 @@ const followsPattern = (pattern: RegExp, input: string) => {
   return input.match(pattern) !== null;
 };
 
+function arequalSets(a: Set<string>, b: Set<string>) {
+  if (a === b) return true;
+  if (a.size !== b.size) return false;
+  for (const value of a) if (!b.has(value)) return false;
+  return true;
+}
+
 interface Value {
   pills: Set<string>;
   lastInputState: string;
 }
 
 interface InputPillsProps {
+  value?: Value;
   onChange: (value: Value) => void;
   pattern?: RegExp;
+  placeholder?: string;
   onPatternError?: (error: boolean) => void;
 }
 
 export default function InputPills({
+  value,
   onChange,
   pattern = /.*?/, // default pattern that accepts all strings
+  placeholder,
   onPatternError,
 }: InputPillsProps): JSX.Element {
   const [lastInputState, setLastInputState] = useState("");
@@ -71,6 +82,17 @@ export default function InputPills({
   }, [pills, lastInputState]);
 
   useEffect(() => {
+    if (
+      value &&
+      (!arequalSets(value.pills, pills) ||
+        value.lastInputState !== lastInputState)
+    ) {
+      setPills(value.pills);
+      setLastInputState(value.lastInputState);
+    }
+  }, [value]);
+
+  useEffect(() => {
     if (onPatternError) {
       onPatternError(patternError);
     }
@@ -82,7 +104,7 @@ export default function InputPills({
         <div
           className={cn(
             "flex flex-row flex-wrap items-center lg:min-w-lg lg:max-w-lg transition-all",
-            "border border-slate-300 p-2",
+            "border border-slate-300 p-2 bg-white",
             "focus-within:border-primary focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50"
           )}
         >
@@ -110,7 +132,7 @@ export default function InputPills({
           ))}
           <input
             className="focus:outline-none inline-flex h-12 text-sm px-2 placeholder:text-muted-foreground lg:w-32 flex-auto"
-            placeholder="ejemplo@ejemplo.com"
+            placeholder={placeholder}
             onChange={handleChange}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
