@@ -41,6 +41,24 @@ function ASSISTANCE(
   ATTENDANCE(email, token, courseId, participants, activities, _variableInput);
 }
 
+function sha512(str: string): string {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_512, str)
+    .map((e) => (e < 0 ? e + 256 : e).toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function hashStudentCode(code: string, courseId: string): string {
+  return sha512(`${sha512(`${code}${courseId}`)}${courseId}`);
+}
+
+/**
+ * Testea el hash
+ * @customfunction
+ */
+function GET_HASH(code: string, courseId: string) {
+  return hashStudentCode(code, courseId);
+}
+
 /**
  * Ve la asistencia de los participantes en las actividades
  * @param email Email del que se autentifica para consultar la asistencia
@@ -62,6 +80,8 @@ function ATTENDANCE(
   const flattenParticipants = asColumn(participants).map((e) => e?.toString() ?? "");
   const flattenActivities = asRow(activities).map((e) => e?.toString() ?? "");
 
+  const flattenHashes = flattenParticipants.map((code) => hashStudentCode(code, courseId));
+
   try {
     const response = UrlFetchApp.fetch(`${BASE_API_URL}courses/${courseId}/spreadsheets`, {
       method: "post",
@@ -73,14 +93,14 @@ function ATTENDANCE(
       },
       payload: JSON.stringify({
         activity_slugs: flattenActivities,
-        student_codes: flattenParticipants,
+        student_codes: flattenHashes,
       }),
     });
 
     const body = response.getContentText();
     const data: Record<string, Record<string, any>> = JSON.parse(body);
 
-    return flattenParticipants.map((student) =>
+    return flattenHashes.map((student) =>
       flattenActivities.map((activity) => {
         if (!(student in data)) return "";
         return data[student].includes(activity) ? true : "";
