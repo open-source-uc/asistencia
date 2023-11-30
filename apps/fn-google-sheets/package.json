@@ -1,6 +1,8 @@
 {
   "scripts": {
     "dev": "clasp push --watch",
+    "deploy": "clasp push",
+    "deploy:version": "clasp push && clasp deploy",
     "check": "tsc --noEmit"
   },
   "devDependencies": {
