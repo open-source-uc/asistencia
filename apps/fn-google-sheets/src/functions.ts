@@ -43,9 +43,11 @@ function ASSISTANCE(
 
 /**
  * Ve la asistencia de los participantes en las actividades
- * @param courseId Id del curso
- * @param participants Lista de participantes
- * @param activities Lista de actividades
+ * @param email Email del que se autentifica para consultar la asistencia
+ * @param token Token del que se autentifica para consultar la asistencia
+ * @param courseId Id o slug del curso
+ * @param participants Lista de participantes, cada elemento es un código de estudiante
+ * @param activities Lista de actividades, cada elemento es un slug de actividad
  * @param _variableInput Variable cualquiera de entrada, para forzar una actualización
  * @customfunction
  */
