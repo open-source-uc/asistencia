@@ -77,29 +77,20 @@ function ATTENDANCE(
   activities: AnySheetsInput,
   _variableInput?: any
 ) {
+  // Asegurarse del formato del input
   const flattenParticipants = asColumn(participants).map((e) => e?.toString() ?? "");
   const flattenActivities = asRow(activities).map((e) => e?.toString() ?? "");
 
+  // Hashear datos sensibles
   const flattenHashes = flattenParticipants.map((code) => hashStudentCode(code, courseId));
 
   try {
-    const response = UrlFetchApp.fetch(`${BASE_API_URL}courses/${courseId}/spreadsheets`, {
-      method: "post",
-      contentType: "application/json",
-      headers: {
-        "X-User-Email": email,
-        "X-User-Token": token,
-        Accept: "application/json",
-      },
-      payload: JSON.stringify({
-        activity_slugs: flattenActivities,
-        student_codes: flattenHashes,
-      }),
-    });
-
+    // Obtener datos de la API
+    const response = makeAttendanceRequest(courseId, email, token, flattenActivities, flattenHashes);
     const body = response.getContentText();
-    const data: Record<string, Record<string, any>> = JSON.parse(body);
+    const data: Record<string, string[]> = JSON.parse(body);
 
+    // Formato de matriz
     return flattenHashes.map((student) =>
       flattenActivities.map((activity) => {
         if (!(student in data)) return "";
@@ -109,6 +100,28 @@ function ATTENDANCE(
   } catch (error) {
     return `Ha fallado la llamada a la API (${error})`;
   }
+}
+
+function makeAttendanceRequest(
+  courseId: string,
+  email: string,
+  token: string,
+  flattenActivities: string[],
+  flattenHashes: string[]
+) {
+  return UrlFetchApp.fetch(`${BASE_API_URL}courses/${courseId}/spreadsheets`, {
+    method: "post",
+    contentType: "application/json",
+    headers: {
+      "X-User-Email": email,
+      "X-User-Token": token,
+      Accept: "application/json",
+    },
+    payload: JSON.stringify({
+      activity_slugs: flattenActivities,
+      student_codes: flattenHashes,
+    }),
+  });
 }
 
 /**
