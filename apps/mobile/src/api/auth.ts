@@ -1,27 +1,16 @@
 import client from "./client";
 
-export const loginUser = async (username: string, password: string) => {
+export const loginUser = async (email: string, password: string) => {
   const credentials = {
-    username: username,
-    password: password,
+    user: {
+      email,
+      password,
+    },
   };
-  try {
-    const endpoint = "/auth/jwt/login";
-    const response = await client.post(endpoint, credentials, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
 
-export const registerUser = async (userDetails: object) => {
   try {
-    const endpoint = "/auth/register";
-    const response = await client.post(endpoint, userDetails);
+    const endpoint = "/users/sign_in";
+    const response = await client.post(endpoint, credentials, {});
     return response.data;
   } catch (error) {
     throw error;
@@ -30,21 +19,8 @@ export const registerUser = async (userDetails: object) => {
 
 export const logoutUser = async () => {
   try {
-    const endpoint = "/auth/jwt/logout";
-    await client.post(endpoint);
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const verifyToken = async (token: string) => {
-  const data = {
-    token: token,
-  };
-  try {
-    const endpoint = "/auth/verify";
-    const response = await client.post(endpoint, data);
-    return response.data;
+    const endpoint = "/users/sign_out";
+    await client.delete(endpoint);
   } catch (error) {
     throw error;
   }

@@ -1,9 +1,10 @@
+import { useFonts } from "expo-font";
 import { Slot, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-import theme from "@/theme";
 import { PaperProvider } from "react-native-paper";
-import { useFonts } from "expo-font";
-import { AuthProvider, useAuth } from '@/hooks/authContext';
+
+import { AuthProvider, useAuth } from "@/hooks/authContext";
+import theme from "@/theme";
 
 const InitialLayout = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -18,12 +19,11 @@ const InitialLayout = () => {
     "RedHatDisplay Light": require("@/../assets/fonts/RedHatDisplay-Light.ttf"),
     "RedHatDisplay Medium": require("@/../assets/fonts/RedHatDisplay-Medium.ttf"),
   });
-  
+
   const inTabsGroup = segments[0] === "(auth)";
-  
+
   useEffect(() => {
     if (isLoading || !fontsLoaded) return;
-
 
     if (isAuthenticated && !inTabsGroup) {
       router.replace("/courses");

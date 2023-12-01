@@ -1,31 +1,29 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
-import { Button } from "react-native-paper";
-import { useState } from "react";
-import { takeAttendance } from "@/api/attendance";
 import { useLocalSearchParams } from "expo-router";
-import { Snackbar } from "react-native-paper";
-import QrScan from "@/components/qrScan";
+import { useState } from "react";
+import { View, Text, TextInput, StyleSheet } from "react-native";
+import { Button, Snackbar } from "react-native-paper";
+
+import { takeAttendance } from "@/api/attendance";
 import NfcScan from "@/components/nfcScan";
+import QrScan from "@/components/qrScan";
 
 function TakeAttendance() {
-  const { courseName, courseId, activitySlug } = useLocalSearchParams();
+  const { courseName, courseSlug, activitySlug } = useLocalSearchParams();
   const [studentAttendanceId, setStudentAttendanceId] = useState("");
   const [snackBarMessage, setSnackBarMessage] = useState("");
 
   const handleManualEntry = async () => {
     try {
       await takeAttendance(
-        {
-          student_attendance_id: studentAttendanceId,
-        },
-        courseId as string,
-        activitySlug as string
+        studentAttendanceId,
+        courseSlug as string,
+        activitySlug as string,
       );
       setSnackBarMessage(
-        `Alumno con identificador ${studentAttendanceId} registrado`
+        `Alumno con identificador ${studentAttendanceId} registrado`,
       );
       setStudentAttendanceId("");
-    } catch (error) {
+    } catch {
       setSnackBarMessage("Error al registrar asistencia");
     }
   };
@@ -35,9 +33,9 @@ function TakeAttendance() {
       <Text style={styles.title}>{courseName}</Text>
       <Text style={styles.subtitle}>{activitySlug}</Text>
       <View style={{ width: "100%", height: "50%" }}>
-        <QrScan courseId={courseId} activitySlug={activitySlug} />
+        <QrScan courseSlug={courseSlug} activitySlug={activitySlug} />
       </View>
-      <NfcScan courseId={courseId} activitySlug={activitySlug} />
+      <NfcScan courseSlug={courseSlug} activitySlug={activitySlug} />
       <View style={styles.manualEntry}>
         <TextInput
           style={styles.input}

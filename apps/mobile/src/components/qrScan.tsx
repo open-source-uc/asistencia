@@ -1,13 +1,13 @@
+import { BarCodeScanner } from "expo-barcode-scanner";
 import { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { BarCodeScanner } from "expo-barcode-scanner";
 import { Snackbar, ActivityIndicator } from "react-native-paper";
-import { calculateChileanRunValidator } from "@/utils/auxFunctions";
-import { takeAttendance } from "@/api/attendance";
 
-function QrScan({ courseId, activitySlug }) {
+import { takeAttendance } from "@/api/attendance";
+import { calculateChileanRunValidator } from "@/utils/auxFunctions";
+
+function QrScan({ courseSlug, activitySlug }) {
   const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
   const [scannedData, setScannedData] = useState("");
   const [snackBarMessage, setSnackBarMessage] = useState("");
 
@@ -18,7 +18,7 @@ function QrScan({ courseId, activitySlug }) {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     try {
       const run = data.slice(-11, -3);
       const validator = data.slice(-3, -2);
@@ -32,20 +32,21 @@ function QrScan({ courseId, activitySlug }) {
       }
 
       if (completeRun !== scannedData) {
-        setScanned(true);
         setScannedData(completeRun);
         setSnackBarMessage(
-          `Alumno con identificador ${completeRun} registrado`
+          `Alumno con identificador ${completeRun} registrado`,
         );
         try {
-          takeAttendance({
-            student_attendance_id: completeRun,
-          }, courseId, activitySlug);
-        } catch (error) {
+          await takeAttendance(
+            completeRun,
+            courseSlug as string,
+            activitySlug as string,
+          );
+        } catch {
           setSnackBarMessage("Error al registrar asistencia");
         }
       }
-    } catch (error) {
+    } catch {
       setSnackBarMessage("No estás escaneando el código de barras de la tuc");
     }
   };
@@ -53,7 +54,7 @@ function QrScan({ courseId, activitySlug }) {
   if (hasPermission === null) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator animating={true} size={120} />
+        <ActivityIndicator animating size={120} />
       </View>
     );
   }

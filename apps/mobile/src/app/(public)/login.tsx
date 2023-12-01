@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import {
   View,
@@ -7,8 +8,8 @@ import {
   Text,
   Dimensions,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "react-native-paper";
+
 import { useAuth } from "@/hooks/authContext";
 
 const Login = () => {

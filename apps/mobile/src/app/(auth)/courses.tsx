@@ -1,7 +1,9 @@
-import { View, Text, StyleSheet } from "react-native";
 import { Link } from "expo-router";
+import { View, Text, StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
+
 import { getCourses } from "@/api/courses";
+import ActivityIndicator from "@/components/activityIndicator";
 import useFetchData from "@/hooks/useFetchData";
 
 function Courses() {
@@ -13,22 +15,24 @@ function Courses() {
     loading,
   } = useFetchData(() => getCourses(), []);
 
+  if (loading || error) {
+    return <ActivityIndicator />;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tienes permiso para tomar asistencia en</Text>
-      {courses.map((course) => (
+      {courses.courses.map((course) => (
         <Link
           href={{
             pathname: "/(auth)/activities",
-            params: { courseId: course.id, courseName: course.name },
+            params: { courseSlug: course.slug, courseName: course.name },
           }}
           key={course.id}
           style={[styles.courseButton, { backgroundColor: colors.primary }]}
         >
           <View style={{ flexDirection: "row" }}>
-            <Text style={styles.text}>
-              {course.name}
-            </Text>
+            <Text style={styles.text}>{course.name}</Text>
           </View>
         </Link>
       ))}

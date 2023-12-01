@@ -1,14 +1,23 @@
+import { sha512 } from "js-sha512";
+
 import client from "./client";
 
+function hashStudentCode(code: string, courseId: string): string {
+  return sha512(`${sha512(`${code}${courseId}`)}${courseId}`);
+}
+
 const takeAttendance = async (
-  data: Object,
-  courseId: string,
-  activitySlug: string
+  student_code: string,
+  courseSlug: string,
+  activitySlug: string,
 ) => {
-  await client.post(
-    `/courses/${courseId}/activities/${activitySlug}/attendances/`,
-    data
-  );
+  const data = {
+    attendance: {
+      student_code: hashStudentCode(student_code, courseSlug),
+      activity_slug: activitySlug,
+    },
+  };
+  await client.post(`/courses/${courseSlug}/attendances`, data);
 };
 
 export { takeAttendance };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function useFetchData(fetchDataFn: () => Promise<any>, initialData = []) {
   const [data, setData] = useState(initialData);

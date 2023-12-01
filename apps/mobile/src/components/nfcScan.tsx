@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import NfcManager, { NfcTech } from "react-native-nfc-manager";
-import { calculateChileanRunValidator } from "@/utils/auxFunctions";
-import { takeAttendance } from "@/api/attendance";
 import { useTheme, Snackbar } from "react-native-paper";
 
-function NfcScan({ courseId, activitySlug }) {
+import { takeAttendance } from "@/api/attendance";
+import { calculateChileanRunValidator } from "@/utils/auxFunctions";
+
+function NfcScan({ courseSlug, activitySlug }) {
   const [studentAttendanceId, setStudentAttendanceId] = useState("");
   const theme = useTheme();
   const [snackBarMessage, setSnackBarMessage] = useState("");
@@ -14,21 +15,19 @@ function NfcScan({ courseId, activitySlug }) {
     if (!studentAttendanceId) return;
     try {
       await takeAttendance(
-        {
-          student_attendance_id: studentAttendanceId,
-        },
-        courseId,
-        activitySlug
+        studentAttendanceId,
+        courseSlug as string,
+        activitySlug as string,
       );
 
       setSnackBarMessage(
-        `Alumno con identificador ${studentAttendanceId} registrado`
+        `Alumno con identificador ${studentAttendanceId} registrado`,
       );
       setStudentAttendanceId("");
-    } catch (error) {
+    } catch {
       setSnackBarMessage("Error al registrar asistencia");
     }
-  }
+  };
   useEffect(() => {
     handleTakeAttendance();
   }, [studentAttendanceId]);
@@ -44,7 +43,7 @@ function NfcScan({ courseId, activitySlug }) {
           setStudentAttendanceId(data);
         }
       }
-    } catch (error) {
+    } catch {
       setSnackBarMessage("Error al leer la tarjeta");
     } finally {
       await NfcManager.cancelTechnologyRequest();
@@ -58,7 +57,7 @@ function NfcScan({ courseId, activitySlug }) {
       .map((item) => parseInt(item, 16));
     return await NfcManager.mifareClassicHandlerAndroid.mifareClassicAuthenticateA(
       3,
-      keyA
+      keyA,
     );
   };
 
@@ -66,12 +65,12 @@ function NfcScan({ courseId, activitySlug }) {
     const blockIndex = 13;
     const blockData =
       await NfcManager.mifareClassicHandlerAndroid.mifareClassicReadBlock(
-        blockIndex
+        blockIndex,
       );
     const bytes = blockData.slice(3, 7);
     const intRut = bytes.reduce(
       (acc, byte, index) => acc + (byte << (8 * index)),
-      0
+      0,
     );
     return `${intRut}-${calculateChileanRunValidator(intRut.toString())}`;
   };
