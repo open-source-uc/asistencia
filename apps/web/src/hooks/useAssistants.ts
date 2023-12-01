@@ -4,9 +4,9 @@ import client from "@/api/client";
 
 interface Assistant {
   id: string;
-  user_email: string;
+  email: string;
   role: string;
-  active: boolean;
+  // active: boolean;
 }
 
 export const useAssistants = (orgId: string = "") => {
@@ -14,10 +14,25 @@ export const useAssistants = (orgId: string = "") => {
   const [isLoading, setIsLoading] = useState(false);
   const getAssistantsByOrg = async () => {
     return await client
-      .get(`/user_courses/${orgId}`)
+      .get(`/api/v1/courses/${orgId}/user_courses`)
       .then((res) => {
-        // console.log(res.data);
-        return res.data;
+        // merge res.data.admin, res.data.manager, res.data.viewer
+        // {email: 'attendance@uc.cl', id: 5}
+        const assistants = [
+          ...res.data.admin.map((assistant: Assistant) => ({
+            ...assistant,
+            role: "admin",
+          })),
+          ...res.data.manager.map((assistant: Assistant) => ({
+            ...assistant,
+            role: "manager",
+          })),
+          ...res.data.viewer.map((assistant: Assistant) => ({
+            ...assistant,
+            role: "viewer",
+          })),
+        ];
+        return assistants;
       })
       .catch(() => {
         return [];
@@ -26,14 +41,12 @@ export const useAssistants = (orgId: string = "") => {
 
   const addAssistantToOrg = async (
     userEmail: string,
-    role: "admin" | "assistant" | "default" = "default"
+    role: "admin" | "manager" | "viewer" = "viewer"
   ): Promise<Assistant | undefined> => {
     return await client
-      .post(`/user_courses/?course_id=${orgId}`, {
-        course_id: orgId,
-        user_email: userEmail,
+      .post(`/api/v1/courses/${orgId}/user_courses`, {
+        email: userEmail,
         role: role,
-        active: true,
       })
       .then((res) => {
         return res.data;

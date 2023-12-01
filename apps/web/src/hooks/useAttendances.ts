@@ -19,10 +19,13 @@ export const useAttendances = (orgId: string = "") => {
     try {
       const studentId = await Promise.resolve(clientHash(studentCode, orgId));
       const body = {
-        student_attendance_id: studentId,
+        attendance: {
+          activity_slug: activitySlug,
+          student_code: studentId,
+        }
       };
       await client.post(
-        `/courses/${orgId}/activities/${activitySlug}/attendances/`,
+        `/api/v1/courses/${orgId}/attendances/`,
         body
       );
       setMessage({

@@ -5,6 +5,7 @@ import client from "@/api/client";
 
 export interface OrgField {
   name: string;
+  slug: string;
 }
 
 export interface Org extends OrgField {
@@ -38,8 +39,8 @@ export const handlerOrgs = (): {
 } => {
   const getOrgs = async () => {
     try {
-      const res = await client.get(`/courses/`);
-      return res.data;
+      const res = await client.get(`/api/v1/courses/`);
+      return res.data.courses;
     } catch (error) {
       console.log(error);
     }
@@ -48,9 +49,9 @@ export const handlerOrgs = (): {
 
   const createOrg = async (values: OrgField) => {
     return await client
-      .post(`/courses/`, {
+      .post(`/api/v1/courses/`, {
         ...values,
-        archived: false,
+        enabled: true,
       })
       .catch((err) => {
         console.log(err);

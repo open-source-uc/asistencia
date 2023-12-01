@@ -16,7 +16,7 @@ import { useUserSession } from "@/hooks/useUserSession";
 
 const formSchema = z.object({
   email: z.string().email("El correo debe ser válido"),
-  password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
 interface Field {
@@ -36,7 +36,7 @@ const FORM_FIELDS: Field[] = [
   {
     name: "password",
     label: "Contraseña",
-    placeholder: "Mínimo 8 caracteres",
+    placeholder: "Mínimo 6 caracteres",
     type: "password",
   },
 ];

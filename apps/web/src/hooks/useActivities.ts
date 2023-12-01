@@ -5,7 +5,7 @@ import client from "@/api/client";
 export interface ActivityField {
   slug: string;
   date: Date;
-  event_type: number;
+  description: string;
 }
 
 export interface Activity extends ActivityField {
@@ -25,9 +25,9 @@ export const useActivities = (
 
   const fetchData = async () => {
     setIsLoading(true);
-    const res = await client.get(`/courses/${orgId}/activities/`);
+    const res = await client.get(`/api/v1/courses/${orgId}/activities/`);
     setActivities(
-      res.data
+      res.data.activities
         .map((activity: Activity) => ({
           ...activity,
           date: new Date(activity.date + "Z"),
@@ -51,18 +51,25 @@ export const useActivities = (
       //   event_type: values.event_type,
       // },
       // allowed_roles: ["admin", "assistant", "default"],
+      name: values.slug,
       slug: values.slug,
-      date: values.date.toISOString().replace("T", " ").replace("Z", ""),
-      event_type: values.event_type,
+      date: values.date
+        .toISOString()
+        .split("T")[0]
+        .split("-")
+        .reverse()
+        .join("-"),
+      description: values.description.toString(),
     };
     return await client
-      .post(`/courses/${orgId}/activities/`, body)
+      .post(`/api/v1/courses/${orgId}/activities/`, body)
       .then((res) => {
+        const activity = res.data.activity;
         setActivities((prev) =>
           [
             {
-              ...res.data,
-              date: new Date(res.data.date + "Z"),
+              ...activity,
+              date: new Date(activity.date),
             },
             ...prev,
           ].sort((a: Activity, b: Activity) => {

@@ -15,7 +15,7 @@ import LoadingSpinner from "@/components/loading-spinner";
 
 const columns = [
   SelectColumn,
-  SortingColumn("Email", "user_email"),
+  SortingColumn("Email", "email"),
   GenericColumn("Rol", "role"),
 ];
 
@@ -80,7 +80,7 @@ export default function Assistants(): JSX.Element {
           />
           <Button
             onClick={addAssistants}
-            className="h-16 w-64"
+            className="h-16"
             isLoading={isLoadingUpload}
           >
             Añadir

@@ -19,7 +19,7 @@ export default function Orgs(): JSX.Element {
               key={i}
               className="justify-center w-full"
               onClick={() => {
-                navigate(`/orgs/${course.id}`, {
+                navigate(`/orgs/${course.slug}`, {
                   state: { orgName: course.name },
                 });
               }}

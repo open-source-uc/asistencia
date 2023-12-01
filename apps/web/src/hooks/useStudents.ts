@@ -4,12 +4,14 @@ import { clientHash } from "@/lib/hashFunctions";
 import client from "@/api/client";
 
 interface Student {
-  // id: string;
-  // course_id: string;
   attendance_id: string;
 }
 
 interface RequestObject {
+  students: ResponseObject[];
+}
+
+interface ResponseObject {
   id: string;
   attendance_codes: string[];
   course_id: string;
@@ -37,11 +39,11 @@ export const useStudents = (
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const res = await client.get<RequestObject[]>(
-        `/courses/${orgId}/students/`
+      const res = await client.get<RequestObject>(
+        `/api/v1/courses/${orgId}/students/`
       );
       const array: Student[] = [];
-      res.data.forEach((obj: RequestObject) => {
+      res.data.students.forEach((obj: ResponseObject) => {
         array.push(...formatDataToStudent(obj.attendance_codes));
       });
       setStudents(array);
@@ -56,18 +58,16 @@ export const useStudents = (
         (studentCode: string): Promise<string> => clientHash(studentCode, orgId)
       )
     );
-    // console.log(studentIds);
     const body = {
-      course_id: orgId,
       attendance_codes: studentIds,
     };
     setIsLoading(true);
     await client
-      .post(`/courses/${orgId}/students/`, body)
+      .post(`api/v1/courses/${orgId}/students/`, body)
       .then((res) => {
         setStudents([
           ...students,
-          ...formatDataToStudent(res.data.attendance_codes),
+          ...formatDataToStudent(res.data.student.attendance_codes),
         ]);
         setIsLoading(false);
       })

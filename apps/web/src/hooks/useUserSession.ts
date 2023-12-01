@@ -2,7 +2,6 @@ import { useContext } from "react";
 import {
   UserSessionContext,
   UserSession,
-  User,
 } from "@/components/contexts/user-session-context";
 import { initialStateUserSession } from "@/components/contexts/user-session-storage";
 import client from "@/api/client";
@@ -10,9 +9,6 @@ import client from "@/api/client";
 interface UserEdit {
   email?: string;
   password?: string;
-  is_active?: boolean;
-  is_superuser?: boolean;
-  is_verified?: boolean;
 }
 
 export const useUserSession = (): {
@@ -32,45 +28,31 @@ export const useUserSession = (): {
 
   const logIn = async (email: string, password: string) => {
     return client
-      .post(
-        `/auth/jwt/login`,
-        {
-          grant_type: "",
-          username: email,
-          password: password,
-          scope: "",
-          client_id: "",
-          client_secret: "",
+      .post(`/users/sign_in`, {
+        user: {
+          email,
+          password,
         },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      )
+      })
       .then(async (response) => {
-        const userData = await getUser(response.data.access_token);
-        if (userData !== null) {
-          const userSession = {
-            id: userData.id,
-            email: userData.email,
-            is_active: userData.is_active,
-            is_superuser: userData.is_superuser,
-            is_verified: userData.is_verified,
-            access_token: response.data.access_token,
-            isLoggedIn: true,
-          };
-          console.log(userSession);
-          setUserSession(userSession);
-        }
+        const userSession = {
+          id: response.data.id,
+          email: response.data.email,
+          access_token: response.data.authentication_token,
+          isLoggedIn: true,
+        };
+        setUserSession(userSession);
       });
   };
 
   const signUp = async (email: string, password: string) => {
     return client
-      .post(`/auth/register`, {
-        email,
-        password,
+      .post(`/users`, {
+        user: {
+          email,
+          password,
+          password_confirmation: password,
+        },
       })
       .then((res) => {
         if (res.data.detail) {
@@ -89,8 +71,10 @@ export const useUserSession = (): {
 
   const forgotPassword = async (email: string) => {
     return client
-      .post(`/auth/forgot-password`, {
-        email,
+      .post(`/users/password`, {
+        user: {
+          email,
+        },
       })
       .then((res) => {
         console.log(res);
@@ -111,25 +95,12 @@ export const useUserSession = (): {
       });
   };
 
-  const getUser = async (access_token: string): Promise<User | null> => {
-    const res = await client.get(`/users/me`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-    if (!res.data) return null;
-    return res.data;
-  };
-
   const editUser = async (body: UserEdit) => {
     const res = await client.patch(`/users/me`, body);
     if (!res.data) return null;
     setUserSession({
       ...userSession,
       email: res.data.email,
-      is_active: res.data.is_active,
-      is_superuser: res.data.is_superuser,
-      is_verified: res.data.is_verified,
     });
   };
 

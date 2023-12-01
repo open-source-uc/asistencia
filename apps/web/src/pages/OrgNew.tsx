@@ -34,6 +34,12 @@ const FORM_FIELDS: IField[] = [
   },
 ];
 
+const generateRandomSlug = () => {
+  // with numbers and letters and -
+  const slug = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  return slug;
+}
+
 export default function OrgNew() {
   const [isLoading, setIsLoading] = useState(false);
   const { createOrg } = handlerOrgs();
@@ -47,7 +53,10 @@ export default function OrgNew() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     setIsLoading(true);
-    await createOrg(values).then(() => {
+    await createOrg({
+      ...values,
+      slug: generateRandomSlug(),
+    }).then(() => {
       setIsLoading(false);
       form.reset();
     });

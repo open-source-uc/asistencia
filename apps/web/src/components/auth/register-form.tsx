@@ -19,10 +19,10 @@ const formSchema = z
     email: z.string().email("El correo debe ser válido"),
     password: z
       .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres"),
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
     repeatPassword: z
       .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres"),
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
   })
   .refine((data) => data.password === data.repeatPassword, {
     message: "Las contraseñas deben ser iguales",
@@ -46,13 +46,13 @@ const FORM_FIELDS: IField[] = [
   {
     name: "password",
     label: "Contraseña",
-    placeholder: "Mínimo 8 caracteres",
+    placeholder: "Mínimo 6 caracteres",
     type: "password",
   },
   {
     name: "repeatPassword",
     label: "Repetir Contraseña",
-    placeholder: "Mínimo 8 caracteres",
+    placeholder: "Mínimo 6 caracteres",
     type: "password",
   },
 ];

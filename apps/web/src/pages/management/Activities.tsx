@@ -17,7 +17,7 @@ const columns: ColumnDef<Activity>[] = [
   SelectColumn,
   DateColumn("Fecha", "date"),
   GenericColumn("Nombre", "slug"),
-  GenericColumn("Tipo", "event_type"),
+  GenericColumn("Descripción", "description"),
 ];
 
 export default function Activities(): JSX.Element {

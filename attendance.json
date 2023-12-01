@@ -1,0 +1,913 @@
+{
+  "info": {
+    "_postman_id": "16d2cf50-a0f3-4976-a08c-98e2a62f5e23",
+    "name": "Attendance",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31349072"
+  },
+  "item": [
+    {
+      "name": "Courses",
+      "item": [
+        {
+          "name": "GET Courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Course/:slug",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Course/:slug",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"NewCourseName\",\n    \"enabled\": \"true\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Course/:slug",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Courses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"CourseName\",\n    \"enabled\": \"true\",\n    \"slug\": \"my-course\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Student",
+      "item": [
+        {
+          "name": "GET students",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug", "students"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET students/:identifier",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/students/:identifier",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":slug",
+                "students",
+                ":identifier"
+              ],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                },
+                {
+                  "key": "identifier",
+                  "value": "ABC"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT student/:identifier",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/students/:identifier",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":slug",
+                "students",
+                ":identifier"
+              ],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": ""
+                },
+                {
+                  "key": "identifier",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE students/:identifier",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/students/:identifier",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":slug",
+                "students",
+                ":identifier"
+              ],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                },
+                {
+                  "key": "identifier",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Students",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"attendance_codes\": [\"ABC\", \"DEF\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug", "students"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "UserCourse",
+      "item": [
+        {
+          "name": "GET user_courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/user_courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug", "user_courses"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET me",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/user_courses/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug", "user_courses", "me"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST user_courses",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"example111@email.com\",\n    \"role\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/user_courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug", "user_courses"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Activities",
+      "item": [
+        {
+          "name": "GET activities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/activities",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug", "activities"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET activities/:identifier",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:course_slug/activities/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":course_slug",
+                "activities",
+                ":slug"
+              ],
+              "variable": [
+                {
+                  "key": "course_slug",
+                  "value": "my-course"
+                },
+                {
+                  "key": "slug",
+                  "value": "ACT1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT activities/:identifier",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:course_slug/activities/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":course_slug",
+                "activities",
+                ":slug"
+              ],
+              "variable": [
+                {
+                  "key": "course_slug",
+                  "value": "my-course"
+                },
+                {
+                  "key": "slug",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE activities/:identifier",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:course_slug/activities/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":course_slug",
+                "activities",
+                ":slug"
+              ],
+              "variable": [
+                {
+                  "key": "course_slug",
+                  "value": "my-course"
+                },
+                {
+                  "key": "slug",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST activities",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"ACT1\",\n    \"description\": \"1234567\",\n    \"date\": \"09-09-2023\",\n    \"slug\": \"ACT1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:course_slug/activities",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":course_slug", "activities"],
+              "variable": [
+                {
+                  "key": "course_slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Attendances",
+      "item": [
+        {
+          "name": "GET attendances",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:slug/attendances",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":slug", "attendances"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET attendance/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:course_slug/attendances/:id",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":course_slug",
+                "attendances",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "course_slug",
+                  "value": "my-course"
+                },
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT attendance/:identifier",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:course_slug/attendances/:id",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":course_slug",
+                "attendances",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "course_slug",
+                  "value": "my-course"
+                },
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE attendance/:identifier",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:course_slug/attendances/:id",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "v1",
+                "courses",
+                ":course_slug",
+                "attendances",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "course_slug",
+                  "value": "my-course"
+                },
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST attendance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"attendance\":\n    {\n        \"student_code\": \"ABC\",\n        \"activity_slug\": \"ACT1\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/:course_slug/attendances",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", ":course_slug", "attendances"],
+              "variable": [
+                {
+                  "key": "course_slug",
+                  "value": "my-course"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "POST user",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"user\": {\n    \"email\": \"example@email.com\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST user/invitation",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-User-Email",
+                "value": "carlos@paredesrobles.com",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"user\":{\n    \"invitation_token\": \"63d8d3e45c7816e1e6e7273a26b148e7b8652d417c67463177be47b687968d14\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\"\n}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/invitation?invitation_token=63d8d3e45c7816e1e6e7273a26b148e7b8652d417c67463177be47b687968d14",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "invitation"],
+              "query": [
+                {
+                  "key": "invitation_token",
+                  "value": "63d8d3e45c7816e1e6e7273a26b148e7b8652d417c67463177be47b687968d14"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "noauth"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        }
+      ]
+    },
+    {
+      "name": "spreadsheet",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-User-Email",
+            "value": "carlos@paredesrobles.com",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"activity_slugs\": [\"ACT1\"],\n    \"student_codes\": [\"ABC\"]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/courses/:slug/spreadsheets",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "courses", ":slug", "spreadsheets"],
+          "variable": [
+            {
+              "key": "slug",
+              "value": "my-course"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-User-Token",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "mkANqM-zJ8TPS2h9GdUH",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ]
+}

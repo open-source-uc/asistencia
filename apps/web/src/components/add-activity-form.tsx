@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 const formSchema = z.object({
   date: z.date(),
   slug: z.string().min(1, "Campo requerido"),
-  event_type: z.number().int("El tipo de actividad debe ser un número entero"),
+  description: z.string().min(1, "Campo requerido"),
 });
 
 export default function AddActivityForm({
@@ -32,7 +32,7 @@ export default function AddActivityForm({
     defaultValues: {
       date: new Date(),
       slug: "",
-      event_type: 1,
+      description: "1",
     },
   });
 
@@ -95,20 +95,16 @@ export default function AddActivityForm({
 
         <FormField
           control={form.control}
-          name={"event_type"}
+          name={"description"}
           render={({ field }) => (
             <FormItem className="flex flex-col space-y-1">
-              <FormLabel>Tipo</FormLabel>
+              <FormLabel>Descripción</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={"Tipo"}
-                  type={"number"}
+                  placeholder={"Descripción"}
+                  type={"text"}
                   className="w-32"
                   {...field}
-                  onChange={(e) => {
-                    if (!isNaN(parseInt(e.target.value)))
-                      field.onChange(parseInt(e.target.value));
-                  }}
                 />
               </FormControl>
               <FormMessage className="w-32" />
