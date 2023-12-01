@@ -14,7 +14,7 @@ function Activities() {
     data: activities,
     error,
     loading,
-  } = useFetchData(() => getActivities(courseSlug as string), []);
+  } = useFetchData(() => getActivities(courseSlug as string));
 
   if (loading || error) {
     return <ActivityIndicator />;

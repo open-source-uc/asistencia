@@ -9,11 +9,7 @@ import useFetchData from "@/hooks/useFetchData";
 function Courses() {
   const { colors } = useTheme();
 
-  const {
-    data: courses,
-    error,
-    loading,
-  } = useFetchData(() => getCourses(), []);
+  const { data: courses, error, loading } = useFetchData(() => getCourses());
 
   if (loading || error) {
     return <ActivityIndicator />;
