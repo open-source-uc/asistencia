@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext"],
+    "types": ["google-apps-script"],
+    "strict": true
+  }
+}
