@@ -1,0 +1,5 @@
+[
+  { "slug": "AAA", "name": "La primera clase", "planned_date": "08-08-2020", "grade": "0.1", "id": 1 },
+  { "slug": "DB", "name": "Bases de Datos", "planned_date": "10-08-2020", "grade": "0.2", "id": 2 },
+  { "slug": "BUG", "name": "Debugging", "planned_date": "17-08-2020", "grade": "0.2", "id": 3 }
+]
