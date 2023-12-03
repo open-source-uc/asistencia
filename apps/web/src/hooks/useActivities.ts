@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
-import { Message } from "@/constants/interfaces";
+import type { Message } from "@/types/interfaces";
 
 export interface ActivityField {
   name: string;
@@ -84,8 +84,8 @@ export const useActivities = (
           content: "Actividad creada correctamente",
         });
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log(error);
         setMessage({
           type: "error",
           content: "Error al crear la actividad. Revisa que el slug sea único",

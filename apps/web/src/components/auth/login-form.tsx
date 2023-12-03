@@ -63,7 +63,9 @@ export default function LoginForm() {
       (error) => {
         setIsLoading(false);
         console.log(error);
-        setError("Ocurrió un error inesperado.");
+        setError(
+          "Ocurrió un error inesperado. Asegúrate de que tus credenciales sean correctas."
+        );
       }
     );
   }

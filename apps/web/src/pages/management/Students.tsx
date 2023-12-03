@@ -6,6 +6,7 @@ import LoadingSpinner from "@/components/loading-spinner";
 import ImportStudents from "@/components/import-students";
 import InputPills from "@/components/input-pills";
 import { Button } from "@/components/ui/button";
+import type { OrgData } from "@/types/interfaces";
 
 const columnsHash = [SortingColumn("Hash Estudiante", "attendance_id")];
 
@@ -14,7 +15,11 @@ interface Value {
   lastInputState: string;
 }
 
-export default function Students(): JSX.Element {
+export default function Students({
+  orgData,
+}: {
+  orgData: OrgData;
+}): JSX.Element {
   const { orgId } = useParams();
   const { students, isLoading, createStudents } = useStudents(orgId);
   const [inputState, setInputState] = useState<Value>({
@@ -39,12 +44,12 @@ export default function Students(): JSX.Element {
         </span>
         <span className="text-sm mb-2 max-w-lg">
           Puedes agregar estudiantes manualmente ingresando su identificador
-          único. Este puede ser su número de alumno, correo institucional o lo que
-          estimes conveniente.
+          único. Este puede ser su número de alumno, correo institucional o lo
+          que estimes conveniente.
         </span>
         <div className="flex flex-row justify-center items-end relative mt-4">
           <InputPills
-            placeholder="Identificador de estudiante"
+            placeholder="Identificador de estudiante 1, Identificador de Estudiante 2, ..."
             onChange={(value: Value) => {
               setInputState(value);
             }}

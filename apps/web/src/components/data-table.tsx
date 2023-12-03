@@ -115,6 +115,7 @@ export function DataTable({
   rowSelection = {},
   setRowSelection = () => {},
   className = "",
+  upperComponent = null,
 }: {
   data: unknown[];
   columns: ColumnDef<any>[];
@@ -122,6 +123,7 @@ export function DataTable({
   rowSelection?: RowSelection;
   setRowSelection?: React.Dispatch<React.SetStateAction<RowSelection>>;
   className?: string;
+  upperComponent?: React.ReactNode;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -143,7 +145,7 @@ export function DataTable({
   return (
     <div className={"flex flex-col space-y-4"}>
       {searchColumn && (
-        <div className="flex items-center py-4">
+        <div className="flex justify-between items-center py-4">
           <Input
             placeholder="Buscar..."
             value={
@@ -154,6 +156,7 @@ export function DataTable({
             }
             className="max-w-sm"
           />
+          {upperComponent}
         </div>
       )}
       <div className={cn("rounded-md border", className)}>

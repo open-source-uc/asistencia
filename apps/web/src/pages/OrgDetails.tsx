@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon, UserCheckIcon, UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LoadingSpinner from "@/components/loading-spinner";
+import type { OrgData } from "@/types/interfaces";
 
 const links = [
   {
@@ -28,7 +29,11 @@ const links = [
   },
 ];
 
-export default function OrgDetails(): JSX.Element {
+export default function OrgDetails({
+  orgData,
+}: {
+  orgData: OrgData;
+}): JSX.Element {
   const navigate = useNavigate();
   const { orgId } = useParams();
   const { activities, isLoading } = useActivities(orgId);
@@ -63,7 +68,7 @@ export default function OrgDetails(): JSX.Element {
         <ScrollArea className="h-96 border border-input-500 shadow-inner">
           {isLoading && <LoadingSpinner className="my-6" />}
           {activities.map((activity, i) => (
-            <div className="flex flex-col border-b-2 ">
+            <div className="flex flex-col border-b-2" key={i}>
               <div
                 className={cn(
                   "flex flex-row justify-start px-6 py-3 transition-all",
@@ -71,7 +76,6 @@ export default function OrgDetails(): JSX.Element {
                     ? "bg-primary text-primary-foreground"
                     : "cursor-pointer"
                 )}
-                key={i}
                 onClick={() => setCurrActivity(i)}
               >
                 <span className="w-32">

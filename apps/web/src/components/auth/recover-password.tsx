@@ -15,8 +15,8 @@ export default function RecoverPassword() {
         setIsLoading(false);
         setError("");
       })
-      .catch((e) => {
-        console.log(e);
+      .catch((error) => {
+        console.log(error);
         setIsLoading(false);
         setError("Ocurrió un error al enviar el correo electrónico");
       });

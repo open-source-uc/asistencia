@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
-import { Message } from "@/constants/interfaces";
+import type { Message } from "@/types/interfaces";
+import { UserType } from "@/types/enums";
 
 export interface OrgField {
   name: string;
@@ -73,8 +74,8 @@ export const useHandlerOrgs = (): {
           content: "Organización creada correctamente",
         });
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log(error);
         setMessage({
           type: "error",
           content: "Error al crear la organización",
@@ -83,10 +84,57 @@ export const useHandlerOrgs = (): {
   };
 
   const deleteOrg = async (orgSlug: string) => {
-    return await client.delete(`/api/v1/courses/${orgSlug}`).catch((err) => {
-      console.log(err);
+    return await client.delete(`/api/v1/courses/${orgSlug}`).catch((error) => {
+      console.log(error);
     });
   };
 
   return { createOrg, getOrgs, deleteOrg, message };
+};
+
+export const useOrg = (
+  slug: string | undefined = ""
+): {
+  org: Org;
+  userType: UserType;
+  isLoading: boolean;
+} => {
+  const [org, setOrg] = useState<Org>({
+    id: "",
+    name: "",
+    slug: "",
+    enabled: false,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState<UserType>(UserType.VIEWER);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const res = await client.get(`/api/v1/courses/${slug}`);
+      getMe();
+      setOrg(res.data.course);
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [slug]);
+
+  const getMe = async () => {
+    return await client
+      .get(`/api/v1/courses/${slug}/user_courses/me`)
+      .then((res) => {
+        setUserType(
+          UserType[
+            Object.keys(res.data).find(
+              (key) => res.data[key].length > 0
+            ) as keyof typeof UserType
+          ] || UserType.VIEWER
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  return { org, userType, isLoading };
 };

@@ -45,43 +45,25 @@ export default function Orgs(): JSX.Element {
               <Button
                 className="justify-center w-full py-6"
                 onClick={() => {
-                  navigate(`/orgs/${course.slug}`, {
-                    state: { orgName: course.name },
-                  });
+                  navigate(`/orgs/${course.slug}`);
                 }}
               >
                 {course.name}
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    // button to hover only if parent is hovered
-                    className={cn(
-                      "absolute right-6 all-unset top-1/2 transform -translate-y-1/2",
-                      "group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out"
-                    )}
-                  >
-                    <MoreHorizontalIcon className="text-white" size={24} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 rounded">
-                  <DropdownMenuLabel>Opciones</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setState({
-                          orgSlugSelected: course.slug,
-                          alertOpen: true,
-                        });
-                      }}
-                    >
-                      <span className="text-red-500">Eliminar</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <DropdownOptionsMenu
+                options={[
+                  {
+                    label: "Eliminar",
+                    onClick: () => {
+                      setState({
+                        orgSlugSelected: course.slug,
+                        alertOpen: true,
+                      });
+                    },
+                    isDestructive: true,
+                  },
+                ]}
+              />
             </div>
           ))}
         </div>
@@ -116,3 +98,43 @@ export default function Orgs(): JSX.Element {
     </div>
   );
 }
+
+interface Option {
+  label: string;
+  onClick: () => void;
+  isDestructive?: boolean;
+}
+
+const DropdownOptionsMenu = ({ options = [] }: { options: Option[] }) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className={cn(
+            "absolute right-6 all-unset top-1/2 transform -translate-y-1/2",
+            "group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out"
+          )}
+        >
+          <MoreHorizontalIcon className="text-white" size={24} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56 rounded">
+        <DropdownMenuLabel>Opciones</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          {options.map((option, i) => (
+            <DropdownMenuItem
+              key={i}
+              className="cursor-pointer"
+              onClick={option.onClick}
+            >
+              <span className={cn(option.isDestructive ? "text-red-500" : "")}>
+                {option.label}
+              </span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};

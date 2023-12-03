@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { clientHash } from "@/lib/hashFunctions";
 import client from "@/api/client";
-import { Message } from "@/constants/interfaces";
+import type { Message } from "@/types/interfaces";
 
 export const useAttendances = (orgId: string = "") => {
   const [message, setMessage] = useState<Message>({

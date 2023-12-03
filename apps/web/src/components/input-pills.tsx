@@ -2,6 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { X as TimesIcon } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 const formatInput = (input: string) => {
   return input.replace(" ", "").replace(",", "").replace(";", "");
@@ -98,6 +107,10 @@ export default function InputPills({
     }
   }, [patternError]);
 
+  const isPillToBeRemoved = (pill: string) => {
+    return confirmRemove && pill === Array.from(pills).pop();
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-row justify-center items-end relative mt-4">
@@ -113,12 +126,21 @@ export default function InputPills({
               key={i}
               className={cn(
                 "flex flex-row items-center justify-center rounded-full p-2 m-1 transition-all",
-                "text-sm text-slate-500",
-                confirmRemove && pill === Array.from(pills).pop()
-                  ? "border border-destructive bg-red-200 text-black"
-                  : "border border-slate-300 bg-slate-100"
+                "text-sm text-slate-500 border ",
+                isPillToBeRemoved(pill)
+                  ? "border-destructive bg-red-200 text-black"
+                  : "border-slate-300 bg-slate-50"
               )}
             >
+              {/* <SelectUserRol
+                onChange={() => {}}
+                className={cn(
+                  "rounded-full mr-2 text-xs p-2 h-auto bg-slate-200 border border-slate-400",
+                  isPillToBeRemoved(pill)
+                    ? "border-destructive bg-red-300 text-black"
+                    : "bg-slate-200 border-slate-400"
+                )}
+              /> */}
               {pill}
               <button
                 className="ml-2"
@@ -130,38 +152,67 @@ export default function InputPills({
               </button>
             </div>
           ))}
-          <input
-            className="focus:outline-none inline-flex h-12 text-sm px-2 placeholder:text-muted-foreground lg:w-32 flex-auto"
-            placeholder={placeholder}
-            onChange={handleChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                addPill();
-              }
-            }}
-            spellCheck={false}
-            onKeyUp={(e) => {
-              if (
-                e.key === "Backspace" &&
-                lastInputState === "" &&
-                pills.size > 0
-              ) {
-                if (!confirmRemove) {
-                  setConfirmRemove(true);
-                  return;
+          <div className="flex flex-row items-center w-full">
+            {/* <SelectUserRol onChange={() => {}} className="rounded mr-1 w-32" /> */}
+            <input
+              className="focus:outline-none inline-flex h-12 text-sm px-2 placeholder:text-muted-foreground lg:w-32 flex-auto"
+              placeholder={placeholder}
+              onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  addPill();
                 }
-                setPills((prev) => {
-                  const newPills = new Set(prev);
-                  newPills.delete(Array.from(prev).pop() || "");
-                  return newPills;
-                });
-                setConfirmRemove(false);
-              }
-            }}
-            value={lastInputState}
-          />
+              }}
+              spellCheck={false}
+              onKeyUp={(e) => {
+                if (
+                  e.key === "Backspace" &&
+                  lastInputState === "" &&
+                  pills.size > 0
+                ) {
+                  if (!confirmRemove) {
+                    setConfirmRemove(true);
+                    return;
+                  }
+                  setPills((prev) => {
+                    const newPills = new Set(prev);
+                    newPills.delete(Array.from(prev).pop() || "");
+                    return newPills;
+                  });
+                  setConfirmRemove(false);
+                }
+              }}
+              value={lastInputState}
+            />
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
+const SelectUserRol = ({
+  onChange,
+  className,
+}: {
+  onChange: (value: string) => void;
+  className?: string;
+}) => {
+  return (
+    <Select onValueChange={onChange}>
+      <SelectTrigger className={cn("", className)}>
+        <SelectValue placeholder="Rol" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>
+            Selecciona el rol del usuario que vas a agregar
+          </SelectLabel>
+          <SelectItem value="viewer">Espectador</SelectItem>
+          <SelectItem value="manager">Gestor</SelectItem>
+          <SelectItem value="admin">Administrador</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+};

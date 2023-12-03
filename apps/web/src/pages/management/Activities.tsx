@@ -13,6 +13,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import LoadingSpinner from "@/components/loading-spinner";
 import AddActivityForm from "@/components/add-activity-form";
 import { cn } from "@/lib/utils";
+import type { OrgData } from "@/types/interfaces";
+import { UserType } from "@/types/enums";
 
 const columns: ColumnDef<Activity>[] = [
   SelectColumn,
@@ -22,7 +24,11 @@ const columns: ColumnDef<Activity>[] = [
   GenericColumn("Descripción", "description"),
 ];
 
-export default function Activities(): JSX.Element {
+export default function Activities({
+  orgData,
+}: {
+  orgData: OrgData;
+}): JSX.Element {
   const { orgId } = useParams();
   const {
     activities,
@@ -58,20 +64,23 @@ export default function Activities(): JSX.Element {
           </div>
         </div>
         {isLoading && <LoadingSpinner />}
-        {!isLoading && (
-          <DataTable
-            data={activities}
-            columns={columns}
-            rowSelection={checkedActivities}
-            setRowSelection={setCheckedActivities}
-          />
-        )}
-      </div>
-      <div className="flex flex-row justify-end items-center w-full">
-        <RemoveDialog
-          onRemove={() => removeActivities(checkedActivities)}
-          text="Esta acción conllevará la eliminación de las asistencias asociadas a las actividades seleccionadas. Además, no se podrá deshacer."
-        />
+        <div className="border border-slate-200 p-4">
+          {!isLoading && (
+            <DataTable
+              searchColumn={"slug"}
+              upperComponent={
+                <RemoveDialog
+                  onRemove={() => removeActivities(checkedActivities)}
+                  text="Esta acción conllevará la eliminación de las asistencias asociadas a las actividades seleccionadas. Además, no se podrá deshacer."
+                />
+              }
+              data={activities}
+              columns={columns}
+              rowSelection={checkedActivities}
+              setRowSelection={setCheckedActivities}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

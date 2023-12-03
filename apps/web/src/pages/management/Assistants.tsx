@@ -12,6 +12,7 @@ import {
   GenericColumn,
 } from "@/components/data-table";
 import LoadingSpinner from "@/components/loading-spinner";
+import type { OrgData } from "@/types/interfaces";
 
 const columns = [
   SelectColumn,
@@ -28,7 +29,11 @@ const initInputValue: Value = {
   lastInputState: "",
 };
 
-export default function Assistants(): JSX.Element {
+export default function Assistants({
+  orgData,
+}: {
+  orgData: OrgData;
+}): JSX.Element {
   const { orgId } = useParams();
   const { assistants, isLoading, addMultipleAssistantsToOrg } =
     useAssistants(orgId);
@@ -92,19 +97,23 @@ export default function Assistants(): JSX.Element {
           </span>
         )}
 
-        <div className="mt-6">
+        <div className="border border-slate-200 p-4 mt-6">
           {isLoading && <LoadingSpinner />}
           {!isLoading && (
             <DataTable
+              searchColumn={"email"}
+              upperComponent={
+                <RemoveDialog
+                  text="Esta acción eliminará los ayudantes seleccionados de la organización. No se podrá deshacer."
+                  onRemove={() => removeAssistant(checkedAssistants)}
+                />
+              }
               data={assistants}
               columns={columns}
               rowSelection={checkedAssistants}
               setRowSelection={setCheckedAssistants}
             />
           )}
-        </div>
-        <div className="flex flex-row justify-end items-center my-4">
-          <RemoveDialog onRemove={() => removeAssistant(checkedAssistants)} />
         </div>
       </div>
     </div>

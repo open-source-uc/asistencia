@@ -54,20 +54,20 @@ export const useUserSession = (): {
           password_confirmation: password,
         },
       })
-      .then((res) => {
-        if (res.data.detail) {
-          console.log(res.data.detail);
-        } else {
-          logIn(email, password);
-        }
+      .then((response) => {
+        const userSession = {
+          id: response.data.id,
+          email: response.data.email,
+          access_token: response.data.authentication_token,
+          isLoggedIn: true,
+        };
+        setUserSession(userSession);
       });
   };
 
   const logOut = () => {
     setUserSession(initialStateUserSession);
   };
-
-  // https://fastapi-users.github.io/fastapi-users/10.1/usage/routes/
 
   const forgotPassword = async (email: string) => {
     return client
@@ -81,6 +81,7 @@ export const useUserSession = (): {
       });
   };
 
+  // TODO: adapt to ror api
   const resetPassword = async (
     newPassword: string,
     forgotPasswordToken: string
@@ -95,6 +96,7 @@ export const useUserSession = (): {
       });
   };
 
+  // TODO: adapt to ror api
   const editUser = async (body: UserEdit) => {
     const res = await client.patch(`/users/me`, body);
     if (!res.data) return null;
@@ -132,25 +134,25 @@ export const useUserSession = (): {
   };
 };
 
-export const useSuperUser = (): {
-  getUser: (userId: string) => Promise<unknown>;
-  editUser: (userId: string, body: UserEdit) => Promise<unknown>;
-  deleteUser: (userId: string) => Promise<unknown>;
-} => {
-  const getUser = async (userId: string) => {
-    const res = await client.get(`/users/${userId}`);
-    if (!res.data) return null;
-    return res.data;
-  };
-  const editUser = async (userId: string, body: UserEdit) => {
-    const res = await client.patch(`/users/${userId}`, body);
-    if (!res.data) return null;
-    return res.data;
-  };
-  const deleteUser = async (userId: string) => {
-    const res = await client.delete(`/users/${userId}`);
-    if (!res.data) return null;
-    return res.data;
-  };
-  return { getUser, editUser, deleteUser };
-};
+// export const useSuperUser = (): {
+//   getUser: (userId: string) => Promise<unknown>;
+//   editUser: (userId: string, body: UserEdit) => Promise<unknown>;
+//   deleteUser: (userId: string) => Promise<unknown>;
+// } => {
+//   const getUser = async (userId: string) => {
+//     const res = await client.get(`/users/${userId}`);
+//     if (!res.data) return null;
+//     return res.data;
+//   };
+//   const editUser = async (userId: string, body: UserEdit) => {
+//     const res = await client.patch(`/users/${userId}`, body);
+//     if (!res.data) return null;
+//     return res.data;
+//   };
+//   const deleteUser = async (userId: string) => {
+//     const res = await client.delete(`/users/${userId}`);
+//     if (!res.data) return null;
+//     return res.data;
+//   };
+//   return { getUser, editUser, deleteUser };
+// };

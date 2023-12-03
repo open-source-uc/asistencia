@@ -25,7 +25,7 @@ export function RemoveDialog({
       <AlertDialogTrigger asChild>
         {componentTrigger || (
           <Button
-            variant={"roundedoutline"}
+            variant={"outline"}
             className="hover:bg-red-500 hover:text-white"
           >
             Eliminar
