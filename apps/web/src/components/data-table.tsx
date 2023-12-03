@@ -104,7 +104,7 @@ export const GenericColumn = (header: string, accessorKey: string) => ({
   cell: ({ row }: { row: RowProps }) => <div>{row.getValue(accessorKey)}</div>,
 });
 
-export interface IRowSelection {
+export interface RowSelection {
   [key: string]: boolean;
 }
 
@@ -119,8 +119,8 @@ export function DataTable({
   data: unknown[];
   columns: ColumnDef<any>[];
   searchColumn?: string | null;
-  rowSelection?: IRowSelection;
-  setRowSelection?: React.Dispatch<React.SetStateAction<IRowSelection>>;
+  rowSelection?: RowSelection;
+  setRowSelection?: React.Dispatch<React.SetStateAction<RowSelection>>;
   className?: string;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);

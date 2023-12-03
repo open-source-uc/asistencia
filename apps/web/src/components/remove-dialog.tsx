@@ -11,8 +11,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-export function RemoveDialog({ ...props }) {
-  const { onRemove, text, componentTrigger } = props;
+export function RemoveDialog({
+  ...props
+}: {
+  onRemove: () => void;
+  text?: string;
+  title?: string;
+  componentTrigger?: React.ReactNode;
+}) {
+  const { onRemove, text, title, componentTrigger } = props;
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -21,21 +28,24 @@ export function RemoveDialog({ ...props }) {
             variant={"roundedoutline"}
             className="hover:bg-red-500 hover:text-white"
           >
-            Remover
+            Eliminar
           </Button>
         )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Estás seguro?</AlertDialogTitle>
+          <AlertDialogTitle>{title || "¿Estás seguro?"}</AlertDialogTitle>
           <AlertDialogDescription>
             {text || "Esta acción no se puede deshacer."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onRemove} className="bg-red-500 hover:bg-red-600">
-            Remover elementos seleccionados
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={onRemove}
+            className="bg-red-500 hover:bg-red-600"
+          >
+            Eliminar elementos seleccionados
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

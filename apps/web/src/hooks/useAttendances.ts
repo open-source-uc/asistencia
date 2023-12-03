@@ -1,15 +1,11 @@
 import { useState } from "react";
 import { clientHash } from "@/lib/hashFunctions";
 import client from "@/api/client";
-
-interface Message {
-  message: string;
-  type: "success" | "error";
-}
+import { Message } from "@/constants/interfaces";
 
 export const useAttendances = (orgId: string = "") => {
   const [message, setMessage] = useState<Message>({
-    message: "",
+    content: "",
     type: "success",
   });
   const takeAttendance = async (
@@ -22,19 +18,16 @@ export const useAttendances = (orgId: string = "") => {
         attendance: {
           activity_slug: activitySlug,
           student_code: studentId,
-        }
+        },
       };
-      await client.post(
-        `/api/v1/courses/${orgId}/attendances/`,
-        body
-      );
+      await client.post(`/api/v1/courses/${orgId}/attendances/`, body);
       setMessage({
-        message: "Asistencia registrada correctamente",
+        content: "Asistencia registrada correctamente",
         type: "success",
       });
     } catch (err) {
       setMessage({
-        message: "Error al registrar la asistencia",
+        content: "Error al registrar la asistencia",
         type: "error",
       });
     }

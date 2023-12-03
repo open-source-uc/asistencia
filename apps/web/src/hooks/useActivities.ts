@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
+import { Message } from "@/constants/interfaces";
 
 export interface ActivityField {
+  name: string;
   slug: string;
   date: Date;
   description: string;
@@ -19,9 +21,16 @@ export const useActivities = (
   activities: Activity[];
   isLoading: boolean;
   createActivity: (values: ActivityField) => Promise<void>;
+  deleteActivity: (activitySlug: string) => Promise<void>;
+  deleteMultipleActivities: (activitySlugs: string[]) => Promise<void>;
+  message: Message;
 } => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<Message>({
+    content: "",
+    type: "success",
+  });
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -45,21 +54,15 @@ export const useActivities = (
 
   const createActivity = async (values: ActivityField): Promise<void> => {
     const body = {
-      // course_activity: {
-      //   slug: values.slug,
-      //   date: values.date.toISOString().replace("T", " ").replace("Z", ""),
-      //   event_type: values.event_type,
-      // },
-      // allowed_roles: ["admin", "assistant", "default"],
-      name: values.slug,
+      name: values.name,
       slug: values.slug,
+      description: values.description,
       date: values.date
         .toISOString()
         .split("T")[0]
         .split("-")
         .reverse()
         .join("-"),
-      description: values.description.toString(),
     };
     return await client
       .post(`/api/v1/courses/${orgId}/activities/`, body)
@@ -76,8 +79,42 @@ export const useActivities = (
             return b.date.getTime() - a.date.getTime();
           })
         );
+        setMessage({
+          type: "success",
+          content: "Actividad creada correctamente",
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage({
+          type: "error",
+          content: "Error al crear la actividad. Revisa que el slug sea único",
+        });
       });
   };
 
-  return { activities, isLoading, createActivity };
+  const deleteActivity = async (activitySlug: string): Promise<void> => {
+    return await client
+      .delete(`/api/v1/courses/${orgId}/activities/${activitySlug}`)
+      .then(() => {
+        setActivities((prev) => prev.filter((a) => a.slug !== activitySlug));
+      });
+  };
+
+  const deleteMultipleActivities = async (
+    activitySlugs: string[]
+  ): Promise<void> => {
+    activitySlugs.forEach(async (activitySlug) => {
+      await deleteActivity(activitySlug);
+    });
+  };
+
+  return {
+    activities,
+    isLoading,
+    createActivity,
+    deleteActivity,
+    deleteMultipleActivities,
+    message,
+  };
 };

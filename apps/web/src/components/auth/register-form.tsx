@@ -14,6 +14,13 @@ import { useForm } from "react-hook-form";
 import { useUserSession } from "@/hooks/useUserSession";
 import { useState } from "react";
 
+interface Field {
+  name: "email" | "password" | "repeatPassword";
+  label: string;
+  placeholder: string;
+  type: string;
+}
+
 const formSchema = z
   .object({
     email: z.string().email("El correo debe ser válido"),
@@ -29,14 +36,7 @@ const formSchema = z
     path: ["repeatPassword"],
   });
 
-interface IField {
-  name: "email" | "password" | "repeatPassword";
-  label: string;
-  placeholder: string;
-  type: string;
-}
-
-const FORM_FIELDS: IField[] = [
+const FORM_FIELDS: Field[] = [
   {
     name: "email",
     label: "Correo",
@@ -89,7 +89,7 @@ export default function RegisterForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <span className="text-xl font-bold text-center mb-12">Registrarse</span>
-        {FORM_FIELDS.map((form_field: IField, i: number) => (
+        {FORM_FIELDS.map((form_field: Field, i: number) => (
           <FormField
             key={i}
             control={form.control}

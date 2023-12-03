@@ -12,20 +12,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { handlerOrgs } from "@/hooks/useOrgs";
+import { useHandlerOrgs } from "@/hooks/useOrgs";
+import { cn } from "@/lib/utils";
 
-const formSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido"),
-});
-
-interface IField {
+interface Field {
   name: "name";
   label: string;
   placeholder: string;
   type: string;
 }
 
-const FORM_FIELDS: IField[] = [
+const formSchema = z.object({
+  name: z.string().min(1, "El nombre es requerido"),
+});
+
+const FORM_FIELDS: Field[] = [
   {
     name: "name",
     label: "Nombre",
@@ -36,13 +37,15 @@ const FORM_FIELDS: IField[] = [
 
 const generateRandomSlug = () => {
   // with numbers and letters and -
-  const slug = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  const slug =
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
   return slug;
-}
+};
 
 export default function OrgNew() {
   const [isLoading, setIsLoading] = useState(false);
-  const { createOrg } = handlerOrgs();
+  const { createOrg, message } = useHandlerOrgs();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,11 +68,10 @@ export default function OrgNew() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-3/4">
-        {/* <div>[TEMPORAL]</div> */}
         <span className="text-xl font-bold text-center mb-12">
           Nueva Organización
         </span>
-        {FORM_FIELDS.map((form_field: IField, i: number) => (
+        {FORM_FIELDS.map((form_field: Field, i: number) => (
           <FormField
             key={i}
             control={form.control}
@@ -82,6 +84,7 @@ export default function OrgNew() {
                     placeholder={form_field.placeholder}
                     type={form_field.type}
                     className="w-full"
+                    autoComplete="off"
                     {...field}
                   />
                 </FormControl>
@@ -93,6 +96,16 @@ export default function OrgNew() {
         <Button type="submit" className="w-64" isLoading={isLoading}>
           Crear Organización
         </Button>
+        <div>
+          <span
+            className={cn(
+              message.type === "error" ? "text-red-500" : "text-primary",
+              "animate-fade-in-up"
+            )}
+          >
+            {message.content}
+          </span>
+        </div>
       </form>
     </Form>
   );

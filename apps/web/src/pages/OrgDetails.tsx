@@ -63,20 +63,31 @@ export default function OrgDetails(): JSX.Element {
         <ScrollArea className="h-96 border border-input-500 shadow-inner">
           {isLoading && <LoadingSpinner className="my-6" />}
           {activities.map((activity, i) => (
-            <div
-              className={cn(
-                "flex flex-row justify-start border-b-2 px-6 py-3 transition-all",
-                i === currActivity
-                  ? "bg-primary text-primary-foreground"
-                  : "cursor-pointer"
-              )}
-              key={i}
-              onClick={() => setCurrActivity(i)}
-            >
-              <span className="w-32">
-                {activity.date?.toLocaleDateString()}
-              </span>
-              <span>{activity.slug}</span>
+            <div className="flex flex-col border-b-2 ">
+              <div
+                className={cn(
+                  "flex flex-row justify-start px-6 py-3 transition-all",
+                  i === currActivity
+                    ? "bg-primary text-primary-foreground"
+                    : "cursor-pointer"
+                )}
+                key={i}
+                onClick={() => setCurrActivity(i)}
+              >
+                <span className="w-32">
+                  {activity.date?.toLocaleDateString()}
+                </span>
+                {i === currActivity ? (
+                  <div className="flex flex-col space-y-2">
+                    <span>{activity.name}</span>
+                    <span className="text-sm text-primary-foreground">
+                      {activity.description}
+                    </span>
+                  </div>
+                ) : (
+                  <span>{activity.name}</span>
+                )}
+              </div>
             </div>
           ))}
         </ScrollArea>
@@ -97,7 +108,7 @@ export default function OrgDetails(): JSX.Element {
           "animate-fade-in-up"
         )}
       >
-        {message.message}
+        {message.content}
       </span>
     </div>
   );

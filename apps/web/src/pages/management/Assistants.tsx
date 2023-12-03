@@ -8,7 +8,7 @@ import {
   DataTable,
   SelectColumn,
   SortingColumn,
-  IRowSelection,
+  RowSelection,
   GenericColumn,
 } from "@/components/data-table";
 import LoadingSpinner from "@/components/loading-spinner";
@@ -32,12 +32,12 @@ export default function Assistants(): JSX.Element {
   const { orgId } = useParams();
   const { assistants, isLoading, addMultipleAssistantsToOrg } =
     useAssistants(orgId);
-  const [checkedAssistants, setCheckedAssistants] = useState<IRowSelection>({});
+  const [checkedAssistants, setCheckedAssistants] = useState<RowSelection>({});
   const [isLoadingUpload, setIsLoadingUpload] = useState(false);
   const [inputState, setInputState] = useState<Value>(initInputValue);
   const [error, setError] = useState("");
 
-  const removeAssistant = (assistants: IRowSelection) => {
+  const removeAssistant = (assistants: RowSelection) => {
     console.log("removed", assistants);
   };
 

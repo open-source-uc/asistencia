@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
+import { Message } from "@/constants/interfaces";
 
 export interface OrgField {
   name: string;
@@ -16,9 +17,10 @@ export interface Org extends OrgField {
 export const useOrgs = (): {
   orgs: Org[];
   isLoading: boolean;
+  deleteOrg: (orgSlug: string) => Promise<void>;
 } => {
-  const { getOrgs } = handlerOrgs();
-  const [orgs, setOrgs] = useState([]);
+  const { getOrgs, deleteOrg: deleteOrgHandler } = useHandlerOrgs();
+  const [orgs, setOrgs] = useState<Org[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -30,13 +32,25 @@ export const useOrgs = (): {
     };
     fetchData();
   }, []);
-  return { orgs, isLoading };
+
+  const deleteOrg = async (orgSlug: string) => {
+    await deleteOrgHandler(orgSlug).then(() =>
+      setOrgs(orgs.filter((org) => org.slug !== orgSlug))
+    );
+  };
+  return { orgs, isLoading, deleteOrg };
 };
 
-export const handlerOrgs = (): {
+export const useHandlerOrgs = (): {
   getOrgs: () => Promise<any>;
   createOrg: (values: OrgField) => Promise<any>;
+  deleteOrg: (orgSlug: string) => Promise<any>;
+  message: Message;
 } => {
+  const [message, setMessage] = useState<Message>({
+    type: "success",
+    content: "",
+  });
   const getOrgs = async () => {
     try {
       const res = await client.get(`/api/v1/courses/`);
@@ -53,10 +67,26 @@ export const handlerOrgs = (): {
         ...values,
         enabled: true,
       })
+      .then(() => {
+        setMessage({
+          type: "success",
+          content: "Organización creada correctamente",
+        });
+      })
       .catch((err) => {
         console.log(err);
+        setMessage({
+          type: "error",
+          content: "Error al crear la organización",
+        });
       });
   };
 
-  return { createOrg, getOrgs };
+  const deleteOrg = async (orgSlug: string) => {
+    return await client.delete(`/api/v1/courses/${orgSlug}`).catch((err) => {
+      console.log(err);
+    });
+  };
+
+  return { createOrg, getOrgs, deleteOrg, message };
 };

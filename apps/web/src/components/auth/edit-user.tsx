@@ -28,14 +28,19 @@ const formSchema = z
     path: ["repeatPassword"],
   });
 
-interface IField {
+interface Field {
   name: "password" | "repeatPassword";
   label: string;
   placeholder: string;
   type: string;
 }
 
-const FORM_FIELDS: IField[] = [
+interface Message {
+  type: "error" | "success" | undefined;
+  content: string;
+}
+
+const FORM_FIELDS: Field[] = [
   {
     name: "password",
     label: "Contraseña",
@@ -49,11 +54,6 @@ const FORM_FIELDS: IField[] = [
     type: "password",
   },
 ];
-
-interface Message {
-  type: "error" | "success" | undefined;
-  content: string;
-}
 
 export default function EditUser() {
   const { editUser } = useUserSession();
@@ -99,7 +99,7 @@ export default function EditUser() {
         <span className="text-xl font-bold text-center mb-12">
           Cambiar Contraseña
         </span>
-        {FORM_FIELDS.map((form_field: IField, i: number) => (
+        {FORM_FIELDS.map((form_field: Field, i: number) => (
           <FormField
             key={i}
             control={form.control}
@@ -127,9 +127,7 @@ export default function EditUser() {
           <FormMessage className="my-4 w-full">{message.content}</FormMessage>
         )}
         {message.type === "success" && (
-          <div className="my-4 w-full text-primary">
-            {message.content}
-          </div>
+          <div className="my-4 w-full text-primary">{message.content}</div>
         )}
       </form>
     </Form>

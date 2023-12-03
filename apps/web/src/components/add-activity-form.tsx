@@ -14,9 +14,41 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 
+interface Field {
+  name: "name" | "slug" | "description";
+  label: string;
+  placeholder: string;
+  type: string;
+}
+
+const INPUT_FIELDS: Field[] = [
+  {
+    name: "slug",
+    label: "Slug",
+    placeholder: "slug-ejemplo",
+    type: "text",
+  },
+  {
+    name: "name",
+    label: "Nombre",
+    placeholder: "Nombre",
+    type: "text",
+  },
+  {
+    name: "description",
+    label: "Descripción",
+    placeholder: "Descripción",
+    type: "text",
+  },
+];
+
 const formSchema = z.object({
   date: z.date(),
-  slug: z.string().min(1, "Campo requerido"),
+  name: z.string().min(1, "Campo requerido"),
+  slug: z
+    .string()
+    .min(1, "Campo requerido")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug inválido"),
   description: z.string().min(1, "Campo requerido"),
 });
 
@@ -31,8 +63,9 @@ export default function AddActivityForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       date: new Date(),
+      name: "",
       slug: "",
-      description: "1",
+      description: "",
     },
   });
 
@@ -74,44 +107,29 @@ export default function AddActivityForm({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name={"slug"}
-          render={({ field }) => (
-            <FormItem className="flex flex-col space-y-1">
-              <FormLabel>Nombre</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={"Nombre"}
-                  type={"text"}
-                  className="w-32"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="w-32" />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name={"description"}
-          render={({ field }) => (
-            <FormItem className="flex flex-col space-y-1">
-              <FormLabel>Descripción</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={"Descripción"}
-                  type={"text"}
-                  className="w-32"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="w-32" />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-64 mt-4" isLoading={isLoading}>
+        {INPUT_FIELDS.map((inputField, i) => (
+          <FormField
+            key={i}
+            control={form.control}
+            name={inputField.name}
+            render={({ field }) => (
+              <FormItem className="flex flex-col space-y-1">
+                <FormLabel>{inputField.label}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={inputField.placeholder}
+                    type={inputField.type}
+                    className="w-32"
+                    autoComplete="off"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="w-32" />
+              </FormItem>
+            )}
+          />
+        ))}
+        <Button type="submit" className="w-48 mt-4" isLoading={isLoading}>
           Añadir
         </Button>
       </form>
