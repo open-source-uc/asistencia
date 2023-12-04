@@ -1,12 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
+import { UserType } from "@/types/enums";
 
-interface Assistant {
-  id: string;
+interface AssistantField {
   email: string;
-  role: string;
-  // active: boolean;
+  role: UserType | undefined;
+}
+
+interface Assistant extends AssistantField {
+  id: string;
 }
 
 export const useAssistants = (orgId: string = "") => {
@@ -41,7 +44,7 @@ export const useAssistants = (orgId: string = "") => {
 
   const addAssistantToOrg = async (
     userEmail: string,
-    role: "admin" | "manager" | "viewer" = "viewer"
+    role: UserType = UserType.VIEWER
   ): Promise<Assistant | undefined> => {
     return await client
       .post(`/api/v1/courses/${orgId}/user_courses`, {
@@ -54,10 +57,12 @@ export const useAssistants = (orgId: string = "") => {
   };
 
   const addMultipleAssistantsToOrg = async (
-    userEmails: string[]
+    userEmails: AssistantField[]
   ): Promise<void> => {
     return await Promise.all(
-      userEmails.map((userEmail) => addAssistantToOrg(userEmail))
+      userEmails.map((userEmail) =>
+        addAssistantToOrg(userEmail.email, userEmail.role)
+      )
     ).then(async () => setAssistants(await getAssistantsByOrg()));
   };
 

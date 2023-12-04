@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAssistants } from "@/hooks/useAssistants";
-import InputPills from "@/components/input-pills";
+import InputSelectPills, {
+  type Value,
+  initialValue,
+} from "@/components/input-select-pills";
 import { Button } from "@/components/ui/button";
 import { RemoveDialog } from "@/components/remove-dialog";
 import {
@@ -19,16 +22,6 @@ const columns = [
   SortingColumn("Email", "email"),
   GenericColumn("Rol", "role"),
 ];
-
-interface Value {
-  pills: Set<string>;
-  lastInputState: string;
-}
-const initInputValue: Value = {
-  pills: new Set(),
-  lastInputState: "",
-};
-
 export default function Assistants({
   orgData,
 }: {
@@ -39,7 +32,7 @@ export default function Assistants({
     useAssistants(orgId);
   const [checkedAssistants, setCheckedAssistants] = useState<RowSelection>({});
   const [isLoadingUpload, setIsLoadingUpload] = useState(false);
-  const [inputState, setInputState] = useState<Value>(initInputValue);
+  const [inputState, setInputState] = useState<Value>(initialValue);
   const [error, setError] = useState("");
 
   const removeAssistant = (assistants: RowSelection) => {
@@ -48,16 +41,22 @@ export default function Assistants({
 
   const addAssistants = () => {
     if (
-      (inputState.pills.size === 0 && inputState.lastInputState === "") ||
+      (inputState.pills.size === 0 && inputState.lastInputState.text === "") ||
       error !== ""
     )
       return;
     setIsLoadingUpload(true);
-    const emails = new Set(inputState.pills);
-    if (inputState.lastInputState !== "") emails.add(inputState.lastInputState);
-    addMultipleAssistantsToOrg(Array.from(emails))
+    const pills = new Set(inputState.pills);
+    if (inputState.lastInputState.text !== "")
+      pills.add(inputState.lastInputState);
+    const assistantsToAdd = Array.from(pills).map((pill) => ({
+      email: pill.text,
+      role: pill.role,
+    }));
+    console.log(assistantsToAdd);
+    addMultipleAssistantsToOrg(assistantsToAdd)
       .then(() => {
-        setInputState(initInputValue);
+        setInputState(initialValue);
         setIsLoadingUpload(false);
       })
       .catch(() => {
@@ -72,7 +71,7 @@ export default function Assistants({
       <div className="flex flex-col w-full">
         <h3 className="text-xl font-medium">Añadir</h3>
         <div className="flex flex-row justify-center items-end relative mt-4">
-          <InputPills
+          <InputSelectPills
             placeholder="ejemplo@ejemplo.com"
             onChange={(value: Value) => {
               setInputState(value);
