@@ -51,29 +51,33 @@ export default function Activities({
     <div className="space-y-6 flex flex-col items-center px-4">
       <h3 className="text-xl font-medium text-center">Gestionar Actividades</h3>
       <div className="flex flex-col w-full">
-        <div className="border border-slate-200 rounded-lg p-4 mb-4">
-          <h3 className="text-lg font-medium mb-2">Añadir</h3>
-          <AddActivityForm addActivity={createActivity} />
-          <div
-            className={cn(
-              message.type === "error" ? "text-red-500" : "text-primary",
-              "animate-fade-in-up mt-3"
-            )}
-          >
-            {message.content}
+        {!(orgData.userType === UserType.VIEWER) && (
+          <div className="border border-slate-200 rounded-lg p-4 mb-4">
+            <h3 className="text-lg font-medium mb-2">Añadir</h3>
+            <AddActivityForm addActivity={createActivity} />
+            <div
+              className={cn(
+                message.type === "error" ? "text-red-500" : "text-primary",
+                "animate-fade-in-up mt-3"
+              )}
+            >
+              {message.content}
+            </div>
           </div>
-        </div>
+        )}
         {isLoading && <LoadingSpinner />}
         <div className="border border-slate-200 p-4">
           {!isLoading && (
             <DataTable
               searchColumn={"slug"}
-              upperComponent={
-                <RemoveDialog
-                  onRemove={() => removeActivities(checkedActivities)}
-                  text="Esta acción conllevará la eliminación de las asistencias asociadas a las actividades seleccionadas. Además, no se podrá deshacer."
-                />
-              }
+              {...(!(orgData.userType === UserType.VIEWER) && {
+                upperComponent: RemoveDialog({
+                  onRemove: () => {
+                    removeActivities(checkedActivities);
+                  },
+                  text: "Esta acción conllevará la eliminación de las asistencias asociadas a las actividades seleccionadas. Además, no se podrá deshacer.",
+                }),
+              })}
               data={activities}
               columns={columns}
               rowSelection={checkedActivities}

@@ -7,6 +7,7 @@ import ImportStudents from "@/components/import-students";
 import InputPills from "@/components/input-pills";
 import { Button } from "@/components/ui/button";
 import type { OrgData } from "@/types/interfaces";
+import { UserType } from "@/types/enums";
 
 const columnsHash = [SortingColumn("Hash Estudiante", "attendance_id")];
 
@@ -38,41 +39,45 @@ export default function Students({
   return (
     <div className="space-y-6 flex flex-col items-center w-full">
       <h3 className="text-xl font-medium text-center">Gestionar Estudiantes</h3>
-      <div className="flex flex-col p-6 bg-slate-50">
-        <span className="text-md font-medium mb-3">
-          Agregar estudiantes manualmente
-        </span>
-        <span className="text-sm mb-2 max-w-lg">
-          Puedes agregar estudiantes manualmente ingresando su identificador
-          único. Este puede ser su número de alumno, correo institucional o lo
-          que estimes conveniente.
-        </span>
-        <div className="flex flex-row justify-center items-end relative mt-4">
-          <InputPills
-            placeholder="Identificador de estudiante 1, Identificador de Estudiante 2, ..."
-            onChange={(value: Value) => {
-              setInputState(value);
-            }}
-            value={inputState}
-          />
-          <Button
-            onClick={addStudentsManually}
-            className="h-16"
-            isLoading={isLoading}
-          >
-            Añadir
-          </Button>
-        </div>
-      </div>
-      <div className="flex flex-col p-6 bg-slate-50">
-        <span className="text-md font-medium mb-6">
-          Importar estudiantes desde un archivo
-        </span>
-        <ImportStudents
-          isLoadingStudents={isLoading}
-          createStudents={createStudents}
-        />
-      </div>
+      {!(orgData.userType === UserType.VIEWER) && (
+        <>
+          <div className="flex flex-col p-6 bg-slate-50">
+            <span className="text-md font-medium mb-3">
+              Agregar estudiantes manualmente
+            </span>
+            <span className="text-sm mb-2 max-w-lg">
+              Puedes agregar estudiantes manualmente ingresando su identificador
+              único. Este puede ser su número de alumno, correo institucional o
+              lo que estimes conveniente.
+            </span>
+            <div className="flex flex-row justify-center items-end relative mt-4">
+              <InputPills
+                placeholder="Identificador de estudiante 1, Identificador de Estudiante 2, ..."
+                onChange={(value: Value) => {
+                  setInputState(value);
+                }}
+                value={inputState}
+              />
+              <Button
+                onClick={addStudentsManually}
+                className="h-16"
+                isLoading={isLoading}
+              >
+                Añadir
+              </Button>
+            </div>
+          </div>
+          <div className="flex flex-col p-6 bg-slate-50">
+            <span className="text-md font-medium mb-6">
+              Importar estudiantes desde un archivo
+            </span>
+            <ImportStudents
+              isLoadingStudents={isLoading}
+              createStudents={createStudents}
+            />
+          </div>
+        </>
+      )}
       <h3 className="text-xl font-medium text-center">
         Estudiantes Registrados
       </h3>

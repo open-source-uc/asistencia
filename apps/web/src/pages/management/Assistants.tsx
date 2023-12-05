@@ -16,6 +16,7 @@ import {
 } from "@/components/data-table";
 import LoadingSpinner from "@/components/loading-spinner";
 import type { OrgData } from "@/types/interfaces";
+import { UserType } from "@/types/enums";
 
 const columns = [
   SelectColumn,
@@ -70,26 +71,28 @@ export default function Assistants({
       <h3 className="text-xl font-medium text-center">Gestionar Ayudantes</h3>
       <div className="flex flex-col w-full">
         <h3 className="text-xl font-medium">Añadir</h3>
-        <div className="flex flex-row justify-center items-end relative mt-4">
-          <InputSelectPills
-            placeholder="ejemplo@ejemplo.com"
-            onChange={(value: Value) => {
-              setInputState(value);
-            }}
-            value={inputState}
-            pattern={/[^@\s]+@[^@\s]+/g} // pattern for emails
-            onPatternError={(error: boolean) => {
-              setError(error ? "Email inválido" : "");
-            }}
-          />
-          <Button
-            onClick={addAssistants}
-            className="h-16"
-            isLoading={isLoadingUpload}
-          >
-            Añadir
-          </Button>
-        </div>
+        {!(orgData.userType === UserType.VIEWER) && (
+          <div className="flex flex-row justify-center items-end relative mt-4">
+            <InputSelectPills
+              placeholder="ejemplo@ejemplo.com"
+              onChange={(value: Value) => {
+                setInputState(value);
+              }}
+              value={inputState}
+              pattern={/[^@\s]+@[^@\s]+/g} // pattern for emails
+              onPatternError={(error: boolean) => {
+                setError(error ? "Email inválido" : "");
+              }}
+            />
+            <Button
+              onClick={addAssistants}
+              className="h-16"
+              isLoading={isLoadingUpload}
+            >
+              Añadir
+            </Button>
+          </div>
+        )}
         {error !== "" && (
           <span className="text-red-500 text-sm ml-2 mt-2 font-medium">
             {error}
@@ -101,12 +104,14 @@ export default function Assistants({
           {!isLoading && (
             <DataTable
               searchColumn={"email"}
-              upperComponent={
-                <RemoveDialog
-                  text="Esta acción eliminará los ayudantes seleccionados de la organización. No se podrá deshacer."
-                  onRemove={() => removeAssistant(checkedAssistants)}
-                />
-              }
+              {...(!(orgData.userType === UserType.VIEWER) && {
+                upperComponent: RemoveDialog({
+                  onRemove: () => {
+                    removeAssistant(checkedAssistants);
+                  },
+                  text: "Esta acción eliminará los ayudantes seleccionados de la organización. No se podrá deshacer.",
+                }),
+              })}
               data={assistants}
               columns={columns}
               rowSelection={checkedAssistants}

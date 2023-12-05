@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon, UserCheckIcon, UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LoadingSpinner from "@/components/loading-spinner";
+import { UserType } from "@/types/enums";
 import type { OrgData } from "@/types/interfaces";
 
 const links = [
@@ -96,16 +97,18 @@ export default function OrgDetails({
           ))}
         </ScrollArea>
       </div>
-      <div className="flex flex-row w-full relative">
-        <Input
-          placeholder="Identificador de Estudiante"
-          value={inputState}
-          onChange={(e) => setInputState(e.target.value)}
-        />
-        <Button className="w-64" onClick={handleTakeAttendance}>
-          Tomar Asistencia
-        </Button>
-      </div>
+      {orgData.userType === UserType.ADMIN && (
+        <div className="flex flex-row w-full relative">
+          <Input
+            placeholder="Identificador de Estudiante"
+            value={inputState}
+            onChange={(e) => setInputState(e.target.value)}
+          />
+          <Button className="w-64" onClick={handleTakeAttendance}>
+            Tomar Asistencia
+          </Button>
+        </div>
+      )}
       <span
         className={cn(
           message.type === "error" ? "text-red-500" : "text-primary",

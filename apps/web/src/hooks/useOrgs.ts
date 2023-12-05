@@ -125,9 +125,9 @@ export const useOrg = (
       .then((res) => {
         setUserType(
           UserType[
-            Object.keys(res.data).find(
-              (key) => res.data[key].length > 0
-            ) as keyof typeof UserType
+            Object.keys(res.data)
+              .find((key) => res.data[key].length > 0)
+              ?.toUpperCase() as keyof typeof UserType
           ] || UserType.VIEWER
         );
       })
