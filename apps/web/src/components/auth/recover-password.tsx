@@ -29,6 +29,8 @@ export default function RecoverPassword() {
         para restablecer su contraseña.
       </span>
       <Input
+        name="email"
+        autoComplete="on"
         type="email"
         placeholder="Correo electrónico"
         className="mt-4"

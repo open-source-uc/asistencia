@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Route, Routes, useLocation, useParams } from "react-router-dom";
+import { Route, Routes, useParams } from "react-router-dom";
 import { Sidebar } from "@/components/sidebar";
 import Settings from "@/pages/Settings";
 import Orgs from "@/pages/Orgs";
@@ -14,6 +13,7 @@ import NotFound from "@/pages/404";
 import { NavBar } from "@/components/navbar";
 import { useUserSession } from "@/hooks/useUserSession";
 import { useOrg } from "@/hooks/useOrgs";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function App(): JSX.Element {
   const { userSession } = useUserSession();
@@ -40,6 +40,7 @@ export default function App(): JSX.Element {
           <Route path={`*`} element={<NotFound />} />
         </Routes>
       </div>
+      <Toaster />
     </div>
   );
 }

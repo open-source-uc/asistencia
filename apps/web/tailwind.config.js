@@ -96,6 +96,10 @@ module.exports = {
         "inner-xl":
           "inset 0 20px 25px -5px rgb(0 0 0 / 0.1), inset 0 10px 10px -5px rgb(0 0 0 / 0.04);",
       },
+      rounded: {
+        md: "0.375rem;",
+        lg: "0.5rem;",
+      },
       keyframes: {
         formShow: {
           "0%": {

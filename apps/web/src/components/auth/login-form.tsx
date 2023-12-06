@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import InputPassword from "@/components/input-password";
 import { useForm } from "react-hook-form";
 import { useUserSession } from "@/hooks/useUserSession";
 
@@ -23,7 +24,8 @@ interface Field {
   name: "email" | "password";
   label: string;
   placeholder: string;
-  type: string;
+  type?: string;
+  component: typeof Input | typeof InputPassword;
 }
 
 const FORM_FIELDS: Field[] = [
@@ -32,12 +34,13 @@ const FORM_FIELDS: Field[] = [
     label: "Correo",
     placeholder: "ejemplo@uc.cl",
     type: "email",
+    component: Input,
   },
   {
     name: "password",
     label: "Contraseña",
     placeholder: "Mínimo 6 caracteres",
-    type: "password",
+    component: InputPassword,
   },
 ];
 
@@ -85,7 +88,8 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>{form_field.label}</FormLabel>
                 <FormControl>
-                  <Input
+                  <form_field.component
+                    autoComplete="on"
                     placeholder={form_field.placeholder}
                     aria-label={form_field.name}
                     type={form_field.type}

@@ -13,12 +13,14 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useUserSession } from "@/hooks/useUserSession";
 import { useState } from "react";
+import InputPassword from "../input-password";
 
 interface Field {
   name: "email" | "password" | "repeatPassword";
   label: string;
   placeholder: string;
-  type: string;
+  type?: string;
+  component: typeof Input | typeof InputPassword;
 }
 
 const formSchema = z
@@ -42,18 +44,19 @@ const FORM_FIELDS: Field[] = [
     label: "Correo",
     placeholder: "ejemplo@uc.cl",
     type: "email",
+    component: Input,
   },
   {
     name: "password",
     label: "Contraseña",
     placeholder: "Mínimo 6 caracteres",
-    type: "password",
+    component: InputPassword,
   },
   {
     name: "repeatPassword",
     label: "Repetir Contraseña",
     placeholder: "Mínimo 6 caracteres",
-    type: "password",
+    component: InputPassword,
   },
 ];
 
@@ -80,7 +83,9 @@ export default function RegisterForm() {
       (error) => {
         setIsLoading(false);
         console.log(error);
-        setError("Ocurrió un error al registrarse.");
+        setError(
+          "Ocurrió un error al registrarse. Revise que no exista una cuenta con el correo ingresado."
+        );
       }
     );
   }
@@ -98,7 +103,8 @@ export default function RegisterForm() {
               <FormItem className="my-4">
                 <FormLabel>{form_field.label}</FormLabel>
                 <FormControl>
-                  <Input
+                  <form_field.component
+                    autoComplete="on"
                     placeholder={form_field.placeholder}
                     type={form_field.type}
                     className="w-full"
