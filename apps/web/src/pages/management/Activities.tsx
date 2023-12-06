@@ -52,7 +52,7 @@ export default function Activities({
       <h3 className="text-xl font-medium text-center">Gestionar Actividades</h3>
       <div className="flex flex-col w-full">
         {!(orgData.userType === UserType.VIEWER) && (
-          <div className="border border-slate-200 rounded-lg p-4 mb-4">
+          <div className="border border-slate-200 p-4 mb-4">
             <h3 className="text-lg font-medium mb-2">Añadir</h3>
             <AddActivityForm addActivity={createActivity} />
             <div

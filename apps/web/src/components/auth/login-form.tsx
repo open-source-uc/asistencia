@@ -105,7 +105,7 @@ export default function LoginForm() {
         <FormMessage className="my-4 w-full">{error}</FormMessage>
         <Button
           type="submit"
-          className="w-64"
+          className="sm:w-64"
           isLoading={isLoading}
           aria-label="submit"
         >

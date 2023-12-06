@@ -117,7 +117,7 @@ export default function RegisterForm() {
           />
         ))}
         <FormMessage className="my-4 w-full">{error}</FormMessage>
-        <Button type="submit" className="w-64 my-4" isLoading={isLoading}>
+        <Button type="submit" className="sm:w-64 my-4" isLoading={isLoading}>
           Registrarse
         </Button>
       </form>

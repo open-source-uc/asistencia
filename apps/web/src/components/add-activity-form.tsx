@@ -85,7 +85,7 @@ export default function AddActivityForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex md:flex-row justify-center relative md:space-x-4 flex-col items-start"
+        className="flex justify-center relative space-x-4 items-start flex-wrap md:flex-row md:flex-nowrap"
       >
         <FormField
           control={form.control}
@@ -129,7 +129,7 @@ export default function AddActivityForm({
             )}
           />
         ))}
-        <Button type="submit" className="w-48 mt-4" isLoading={isLoading}>
+        <Button type="submit" className="sm:w-48 mt-4" isLoading={isLoading}>
           Añadir
         </Button>
       </form>
