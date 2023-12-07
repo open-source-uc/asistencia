@@ -19,8 +19,6 @@ export const useAssistants = (orgId: string = "") => {
     return await client
       .get(`/api/v1/courses/${orgId}/user_courses`)
       .then((res) => {
-        // merge res.data.admin, res.data.manager, res.data.viewer
-        // {email: 'attendance@uc.cl', id: 5}
         const assistants = [
           ...res.data.admin.map((assistant: Assistant) => ({
             ...assistant,
@@ -57,13 +55,62 @@ export const useAssistants = (orgId: string = "") => {
   };
 
   const addMultipleAssistantsToOrg = async (
-    userEmails: AssistantField[]
+    userEmails: string[],
+    role: UserType | undefined
   ): Promise<void> => {
-    return await Promise.all(
-      userEmails.map((userEmail) =>
-        addAssistantToOrg(userEmail.email, userEmail.role)
-      )
-    ).then(async () => setAssistants(await getAssistantsByOrg()));
+    if (!role) {
+      return Promise.reject();
+    }
+    return await client
+      .post(`/api/v1/courses/${orgId}/user_courses/batch_create`, {
+        emails: userEmails,
+        role: role,
+      })
+      .then(() => {
+        const usersToAdd = userEmails.filter(
+          (email) =>
+            !assistants.find(
+              (assistant) =>
+                assistant.email === email && assistant.role === role
+            )
+        );
+        const usersToAddWithId = usersToAdd.map((email) => ({
+          email,
+          role,
+          id: "",
+        }));
+        setAssistants((prevAssistants) => [
+          ...prevAssistants,
+          ...usersToAddWithId,
+        ]);
+      });
+  };
+
+  const removeAssistantFromOrg = async (
+    userEmail: string,
+    role: UserType = UserType.VIEWER
+  ): Promise<Assistant | undefined> => {
+    return await client
+      .delete(`/api/v1/courses/${orgId}/user_courses`, {
+        data: { email: userEmail, role: role },
+      })
+      .then((res) => {
+        setAssistants((prevAssistants) =>
+          prevAssistants.filter(
+            (assistant) =>
+              !(assistant.email === userEmail && assistant.role === role)
+          )
+        );
+        return res.data;
+      });
+  };
+
+  const removeMultipleAssistantsFromOrg = async (
+    users: AssistantField[]
+  ): Promise<void> => {
+    users.map(async (user) => {
+      removeAssistantFromOrg(user.email, user.role);
+    });
   };
 
   useEffect(() => {
@@ -80,5 +127,7 @@ export const useAssistants = (orgId: string = "") => {
     isLoading,
     addAssistantToOrg,
     addMultipleAssistantsToOrg,
+    removeAssistantFromOrg,
+    removeMultipleAssistantsFromOrg,
   };
 };

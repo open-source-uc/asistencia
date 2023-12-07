@@ -62,7 +62,7 @@ export default function AddActivityForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      date: new Date(),
+      date: new Date(new Date().toDateString()),
       name: "",
       slug: "",
       description: "",

@@ -1,36 +1,37 @@
-import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import { clientHash } from "@/lib/hashFunctions";
 import client from "@/api/client";
-import type { Message } from "@/types/interfaces";
 
 export const useAttendances = (orgId: string = "") => {
-  const [message, setMessage] = useState<Message>({
-    content: "",
-    type: "success",
-  });
+  const { toast } = useToast();
   const takeAttendance = async (
     activitySlug: string,
     studentCode: string
   ): Promise<void> => {
-    try {
-      const studentId = await Promise.resolve(clientHash(studentCode, orgId));
-      const body = {
-        attendance: {
-          activity_slug: activitySlug,
-          student_code: studentId,
-        },
-      };
-      await client.post(`/api/v1/courses/${orgId}/attendances/`, body);
-      setMessage({
-        content: "Asistencia registrada correctamente",
-        type: "success",
+    const studentId = await Promise.resolve(clientHash(studentCode, orgId));
+    const body = {
+      attendance: {
+        activity_slug: activitySlug,
+        student_code: studentId,
+      },
+    };
+    return await client
+      .post(`/api/v1/courses/${orgId}/attendances/`, body)
+      .then(() => {
+        toast({
+          title: "Asistencia tomada",
+          description: "La asistencia se ha tomado correctamente.",
+          variant: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error al tomar asistencia",
+          description: "Ha ocurrido un error al tomar la asistencia.",
+          variant: "destructive",
+        });
       });
-    } catch (err) {
-      setMessage({
-        content: "Error al registrar la asistencia",
-        type: "error",
-      });
-    }
   };
-  return { takeAttendance, message };
+  return { takeAttendance };
 };

@@ -13,7 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useHandlerOrgs } from "@/hooks/useOrgs";
-import { cn } from "@/lib/utils";
 
 interface Field {
   name: "name";
@@ -45,7 +44,7 @@ const generateRandomSlug = () => {
 
 export default function OrgNew() {
   const [isLoading, setIsLoading] = useState(false);
-  const { createOrg, message } = useHandlerOrgs();
+  const { createOrg } = useHandlerOrgs();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,7 +53,6 @@ export default function OrgNew() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     setIsLoading(true);
     await createOrg({
       ...values,
@@ -96,16 +94,6 @@ export default function OrgNew() {
         <Button type="submit" className="w-64" isLoading={isLoading}>
           Crear Organización
         </Button>
-        <div>
-          <span
-            className={cn(
-              message.type === "error" ? "text-red-500" : "text-primary",
-              "animate-fade-in-up"
-            )}
-          >
-            {message.content}
-          </span>
-        </div>
       </form>
     </Form>
   );

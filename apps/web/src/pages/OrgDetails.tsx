@@ -11,6 +11,10 @@ import { cn } from "@/lib/utils";
 import LoadingSpinner from "@/components/loading-spinner";
 import { UserType } from "@/types/enums";
 import type { OrgData } from "@/types/interfaces";
+import { useToast } from "@/components/ui/use-toast";
+import { ButtonClipboard } from "@/components/button-clipboard";
+import { HoverElement } from "@/components/hover-element";
+import { Info } from "lucide-react";
 
 const links = [
   {
@@ -37,19 +41,46 @@ export default function OrgDetails({
 }): JSX.Element {
   const navigate = useNavigate();
   const { orgId } = useParams();
+  const { toast } = useToast();
   const { activities, isLoading } = useActivities(orgId);
-  const { takeAttendance, message } = useAttendances(orgId);
+  const { takeAttendance } = useAttendances(orgId);
   const [currActivity, setCurrActivity] = useState(0);
   const [inputState, setInputState] = useState("");
 
   const handleTakeAttendance = () => {
-    if (inputState === "") return;
+    if (inputState === "" || activities.length === 0) {
+      toast({
+        title: "Error al tomar asistencia",
+        description:
+          "Asegúrate de seleccionar una actividad y de ingresar un identificador de estudiante.",
+        variant: "destructive",
+      });
+      return;
+    }
     takeAttendance(activities[currActivity].slug, inputState);
     setInputState("");
   };
 
   return (
-    <div className="space-y-6 flex flex-col items-center px-4">
+    <div className="space-y-6 flex flex-col items-center px-4 pb-20">
+      <div className="flex flex-row items-center flex-wrap bg-slate-100 p-4 space-x-4">
+        <HoverElement
+          triggerComponent={<Info size={15} />}
+          text="Este identificador se utiliza para ver la asistencia de los estudiantes en Excel o Google Sheets."
+        />
+        <span className="font-bold ">ID de Organización</span>
+        <div className="flex flex-row justify-center items-center">
+          <Input
+            value={orgId}
+            readOnly={true}
+            className="pr-12 border border-slate-400 rounded-md"
+          />
+          <ButtonClipboard
+            text={orgId || ""}
+            alertDescription="ID de Organización copiado al portapapeles."
+          />
+        </div>
+      </div>
       <div className="w-full flex flex-row flex-wrap justify-center items-center md:space-x-4 space-x-0">
         {links.map((link, i: number) => (
           <Button
@@ -109,14 +140,6 @@ export default function OrgDetails({
           </Button>
         </div>
       )}
-      <span
-        className={cn(
-          message.type === "error" ? "text-red-500" : "text-primary",
-          "animate-fade-in-up"
-        )}
-      >
-        {message.content}
-      </span>
     </div>
   );
 }

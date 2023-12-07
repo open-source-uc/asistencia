@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
-import type { Message } from "@/types/interfaces";
+import { useToast } from "@/components/ui/use-toast";
 
 export interface ActivityField {
   name: string;
@@ -23,14 +23,10 @@ export const useActivities = (
   createActivity: (values: ActivityField) => Promise<void>;
   deleteActivity: (activitySlug: string) => Promise<void>;
   deleteMultipleActivities: (activitySlugs: string[]) => Promise<void>;
-  message: Message;
 } => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<Message>({
-    content: "",
-    type: "success",
-  });
+  const { toast } = useToast();
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -39,7 +35,7 @@ export const useActivities = (
       res.data.activities
         .map((activity: Activity) => ({
           ...activity,
-          date: new Date(activity.date + "Z"),
+          date: new Date(activity.date),
         }))
         .sort((a: Activity, b: Activity) => {
           return b.date.getTime() - a.date.getTime();
@@ -57,12 +53,7 @@ export const useActivities = (
       name: values.name,
       slug: values.slug,
       description: values.description,
-      date: values.date
-        .toISOString()
-        .split("T")[0]
-        .split("-")
-        .reverse()
-        .join("-"),
+      date: new Date(values.date.getTime() + 86400000).toISOString(),
     };
     return await client
       .post(`/api/v1/courses/${orgId}/activities/`, body)
@@ -79,16 +70,19 @@ export const useActivities = (
             return b.date.getTime() - a.date.getTime();
           })
         );
-        setMessage({
-          type: "success",
-          content: "Actividad creada correctamente",
+        toast({
+          title: "Actividad creada",
+          description: "La actividad se ha creado correctamente.",
+          variant: "success",
         });
       })
       .catch((error) => {
         console.log(error);
-        setMessage({
-          type: "error",
-          content: "Error al crear la actividad. Revisa que el slug sea único",
+        toast({
+          title: "Error al crear la actividad",
+          description:
+            "Ha ocurrido un error al crear la actividad. Revisa que el slug sea único.",
+          variant: "destructive",
         });
       });
   };
@@ -115,6 +109,5 @@ export const useActivities = (
     createActivity,
     deleteActivity,
     deleteMultipleActivities,
-    message,
   };
 };

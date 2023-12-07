@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
 import { useUserSession } from "@/hooks/useUserSession";
-import EditUser from "@/components/auth/edit-user";
+import EditUser from "@/components/forms/edit-user";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import InputPassword from "@/components/input-password";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Check, Copy, Info } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { ButtonClipboard } from "@/components/button-clipboard";
+import { Info } from "lucide-react";
+import { HoverElement } from "@/components/hover-element";
 
 export default function Settings(): JSX.Element {
   const { userSession, logOut } = useUserSession();
@@ -35,7 +30,7 @@ export default function Settings(): JSX.Element {
                 readOnly={true}
                 className="pr-12 border border-slate-400 rounded-md"
               />
-              <ClipboardButton
+              <ButtonClipboard
                 text={userSession.access_token}
                 alertTitle="Token copiado al portapapeles."
                 alertDescription="Recuerda que este token es privado y no debería ser compartido con nadie."
@@ -57,61 +52,3 @@ export default function Settings(): JSX.Element {
     </div>
   );
 }
-
-const HoverElement = ({
-  triggerComponent,
-  text,
-}: {
-  triggerComponent: JSX.Element;
-  text: string;
-}) => {
-  return (
-    <HoverCard>
-      <HoverCardTrigger>{triggerComponent}</HoverCardTrigger>
-      <HoverCardContent>
-        <span className="text-sm text-gray-600">{text}</span>
-      </HoverCardContent>
-    </HoverCard>
-  );
-};
-
-const ClipboardButton = ({
-  text,
-  alertTitle,
-  alertDescription,
-}: {
-  text: string;
-  alertTitle: string;
-  alertDescription: string;
-}) => {
-  const { toast } = useToast();
-  const [isCopied, setIsCopied] = useState<boolean>(false);
-  useEffect(() => {
-    if (isCopied) {
-      const timer = setTimeout(() => {
-        setIsCopied(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [isCopied]);
-  return (
-    <Button
-      variant={"noshadow"}
-      className="p-3"
-      onClick={() => {
-        setIsCopied(true);
-        navigator.clipboard.writeText(text);
-        toast({
-          title: alertTitle,
-          description: alertDescription,
-        });
-      }}
-    >
-      {isCopied ? (
-        <Check size={16} color="white" />
-      ) : (
-        <Copy size={16} color="white" />
-      )}
-    </Button>
-  );
-};

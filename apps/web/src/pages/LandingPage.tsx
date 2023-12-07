@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import LoginForm from "@/components/auth/login-form";
-import RegisterForm from "@/components/auth/register-form";
-import RecoverPassword from "@/components/auth/recover-password";
+import LoginForm from "@/components/forms/login-form";
+import RegisterForm from "@/components/forms/register-form";
+import RecoverPassword from "@/components/forms/recover-password";
 
 function useQuery() {
   const { search } = useLocation();

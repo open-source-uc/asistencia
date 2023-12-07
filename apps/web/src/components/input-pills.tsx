@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -18,18 +19,23 @@ function arequalSets(a: Set<string>, b: Set<string>) {
   return true;
 }
 
-interface Value {
+export interface Value {
   pills: Set<string>;
   lastInputState: string;
 }
 
-interface InputPillsProps {
+export interface InputPillsProps {
   value?: Value;
   onChange: (value: Value) => void;
   pattern?: RegExp;
   placeholder?: string;
   onPatternError?: (error: boolean) => void;
 }
+
+export const initialValue: Value = {
+  pills: new Set(),
+  lastInputState: "",
+};
 
 export default function InputPills({
   value,
@@ -38,9 +44,11 @@ export default function InputPills({
   placeholder,
   onPatternError,
 }: InputPillsProps): JSX.Element {
-  const [lastInputState, setLastInputState] = useState("");
+  const [lastInputState, setLastInputState] = useState(
+    initialValue.lastInputState
+  );
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const [pills, setPills] = useState<Set<string>>(new Set());
+  const [pills, setPills] = useState<Set<string>>(initialValue.pills);
   const [patternError, setPatternError] = useState<boolean>(false);
 
   const addPill = () => {
@@ -50,7 +58,7 @@ export default function InputPills({
     }
     setPatternError(false);
     setPills((prev) => new Set(prev).add(formatInput(lastInputState)));
-    setLastInputState("");
+    setLastInputState(initialValue.lastInputState);
   };
 
   const removePill = (pill: string) => {

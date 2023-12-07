@@ -3,7 +3,7 @@ import { useStudents } from "@/hooks/useStudents";
 import { useParams } from "react-router-dom";
 import { SortingColumn, DataTable } from "@/components/data-table";
 import LoadingSpinner from "@/components/loading-spinner";
-import ImportStudents from "@/components/import-students";
+import ImportStudents from "@/components/forms/import-students";
 import InputPills from "@/components/input-pills";
 import { Button } from "@/components/ui/button";
 import type { OrgData } from "@/types/interfaces";

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import client from "@/api/client";
 import type { Message } from "@/types/interfaces";
 import { UserType } from "@/types/enums";
+import { useToast } from "@/components/ui/use-toast";
 
 export interface OrgField {
   name: string;
@@ -46,12 +47,8 @@ export const useHandlerOrgs = (): {
   getOrgs: () => Promise<any>;
   createOrg: (values: OrgField) => Promise<any>;
   deleteOrg: (orgSlug: string) => Promise<any>;
-  message: Message;
 } => {
-  const [message, setMessage] = useState<Message>({
-    type: "success",
-    content: "",
-  });
+  const { toast } = useToast();
   const getOrgs = async () => {
     try {
       const res = await client.get(`/api/v1/courses/`);
@@ -69,16 +66,18 @@ export const useHandlerOrgs = (): {
         enabled: true,
       })
       .then(() => {
-        setMessage({
-          type: "success",
-          content: "Organización creada correctamente",
+        toast({
+          title: "Organización creada",
+          description: "La organización se ha creado correctamente.",
+          variant: "success",
         });
       })
       .catch((error) => {
         console.log(error);
-        setMessage({
-          type: "error",
-          content: "Error al crear la organización",
+        toast({
+          title: "Error al crear la organización",
+          description: "Ha ocurrido un error al crear la organización.",
+          variant: "destructive",
         });
       });
   };
@@ -89,7 +88,7 @@ export const useHandlerOrgs = (): {
     });
   };
 
-  return { createOrg, getOrgs, deleteOrg, message };
+  return { createOrg, getOrgs, deleteOrg };
 };
 
 export const useOrg = (

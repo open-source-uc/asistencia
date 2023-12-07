@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { clientHash } from "@/lib/hashFunctions";
 import client from "@/api/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Student {
   attendance_id: string;
@@ -27,6 +28,7 @@ export const useStudents = (
 } => {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const formatDataToStudent = (data: string[]): Student[] => {
     return data.map((code) => {
@@ -70,9 +72,19 @@ export const useStudents = (
           ...formatDataToStudent(res.data.student.attendance_codes),
         ]);
         setIsLoading(false);
+        toast({
+          title: "Estudiantes agregados",
+          description: "Los estudiantes se han agregado correctamente.",
+          variant: "success",
+        });
       })
       .catch(() => {
         setIsLoading(false);
+        toast({
+          title: "Error al agregar estudiantes",
+          description: "Ha ocurrido un error al agregar los estudiantes.",
+          variant: "destructive",
+        });
       });
   };
 

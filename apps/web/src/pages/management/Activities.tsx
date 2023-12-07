@@ -11,8 +11,7 @@ import {
 } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import LoadingSpinner from "@/components/loading-spinner";
-import AddActivityForm from "@/components/add-activity-form";
-import { cn } from "@/lib/utils";
+import AddActivityForm from "@/components/forms/add-activity-form";
 import type { OrgData } from "@/types/interfaces";
 import { UserType } from "@/types/enums";
 
@@ -35,7 +34,6 @@ export default function Activities({
     isLoading,
     createActivity,
     deleteMultipleActivities,
-    message,
   } = useActivities(orgId);
   const [checkedActivities, setCheckedActivities] = useState<RowSelection>({});
 
@@ -55,14 +53,6 @@ export default function Activities({
           <div className="border border-slate-200 p-4 mb-4">
             <h3 className="text-lg font-medium mb-2">Añadir</h3>
             <AddActivityForm addActivity={createActivity} />
-            <div
-              className={cn(
-                message.type === "error" ? "text-red-500" : "text-primary",
-                "animate-fade-in-up mt-3"
-              )}
-            >
-              {message.content}
-            </div>
           </div>
         )}
         {isLoading && <LoadingSpinner />}
