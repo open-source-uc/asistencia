@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { MenuIcon } from "lucide-react";
-import { BARTABS } from "@/constants/barTabs";
+import { BARTABS } from "@/lib/constants/barTabs";
 
 
 export function NavBar({ className }: { className?: string }) {

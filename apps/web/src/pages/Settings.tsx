@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import InputPassword from "@/components/input-password";
 import { ButtonClipboard } from "@/components/button-clipboard";
 import { Info } from "lucide-react";
-import { HoverElement } from "@/components/hover-element";
+import { PopoverMessage } from "@/components/popover-message";
 
 export default function Settings(): JSX.Element {
   const { userSession, logOut } = useUserSession();
@@ -19,8 +19,12 @@ export default function Settings(): JSX.Element {
             {userSession.email}
           </h2>
           <div className="flex flex-row items-center flex-wrap bg-slate-100 p-4 space-x-4">
-            <HoverElement
-              triggerComponent={<Info size={15} />}
+            <PopoverMessage
+              triggerComponent={
+                <button className="p-2 rounded-full hover:bg-slate-200">
+                  <Info size={15} />
+                </button>
+              }
               text="Este token es privado y no debería ser compartido con nadie."
             />
             <span className="font-bold ">Token de Usuario</span>

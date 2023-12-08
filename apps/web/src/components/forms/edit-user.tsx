@@ -13,15 +13,16 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { useUserSession } from "@/hooks/useUserSession";
 import { useState } from "react";
+import InputPassword from "@/components/input-password";
 
 const formSchema = z
   .object({
     password: z
       .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres"),
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
     repeatPassword: z
       .string()
-      .min(8, "La contraseña debe tener al menos 8 caracteres"),
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
   })
   .refine((data) => data.password === data.repeatPassword, {
     message: "Las contraseñas deben ser iguales",
@@ -32,36 +33,28 @@ interface Field {
   name: "password" | "repeatPassword";
   label: string;
   placeholder: string;
-  type: string;
-}
-
-interface Message {
-  type: "error" | "success" | undefined;
-  content: string;
+  type?: string;
+  component: typeof Input | typeof InputPassword;
 }
 
 const FORM_FIELDS: Field[] = [
   {
     name: "password",
     label: "Contraseña",
-    placeholder: "Mínimo 8 caracteres",
-    type: "password",
+    placeholder: "Mínimo 6 caracteres",
+    component: InputPassword,
   },
   {
     name: "repeatPassword",
     label: "Repetir Contraseña",
-    placeholder: "Mínimo 8 caracteres",
-    type: "password",
+    placeholder: "Mínimo 6 caracteres",
+    component: InputPassword,
   },
 ];
 
 export default function EditUser() {
   const { editUser } = useUserSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<Message>({
-    type: undefined,
-    content: "",
-  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,24 +66,10 @@ export default function EditUser() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    editUser({ password: values.password }).then(
-      () => {
-        setIsLoading(false);
-        form.reset();
-        setMessage({
-          type: "success",
-          content: "Contraseña cambiada con éxito",
-        });
-      },
-      (error) => {
-        setIsLoading(false);
-        console.log(error);
-        setMessage({
-          type: "error",
-          content: "Ha ocurrido un error al cambiar la contraseña",
-        });
-      }
-    );
+    editUser({ password: values.password }).then(() => {
+      setIsLoading(false);
+      form.reset();
+    });
   }
 
   return (
@@ -108,7 +87,7 @@ export default function EditUser() {
               <FormItem className="my-4">
                 <FormLabel>{form_field.label}</FormLabel>
                 <FormControl>
-                  <Input
+                  <form_field.component
                     placeholder={form_field.placeholder}
                     type={form_field.type}
                     className="w-full"
@@ -123,12 +102,6 @@ export default function EditUser() {
         <Button type="submit" className="w-64 my-4" isLoading={isLoading}>
           Cambiar contraseña
         </Button>
-        {message.type === "error" && (
-          <FormMessage className="my-4 w-full">{message.content}</FormMessage>
-        )}
-        {message.type === "success" && (
-          <div className="my-4 w-full text-primary">{message.content}</div>
-        )}
       </form>
     </Form>
   );

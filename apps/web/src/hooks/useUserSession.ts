@@ -5,6 +5,7 @@ import {
 } from "@/components/contexts/user-session-context";
 import { initialStateUserSession } from "@/components/contexts/user-session-storage";
 import client from "@/api/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface UserEdit {
   email?: string;
@@ -19,12 +20,9 @@ export const useUserSession = (): {
   signUp: (email: string, password: string) => Promise<unknown>;
   editUser: (body: UserEdit) => Promise<unknown>;
   forgotPassword: (email: string) => Promise<unknown>;
-  resetPassword: (
-    newPassword: string,
-    forgotPasswordToken: string
-  ) => Promise<unknown>;
 } => {
   const { userSession, setUserSession } = useContext(UserSessionContext);
+  const { toast } = useToast();
 
   const logIn = async (email: string, password: string) => {
     return client
@@ -42,6 +40,20 @@ export const useUserSession = (): {
           isLoggedIn: true,
         };
         setUserSession(userSession);
+        toast({
+          title: "Bienvenido",
+          description: "Has iniciado sesión correctamente.",
+          variant: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description:
+            "No se pudo iniciar sesión. Verifica que tus credenciales sean correctas.",
+          variant: "destructive",
+        });
       });
   };
 
@@ -62,6 +74,11 @@ export const useUserSession = (): {
           isLoggedIn: true,
         };
         setUserSession(userSession);
+        toast({
+          title: "Bienvenido",
+          description: "Te has registrado correctamente.",
+          variant: "success",
+        });
       });
   };
 
@@ -81,46 +98,30 @@ export const useUserSession = (): {
       });
   };
 
-  // TODO: adapt to ror api
-  const resetPassword = async (
-    newPassword: string,
-    forgotPasswordToken: string
-  ) => {
+  const editUser = async (body: UserEdit) => {
     return client
-      .post(`/auth/reset-password`, {
-        token: forgotPasswordToken,
-        password: newPassword,
+      .patch(`/users/password`, {
+        user: {
+          ...body,
+        },
       })
       .then((res) => {
-        console.log(res.data);
+        console.log(res);
+        toast({
+          title: "Actualizado",
+          description: "Se ha actualizado tu información correctamente.",
+          variant: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar tu información.",
+          variant: "destructive",
+        });
       });
   };
-
-  // TODO: adapt to ror api
-  const editUser = async (body: UserEdit) => {
-    const res = await client.patch(`/users/me`, body);
-    if (!res.data) return null;
-    setUserSession({
-      ...userSession,
-      email: res.data.email,
-    });
-  };
-
-  // const requestVerifyToken = async (email: string) => {
-  //   return (
-  //     await client.post(`/auth/request-verify-token`, {
-  //       email,
-  //     })
-  //   ).data;
-  // };
-
-  // const verifyToken = async (token: string) => {
-  //   return (
-  //     await client.post(`/auth/verify`, {
-  //       token,
-  //     })
-  //   ).data;
-  // };
 
   return {
     userSession,
@@ -130,29 +131,5 @@ export const useUserSession = (): {
     signUp,
     editUser,
     forgotPassword,
-    resetPassword,
   };
 };
-
-// export const useSuperUser = (): {
-//   getUser: (userId: string) => Promise<unknown>;
-//   editUser: (userId: string, body: UserEdit) => Promise<unknown>;
-//   deleteUser: (userId: string) => Promise<unknown>;
-// } => {
-//   const getUser = async (userId: string) => {
-//     const res = await client.get(`/users/${userId}`);
-//     if (!res.data) return null;
-//     return res.data;
-//   };
-//   const editUser = async (userId: string, body: UserEdit) => {
-//     const res = await client.patch(`/users/${userId}`, body);
-//     if (!res.data) return null;
-//     return res.data;
-//   };
-//   const deleteUser = async (userId: string) => {
-//     const res = await client.delete(`/users/${userId}`);
-//     if (!res.data) return null;
-//     return res.data;
-//   };
-//   return { getUser, editUser, deleteUser };
-// };

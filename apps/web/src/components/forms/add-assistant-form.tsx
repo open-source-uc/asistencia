@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import InputPills, { type Value, initialValue } from "@/components/input-pills";
 import { Button } from "@/components/ui/button";
 import { UserType } from "@/types/enums";
+import { ASSISTANTS_ROLES } from "@/lib/constants/assistantsRoles";
 
 export default function AddAssistantForm({
   addMultipleAssistantsToOrg,
@@ -137,9 +138,11 @@ const SelectUserRol = ({
           <SelectLabel>
             Selecciona el rol de los ayudantes a agregar
           </SelectLabel>
-          <SelectItem value="viewer">Espectador</SelectItem>
-          <SelectItem value="manager">Gestor</SelectItem>
-          <SelectItem value="admin">Administrador</SelectItem>
+          {Object.keys(ASSISTANTS_ROLES).map((rawRole) => (
+            <SelectItem key={rawRole} value={rawRole}>
+              {ASSISTANTS_ROLES[rawRole as keyof typeof ASSISTANTS_ROLES]}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>

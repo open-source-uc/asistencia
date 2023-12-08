@@ -98,10 +98,16 @@ export const DateColumn = (header: string, accessorKey: string) => ({
   },
 });
 
-export const GenericColumn = (header: string, accessorKey: string) => ({
+export const GenericColumn = (
+  header: string,
+  accessorKey: string,
+  formatCellValue: (value: string) => string = (value) => value
+) => ({
   accessorKey,
   header,
-  cell: ({ row }: { row: RowProps }) => <div>{row.getValue(accessorKey)}</div>,
+  cell: ({ row }: { row: RowProps }) => (
+    <div>{formatCellValue(row.getValue(accessorKey))}</div>
+  ),
 });
 
 export interface RowSelection {

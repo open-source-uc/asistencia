@@ -13,8 +13,9 @@ import { UserType } from "@/types/enums";
 import type { OrgData } from "@/types/interfaces";
 import { useToast } from "@/components/ui/use-toast";
 import { ButtonClipboard } from "@/components/button-clipboard";
-import { HoverElement } from "@/components/hover-element";
+import { PopoverMessage } from "@/components/popover-message";
 import { Info } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const links = [
   {
@@ -64,8 +65,12 @@ export default function OrgDetails({
   return (
     <div className="space-y-6 flex flex-col items-center px-4 pb-20">
       <div className="flex flex-row items-center flex-wrap bg-slate-100 p-4 space-x-4">
-        <HoverElement
-          triggerComponent={<Info size={15} />}
+        <PopoverMessage
+          triggerComponent={
+            <button className="p-2 rounded-full hover:bg-slate-200">
+              <Info size={15} />
+            </button>
+          }
           text="Este identificador se utiliza para ver la asistencia de los estudiantes en Excel o Google Sheets."
         />
         <span className="font-bold ">ID de Organización</span>
@@ -73,7 +78,7 @@ export default function OrgDetails({
           <Input
             value={orgId}
             readOnly={true}
-            className="pr-12 border border-slate-400 rounded-md"
+            className="border border-slate-400 rounded-md"
           />
           <ButtonClipboard
             text={orgId || ""}
@@ -115,13 +120,15 @@ export default function OrgDetails({
                 </span>
                 {i === currActivity ? (
                   <div className="flex flex-col space-y-2">
-                    <span>{activity.name}</span>
-                    <span className="text-sm text-primary-foreground">
-                      {activity.description}
-                    </span>
+                    <span className="font-medium">{activity.slug}</span>
+                    <div className="flex flex-row text-sm text-primary-foreground">
+                      <span>{activity.name}</span>
+                      <Separator orientation="vertical" className="mx-2" />
+                      <span>{activity.description}</span>
+                    </div>
                   </div>
                 ) : (
-                  <span>{activity.name}</span>
+                  <span className="font-medium">{activity.slug}</span>
                 )}
               </div>
             </div>

@@ -13,11 +13,17 @@ import LoadingSpinner from "@/components/loading-spinner";
 import type { OrgData } from "@/types/interfaces";
 import { UserType } from "@/types/enums";
 import AddAssistantForm from "@/components/forms/add-assistant-form";
+import { ASSISTANTS_ROLES } from "@/lib/constants/assistantsRoles";
 
 const columns = [
   SelectColumn,
   SortingColumn("Email", "email"),
-  GenericColumn("Rol", "role"),
+  GenericColumn(
+    "Rol",
+    "role",
+    (value: string) =>
+      ASSISTANTS_ROLES[value as keyof typeof ASSISTANTS_ROLES] || value
+  ),
 ];
 export default function Assistants({
   orgData,
