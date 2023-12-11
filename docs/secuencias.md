@@ -63,3 +63,29 @@ sequenceDiagram
 		end
 	end
 ```
+
+### Versión final en español
+
+```mermaid
+sequenceDiagram
+	participant b as Backend
+	participant m as App
+	actor y as Ayudante 
+    actor a as Alumno
+
+    y->>+m: Selecionar curso y actividad
+    activate y
+    m->>m: Guardar salt del curso
+	loop Por cada alumno
+		y->>+a: Pedir identificación
+		a-->>-y: Mostrar identificación
+		y->>m: Escanear identificación
+		m->>m: Aplicar hash para <br>obtener código de alumno
+
+		m->>+b: Marcar asistencia dado<br>código, actividad y curso
+        b-->>-m: Datos públicos para<br>confirmar asistencia
+        m-->>y: Mostrar confirmación<br>de asistencia
+        deactivate y
+        deactivate m
+	end
+```
