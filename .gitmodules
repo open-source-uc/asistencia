@@ -1,0 +1,3 @@
+[submodule "apps/asistencia-backend"]
+	path = apps/asistencia-backend
+	url = https://github.com/open-source-uc/asistencia-backend
