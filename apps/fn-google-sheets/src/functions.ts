@@ -82,7 +82,7 @@ function ATTENDANCE(
   const flattenActivities = asRow(activities).map((e) => e?.toString() ?? "");
 
   // Hashear datos sensibles
-  const flattenHashes = flattenParticipants.map((code) => hashStudentCode(code, courseId));
+  const flattenHashes = flattenParticipants.map((code) => (code ? hashStudentCode(code, courseId) : ""));
 
   try {
     // No se consulta si los elementos no son válidos
