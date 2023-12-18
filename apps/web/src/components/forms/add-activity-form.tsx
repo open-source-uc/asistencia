@@ -14,10 +14,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 
+interface Field {
+  name: "name" | "slug" | "description";
+  label: string;
+  placeholder: string;
+  type: string;
+}
+
+const INPUT_FIELDS: Field[] = [
+  {
+    name: "slug",
+    label: "Slug",
+    placeholder: "slug-ejemplo",
+    type: "text",
+  },
+  {
+    name: "name",
+    label: "Nombre",
+    placeholder: "Nombre",
+    type: "text",
+  },
+  {
+    name: "description",
+    label: "Descripción",
+    placeholder: "Descripción",
+    type: "text",
+  },
+];
+
 const formSchema = z.object({
   date: z.date(),
-  slug: z.string().min(1, "Campo requerido"),
-  event_type: z.number().int("El tipo de actividad debe ser un número entero"),
+  name: z.string().min(1, "Campo requerido"),
+  slug: z
+    .string()
+    .min(1, "Campo requerido")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug inválido"),
+  description: z.string().min(1, "Campo requerido"),
 });
 
 export default function AddActivityForm({
@@ -30,9 +62,10 @@ export default function AddActivityForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      date: new Date(),
+      date: new Date(new Date().toDateString()),
+      name: "",
       slug: "",
-      event_type: 1,
+      description: "",
     },
   });
 
@@ -52,7 +85,7 @@ export default function AddActivityForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex md:flex-row justify-center relative md:space-x-4 flex-col items-start"
+        className="flex justify-center relative space-x-4 items-start flex-wrap md:flex-row md:flex-nowrap"
       >
         <FormField
           control={form.control}
@@ -74,48 +107,29 @@ export default function AddActivityForm({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name={"slug"}
-          render={({ field }) => (
-            <FormItem className="flex flex-col space-y-1">
-              <FormLabel>Nombre</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={"Nombre"}
-                  type={"text"}
-                  className="w-32"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="w-32" />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name={"event_type"}
-          render={({ field }) => (
-            <FormItem className="flex flex-col space-y-1">
-              <FormLabel>Tipo</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={"Tipo"}
-                  type={"number"}
-                  className="w-32"
-                  {...field}
-                  onChange={(e) => {
-                    if (!isNaN(parseInt(e.target.value)))
-                      field.onChange(parseInt(e.target.value));
-                  }}
-                />
-              </FormControl>
-              <FormMessage className="w-32" />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-64 mt-4" isLoading={isLoading}>
+        {INPUT_FIELDS.map((inputField, i) => (
+          <FormField
+            key={i}
+            control={form.control}
+            name={inputField.name}
+            render={({ field }) => (
+              <FormItem className="flex flex-col space-y-1">
+                <FormLabel>{inputField.label}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={inputField.placeholder}
+                    type={inputField.type}
+                    className="w-32"
+                    autoComplete="off"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="w-32" />
+              </FormItem>
+            )}
+          />
+        ))}
+        <Button type="submit" className="sm:w-48 mt-4" isLoading={isLoading}>
           Añadir
         </Button>
       </form>

@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useParams } from "react-router-dom";
 import { Sidebar } from "@/components/sidebar";
 import Settings from "@/pages/Settings";
 import Orgs from "@/pages/Orgs";
@@ -13,23 +12,28 @@ import LandingPage from "@/pages/LandingPage";
 import NotFound from "@/pages/404";
 import { NavBar } from "@/components/navbar";
 import { useUserSession } from "@/hooks/useUserSession";
+import { useOrg } from "@/hooks/useOrgs";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function App(): JSX.Element {
   const { userSession } = useUserSession();
 
   if (!userSession.isLoggedIn)
     return (
-      <Routes>
-        <Route path={`/`} element={<LandingPage />} />
-        <Route path={`*`} element={<NotFound />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path={`/`} element={<LandingPage />} />
+          <Route path={`*`} element={<NotFound />} />
+        </Routes>
+        <Toaster />
+      </>
     );
 
   return (
     <div className="flex flex-row min-h-screen">
       <NavBar className="flex lg:hidden flex-col" />
       <Sidebar className="hidden lg:flex" />
-      <div className="flex flex-col items-center w-full py-16 mt-8 px-4 lg:mt-0 lg:px-0 overflow-x-scroll">
+      <div className="flex flex-col items-center w-full py-16 mt-8 px-4 lg:mt-0 lg:px-0">
         <Routes>
           <Route path={`/`} element={<Home />} />
           <Route path={`/orgs`} element={<Orgs />} />
@@ -39,28 +43,28 @@ export default function App(): JSX.Element {
           <Route path={`*`} element={<NotFound />} />
         </Routes>
       </div>
+      <Toaster />
     </div>
   );
 }
 
 const OrgGeneral = (): JSX.Element => {
-  const location = useLocation();
-  const [name, setName] = useState("");
-  useEffect(() => {
-    if (location.state && location.state.orgName) {
-      setName(location.state.orgName);
-    }
-  }, [location]);
+  const { orgId } = useParams();
+  const { org, userType } = useOrg(orgId);
+  const orgData = {
+    ...org,
+    userType,
+  };
 
   return (
     <div className="space-y-6 flex flex-col items-center px-4">
-      <h2 className="text-2xl font-bold text-center">{name}</h2>
+      <h2 className="text-2xl font-bold text-center">{org.name}</h2>
       <hr className="w-3/4 border-input border-1" />
       <Routes>
-        <Route path={`/`} element={<OrgDetails />} />
-        <Route path={`activities`} element={<Activities />} />
-        <Route path={`assistants`} element={<Assistants />} />
-        <Route path={`students`} element={<Students />} />
+        <Route path={`/`} element={<OrgDetails orgData={orgData} />} />
+        <Route path={`activities`} element={<Activities orgData={orgData} />} />
+        <Route path={`assistants`} element={<Assistants orgData={orgData} />} />
+        <Route path={`students`} element={<Students orgData={orgData} />} />
       </Routes>
     </div>
   );

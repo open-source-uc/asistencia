@@ -4,9 +4,6 @@ export const initialStateUserSession: UserSession = {
   id: "",
   email: "",
   access_token: "",
-  is_active: false,
-  is_superuser: false,
-  is_verified: false,
   isLoggedIn: false,
 };
 

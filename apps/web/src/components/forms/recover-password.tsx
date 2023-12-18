@@ -15,8 +15,8 @@ export default function RecoverPassword() {
         setIsLoading(false);
         setError("");
       })
-      .catch((e) => {
-        console.log(e);
+      .catch((error) => {
+        console.log(error);
         setIsLoading(false);
         setError("Ocurrió un error al enviar el correo electrónico");
       });
@@ -29,6 +29,8 @@ export default function RecoverPassword() {
         para restablecer su contraseña.
       </span>
       <Input
+        name="email"
+        autoComplete="on"
         type="email"
         placeholder="Correo electrónico"
         className="mt-4"

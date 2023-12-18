@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 interface RowProps {
   getIsSelected: () => boolean;
   toggleSelected: (value?: boolean) => void;
-  getValue: (key: string) => string;
+  getValue: (key: string) => any;
 }
 
 export const SelectColumn = {
@@ -97,14 +97,37 @@ export const DateColumn = (header: string, accessorKey: string) => ({
     return <div>{date}</div>;
   },
 });
-
-export const GenericColumn = (header: string, accessorKey: string) => ({
+// a column that has an array of strings as its value
+export const ArrayColumn = (header: string, accessorKey: string) => ({
   accessorKey,
   header,
-  cell: ({ row }: { row: RowProps }) => <div>{row.getValue(accessorKey)}</div>,
+  cell: ({ row }: { row: RowProps }) => {
+    const value = row.getValue(accessorKey);
+    return (
+      <div className="flex flex-col gap-1">
+        {value.map((item: string) => (
+          <div key={item} className="px-2 py-1 bg-slate-100 rounded">
+            {item}
+          </div>
+        ))}
+      </div>
+    );
+  },
 });
 
-export interface IRowSelection {
+export const GenericColumn = (
+  header: string,
+  accessorKey: string,
+  formatCellValue: (value: string) => string = (value) => value
+) => ({
+  accessorKey,
+  header,
+  cell: ({ row }: { row: RowProps }) => (
+    <div>{formatCellValue(row.getValue(accessorKey))}</div>
+  ),
+});
+
+export interface RowSelection {
   [key: string]: boolean;
 }
 
@@ -115,13 +138,15 @@ export function DataTable({
   rowSelection = {},
   setRowSelection = () => {},
   className = "",
+  upperComponent = null,
 }: {
   data: unknown[];
   columns: ColumnDef<any>[];
   searchColumn?: string | null;
-  rowSelection?: IRowSelection;
-  setRowSelection?: React.Dispatch<React.SetStateAction<IRowSelection>>;
+  rowSelection?: RowSelection;
+  setRowSelection?: React.Dispatch<React.SetStateAction<RowSelection>>;
   className?: string;
+  upperComponent?: React.ReactNode;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -143,7 +168,7 @@ export function DataTable({
   return (
     <div className={"flex flex-col space-y-4"}>
       {searchColumn && (
-        <div className="flex items-center py-4">
+        <div className="flex justify-between items-center py-4">
           <Input
             placeholder="Buscar..."
             value={
@@ -154,6 +179,7 @@ export function DataTable({
             }
             className="max-w-sm"
           />
+          {upperComponent}
         </div>
       )}
       <div className={cn("rounded-md border", className)}>

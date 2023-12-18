@@ -2,17 +2,14 @@ import { useContext } from "react";
 import {
   UserSessionContext,
   UserSession,
-  User,
 } from "@/components/contexts/user-session-context";
 import { initialStateUserSession } from "@/components/contexts/user-session-storage";
 import client from "@/api/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface UserEdit {
   email?: string;
   password?: string;
-  is_active?: boolean;
-  is_superuser?: boolean;
-  is_verified?: boolean;
 }
 
 export const useUserSession = (): {
@@ -23,61 +20,65 @@ export const useUserSession = (): {
   signUp: (email: string, password: string) => Promise<unknown>;
   editUser: (body: UserEdit) => Promise<unknown>;
   forgotPassword: (email: string) => Promise<unknown>;
-  resetPassword: (
-    newPassword: string,
-    forgotPasswordToken: string
-  ) => Promise<unknown>;
 } => {
   const { userSession, setUserSession } = useContext(UserSessionContext);
+  const { toast } = useToast();
 
   const logIn = async (email: string, password: string) => {
     return client
-      .post(
-        `/auth/jwt/login`,
-        {
-          grant_type: "",
-          username: email,
-          password: password,
-          scope: "",
-          client_id: "",
-          client_secret: "",
+      .post(`/users/sign_in`, {
+        user: {
+          email,
+          password,
         },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      )
+      })
       .then(async (response) => {
-        const userData = await getUser(response.data.access_token);
-        if (userData !== null) {
-          const userSession = {
-            id: userData.id,
-            email: userData.email,
-            is_active: userData.is_active,
-            is_superuser: userData.is_superuser,
-            is_verified: userData.is_verified,
-            access_token: response.data.access_token,
-            isLoggedIn: true,
-          };
-          console.log(userSession);
-          setUserSession(userSession);
-        }
+        const userSession = {
+          id: response.data.id,
+          email: response.data.email,
+          access_token: response.data.authentication_token,
+          isLoggedIn: true,
+        };
+        setUserSession(userSession);
+        toast({
+          title: "Bienvenido",
+          description: "Has iniciado sesión correctamente.",
+          variant: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description:
+            "No se pudo iniciar sesión. Verifica que tus credenciales sean correctas.",
+          variant: "destructive",
+        });
       });
   };
 
   const signUp = async (email: string, password: string) => {
     return client
-      .post(`/auth/register`, {
-        email,
-        password,
+      .post(`/users`, {
+        user: {
+          email,
+          password,
+          password_confirmation: password,
+        },
       })
-      .then((res) => {
-        if (res.data.detail) {
-          console.log(res.data.detail);
-        } else {
-          logIn(email, password);
-        }
+      .then((response) => {
+        const userSession = {
+          id: response.data.id,
+          email: response.data.email,
+          access_token: response.data.authentication_token,
+          isLoggedIn: true,
+        };
+        setUserSession(userSession);
+        toast({
+          title: "Bienvenido",
+          description: "Te has registrado correctamente.",
+          variant: "success",
+        });
       });
   };
 
@@ -85,69 +86,43 @@ export const useUserSession = (): {
     setUserSession(initialStateUserSession);
   };
 
-  // https://fastapi-users.github.io/fastapi-users/10.1/usage/routes/
-
   const forgotPassword = async (email: string) => {
     return client
-      .post(`/auth/forgot-password`, {
-        email,
+      .post(`/users/password`, {
+        user: {
+          email,
+        },
       })
       .then((res) => {
         console.log(res);
       });
   };
 
-  const resetPassword = async (
-    newPassword: string,
-    forgotPasswordToken: string
-  ) => {
+  const editUser = async (body: UserEdit) => {
     return client
-      .post(`/auth/reset-password`, {
-        token: forgotPasswordToken,
-        password: newPassword,
+      .patch(`/users/me`, {
+        user: {
+          password: body.password,
+          password_confirmation: body.password,
+        },
       })
       .then((res) => {
-        console.log(res.data);
+        console.log(res);
+        toast({
+          title: "Actualizado",
+          description: "Se ha actualizado tu información correctamente.",
+          variant: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description: "No se pudo actualizar tu información.",
+          variant: "destructive",
+        });
       });
   };
-
-  const getUser = async (access_token: string): Promise<User | null> => {
-    const res = await client.get(`/users/me`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-    if (!res.data) return null;
-    return res.data;
-  };
-
-  const editUser = async (body: UserEdit) => {
-    const res = await client.patch(`/users/me`, body);
-    if (!res.data) return null;
-    setUserSession({
-      ...userSession,
-      email: res.data.email,
-      is_active: res.data.is_active,
-      is_superuser: res.data.is_superuser,
-      is_verified: res.data.is_verified,
-    });
-  };
-
-  // const requestVerifyToken = async (email: string) => {
-  //   return (
-  //     await client.post(`/auth/request-verify-token`, {
-  //       email,
-  //     })
-  //   ).data;
-  // };
-
-  // const verifyToken = async (token: string) => {
-  //   return (
-  //     await client.post(`/auth/verify`, {
-  //       token,
-  //     })
-  //   ).data;
-  // };
 
   return {
     userSession,
@@ -157,29 +132,5 @@ export const useUserSession = (): {
     signUp,
     editUser,
     forgotPassword,
-    resetPassword,
   };
-};
-
-export const useSuperUser = (): {
-  getUser: (userId: string) => Promise<unknown>;
-  editUser: (userId: string, body: UserEdit) => Promise<unknown>;
-  deleteUser: (userId: string) => Promise<unknown>;
-} => {
-  const getUser = async (userId: string) => {
-    const res = await client.get(`/users/${userId}`);
-    if (!res.data) return null;
-    return res.data;
-  };
-  const editUser = async (userId: string, body: UserEdit) => {
-    const res = await client.patch(`/users/${userId}`, body);
-    if (!res.data) return null;
-    return res.data;
-  };
-  const deleteUser = async (userId: string) => {
-    const res = await client.delete(`/users/${userId}`);
-    if (!res.data) return null;
-    return res.data;
-  };
-  return { getUser, editUser, deleteUser };
 };

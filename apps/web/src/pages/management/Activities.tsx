@@ -7,48 +7,74 @@ import {
   SelectColumn,
   GenericColumn,
   DateColumn,
-  IRowSelection,
+  RowSelection,
 } from "@/components/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import LoadingSpinner from "@/components/loading-spinner";
-import AddActivityForm from "@/components/add-activity-form";
+import AddActivityForm from "@/components/forms/add-activity-form";
+import type { OrgData } from "@/types/interfaces";
+import { UserType } from "@/types/enums";
 
 const columns: ColumnDef<Activity>[] = [
   SelectColumn,
   DateColumn("Fecha", "date"),
-  GenericColumn("Nombre", "slug"),
-  GenericColumn("Tipo", "event_type"),
+  GenericColumn("Slug", "slug"),
+  GenericColumn("Nombre", "name"),
+  GenericColumn("Descripción", "description"),
 ];
 
-export default function Activities(): JSX.Element {
+export default function Activities({
+  orgData,
+}: {
+  orgData: OrgData;
+}): JSX.Element {
   const { orgId } = useParams();
-  const { activities, isLoading, createActivity } = useActivities(orgId);
-  const [checkedActivities, setCheckedActivities] = useState<IRowSelection>({});
+  const {
+    activities,
+    isLoading,
+    createActivity,
+    deleteMultipleActivities,
+  } = useActivities(orgId);
+  const [checkedActivities, setCheckedActivities] = useState<RowSelection>({});
 
-  const removeActivities = (activities: IRowSelection) => {
-    console.log("removed", activities);
+  const removeActivities = (activitiesToDelete: RowSelection) => {
+    deleteMultipleActivities(
+      Object.keys(activitiesToDelete)
+        .filter((key) => activitiesToDelete[key])
+        .map((key) => activities[parseInt(key)].slug)
+    );
   };
 
   return (
     <div className="space-y-6 flex flex-col items-center px-4">
       <h3 className="text-xl font-medium text-center">Gestionar Actividades</h3>
       <div className="flex flex-col w-full">
-        <div className="border border-slate-200 rounded-lg p-4 mb-4">
-          <h3 className="text-lg font-medium mb-2">Añadir</h3>
-          <AddActivityForm addActivity={createActivity} />
-        </div>
-        {isLoading && <LoadingSpinner />}
-        {!isLoading && (
-          <DataTable
-            data={activities}
-            columns={columns}
-            rowSelection={checkedActivities}
-            setRowSelection={setCheckedActivities}
-          />
+        {!(orgData.userType === UserType.VIEWER) && (
+          <div className="border border-slate-200 p-4 mb-4">
+            <h3 className="text-lg font-medium mb-2">Añadir</h3>
+            <AddActivityForm addActivity={createActivity} />
+          </div>
         )}
-      </div>
-      <div className="flex flex-row justify-end items-center">
-        <RemoveDialog onRemove={() => removeActivities(checkedActivities)} />
+        {isLoading && <LoadingSpinner />}
+        <div className="border border-slate-200 p-4">
+          {!isLoading && (
+            <DataTable
+              searchColumn={"slug"}
+              {...(!(orgData.userType === UserType.VIEWER) && {
+                upperComponent: RemoveDialog({
+                  onRemove: () => {
+                    removeActivities(checkedActivities);
+                  },
+                  text: "Esta acción conllevará la eliminación de las asistencias asociadas a las actividades seleccionadas. Además, no se podrá deshacer.",
+                }),
+              })}
+              data={activities}
+              columns={columns}
+              rowSelection={checkedActivities}
+              setRowSelection={setCheckedActivities}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,15 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { X as TimesIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
-const formatInput = (input: string) => {
-  return input.replace(" ", "").replace(",", "").replace(";", "");
+const formatInput = (input: string, separators: string[]) => {
+  separators.forEach((separator) => {
+    input = input.replace(separator, " ");
+  });
+  return input;
 };
 
 const followsPattern = (pattern: RegExp, input: string) => {
@@ -18,18 +23,25 @@ function arequalSets(a: Set<string>, b: Set<string>) {
   return true;
 }
 
-interface Value {
+export interface Value {
   pills: Set<string>;
   lastInputState: string;
 }
 
-interface InputPillsProps {
+export interface InputPillsProps {
   value?: Value;
   onChange: (value: Value) => void;
   pattern?: RegExp;
   placeholder?: string;
   onPatternError?: (error: boolean) => void;
+  separators?: string[];
+  className?: string;
 }
+
+export const initialValue: Value = {
+  pills: new Set(),
+  lastInputState: "",
+};
 
 export default function InputPills({
   value,
@@ -37,10 +49,14 @@ export default function InputPills({
   pattern = /.*?/, // default pattern that accepts all strings
   placeholder,
   onPatternError,
+  separators = [",", " ", ";"],
+  className,
 }: InputPillsProps): JSX.Element {
-  const [lastInputState, setLastInputState] = useState("");
+  const [lastInputState, setLastInputState] = useState(
+    initialValue.lastInputState
+  );
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const [pills, setPills] = useState<Set<string>>(new Set());
+  const [pills, setPills] = useState<Set<string>>(initialValue.pills);
   const [patternError, setPatternError] = useState<boolean>(false);
 
   const addPill = () => {
@@ -49,8 +65,10 @@ export default function InputPills({
       return;
     }
     setPatternError(false);
-    setPills((prev) => new Set(prev).add(formatInput(lastInputState)));
-    setLastInputState("");
+    setPills((prev) =>
+      new Set(prev).add(formatInput(lastInputState, separators))
+    );
+    setLastInputState(initialValue.lastInputState);
   };
 
   const removePill = (pill: string) => {
@@ -64,7 +82,7 @@ export default function InputPills({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmRemove(false);
     const text = e.target.value;
-    if (text.includes(" ") || text.includes(",") || text.includes(";")) {
+    if (separators.some((separator) => text.includes(separator))) {
       addPill();
       return;
     }
@@ -98,38 +116,45 @@ export default function InputPills({
     }
   }, [patternError]);
 
+  const isPillToBeRemoved = (pill: string) => {
+    return confirmRemove && pill === Array.from(pills).pop();
+  };
+
   return (
-    <div className="flex flex-col w-full">
-      <div className="flex flex-row justify-center items-end relative mt-4">
-        <div
-          className={cn(
-            "flex flex-row flex-wrap items-center lg:min-w-lg lg:max-w-lg transition-all",
-            "border border-slate-300 p-2 bg-white",
-            "focus-within:border-primary focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50"
-          )}
-        >
-          {Array.from(pills).map((pill, i) => (
-            <div
-              key={i}
-              className={cn(
-                "flex flex-row items-center justify-center rounded-full p-2 m-1 transition-all",
-                "text-sm text-slate-500",
-                confirmRemove && pill === Array.from(pills).pop()
-                  ? "border border-destructive bg-red-200 text-black"
-                  : "border border-slate-300 bg-slate-100"
-              )}
+    <div
+      className={cn(
+        "flex flex-row justify-center items-end relative",
+        className
+      )}
+    >
+      <div
+        className={cn(
+          "flex flex-row flex-wrap items-center lg:min-w-lg lg:max-w-lg transition-all",
+          "border border-slate-200 p-2 bg-white",
+          "focus-within:border-primary focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50"
+        )}
+      >
+        {Array.from(pills).map((pill, i) => (
+          <Badge
+            key={i}
+            variant={isPillToBeRemoved(pill) ? "destructive" : "secondary"}
+            className={cn("p-1 px-2 m-1 transition-all")}
+          >
+            {pill}
+            <button
+              className="ml-2"
+              onClick={() => {
+                removePill(pill);
+              }}
             >
-              {pill}
-              <button
-                className="ml-2"
-                onClick={() => {
-                  removePill(pill);
-                }}
-              >
-                <TimesIcon size={15} />
-              </button>
-            </div>
-          ))}
+              <TimesIcon
+                size={15}
+                className="text-muted-foreground hover:text-foreground"
+              />
+            </button>
+          </Badge>
+        ))}
+        <div className="flex flex-row items-center w-full">
           <input
             className="focus:outline-none inline-flex h-12 text-sm px-2 placeholder:text-muted-foreground lg:w-32 flex-auto"
             placeholder={placeholder}

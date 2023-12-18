@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export interface ActivityField {
+  name: string;
   slug: string;
   date: Date;
-  event_type: number;
+  description: string;
 }
 
 export interface Activity extends ActivityField {
@@ -19,18 +21,21 @@ export const useActivities = (
   activities: Activity[];
   isLoading: boolean;
   createActivity: (values: ActivityField) => Promise<void>;
+  deleteActivity: (activitySlug: string) => Promise<void>;
+  deleteMultipleActivities: (activitySlugs: string[]) => Promise<void>;
 } => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const fetchData = async () => {
     setIsLoading(true);
-    const res = await client.get(`/courses/${orgId}/activities/`);
+    const res = await client.get(`/api/v1/courses/${orgId}/activities/`);
     setActivities(
-      res.data
+      res.data.activities
         .map((activity: Activity) => ({
           ...activity,
-          date: new Date(activity.date + "Z"),
+          date: new Date(activity.date),
         }))
         .sort((a: Activity, b: Activity) => {
           return b.date.getTime() - a.date.getTime();
@@ -45,32 +50,64 @@ export const useActivities = (
 
   const createActivity = async (values: ActivityField): Promise<void> => {
     const body = {
-      // course_activity: {
-      //   slug: values.slug,
-      //   date: values.date.toISOString().replace("T", " ").replace("Z", ""),
-      //   event_type: values.event_type,
-      // },
-      // allowed_roles: ["admin", "assistant", "default"],
+      name: values.name,
       slug: values.slug,
-      date: values.date.toISOString().replace("T", " ").replace("Z", ""),
-      event_type: values.event_type,
+      description: values.description,
+      date: new Date(values.date.getTime() + 86400000).toISOString(),
     };
     return await client
-      .post(`/courses/${orgId}/activities/`, body)
+      .post(`/api/v1/courses/${orgId}/activities/`, body)
       .then((res) => {
+        const activity = res.data.activity;
         setActivities((prev) =>
           [
             {
-              ...res.data,
-              date: new Date(res.data.date + "Z"),
+              ...activity,
+              date: new Date(activity.date),
             },
             ...prev,
           ].sort((a: Activity, b: Activity) => {
             return b.date.getTime() - a.date.getTime();
           })
         );
+        toast({
+          title: "Actividad creada",
+          description: "La actividad se ha creado correctamente.",
+          variant: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error al crear la actividad",
+          description:
+            "Ha ocurrido un error al crear la actividad. Revisa que el slug sea único.",
+          variant: "destructive",
+        });
       });
   };
 
-  return { activities, isLoading, createActivity };
+  const deleteActivity = async (activitySlug: string): Promise<void> => {
+    return await client
+      .delete(`/api/v1/courses/${orgId}/activities/${activitySlug}`)
+      .then(() => {
+        setActivities((prev) => prev.filter((a) => a.slug !== activitySlug));
+      });
+  };
+
+  const deleteMultipleActivities = async (
+    activitySlugs: string[]
+  ): Promise<void> => {
+    activitySlugs.forEach(async (activitySlug) => {
+      await deleteActivity(activitySlug);
+    });
+  };
+
+  return {
+    activities,
+    isLoading,
+    createActivity,
+    deleteActivity,
+    deleteMultipleActivities,
+  };
 };

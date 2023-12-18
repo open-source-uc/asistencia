@@ -1,12 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
+import { UserType } from "@/types/enums";
 
-interface Assistant {
+interface AssistantField {
+  email: string;
+  role: UserType | undefined;
+}
+
+interface Assistant extends AssistantField {
   id: string;
-  user_email: string;
-  role: string;
-  active: boolean;
 }
 
 export const useAssistants = (orgId: string = "") => {
@@ -14,10 +17,23 @@ export const useAssistants = (orgId: string = "") => {
   const [isLoading, setIsLoading] = useState(false);
   const getAssistantsByOrg = async () => {
     return await client
-      .get(`/user_courses/${orgId}`)
+      .get(`/api/v1/courses/${orgId}/user_courses`)
       .then((res) => {
-        // console.log(res.data);
-        return res.data;
+        const assistants = [
+          ...res.data.admin.map((assistant: Assistant) => ({
+            ...assistant,
+            role: "admin",
+          })),
+          ...res.data.manager.map((assistant: Assistant) => ({
+            ...assistant,
+            role: "manager",
+          })),
+          ...res.data.viewer.map((assistant: Assistant) => ({
+            ...assistant,
+            role: "viewer",
+          })),
+        ];
+        return assistants;
       })
       .catch(() => {
         return [];
@@ -26,14 +42,12 @@ export const useAssistants = (orgId: string = "") => {
 
   const addAssistantToOrg = async (
     userEmail: string,
-    role: "admin" | "assistant" | "default" = "default"
+    role: UserType = UserType.VIEWER
   ): Promise<Assistant | undefined> => {
     return await client
-      .post(`/user_courses/?course_id=${orgId}`, {
-        course_id: orgId,
-        user_email: userEmail,
+      .post(`/api/v1/courses/${orgId}/user_courses`, {
+        email: userEmail,
         role: role,
-        active: true,
       })
       .then((res) => {
         return res.data;
@@ -41,11 +55,62 @@ export const useAssistants = (orgId: string = "") => {
   };
 
   const addMultipleAssistantsToOrg = async (
-    userEmails: string[]
+    userEmails: string[],
+    role: UserType | undefined
   ): Promise<void> => {
-    return await Promise.all(
-      userEmails.map((userEmail) => addAssistantToOrg(userEmail))
-    ).then(async () => setAssistants(await getAssistantsByOrg()));
+    if (!role) {
+      return Promise.reject();
+    }
+    return await client
+      .post(`/api/v1/courses/${orgId}/user_courses/batch_create`, {
+        emails: userEmails,
+        role: role,
+      })
+      .then(() => {
+        const usersToAdd = userEmails.filter(
+          (email) =>
+            !assistants.find(
+              (assistant) =>
+                assistant.email === email && assistant.role === role
+            )
+        );
+        const usersToAddWithId = usersToAdd.map((email) => ({
+          email,
+          role,
+          id: "",
+        }));
+        setAssistants((prevAssistants) => [
+          ...prevAssistants,
+          ...usersToAddWithId,
+        ]);
+      });
+  };
+
+  const removeAssistantFromOrg = async (
+    userEmail: string,
+    role: UserType = UserType.VIEWER
+  ): Promise<Assistant | undefined> => {
+    return await client
+      .delete(`/api/v1/courses/${orgId}/user_courses`, {
+        data: { email: userEmail, role: role },
+      })
+      .then((res) => {
+        setAssistants((prevAssistants) =>
+          prevAssistants.filter(
+            (assistant) =>
+              !(assistant.email === userEmail && assistant.role === role)
+          )
+        );
+        return res.data;
+      });
+  };
+
+  const removeMultipleAssistantsFromOrg = async (
+    users: AssistantField[]
+  ): Promise<void> => {
+    users.map(async (user) => {
+      removeAssistantFromOrg(user.email, user.role);
+    });
   };
 
   useEffect(() => {
@@ -62,5 +127,7 @@ export const useAssistants = (orgId: string = "") => {
     isLoading,
     addAssistantToOrg,
     addMultipleAssistantsToOrg,
+    removeAssistantFromOrg,
+    removeMultipleAssistantsFromOrg,
   };
 };

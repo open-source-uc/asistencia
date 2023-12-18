@@ -9,6 +9,13 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon, UserCheckIcon, UserIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LoadingSpinner from "@/components/loading-spinner";
+import { UserType } from "@/types/enums";
+import type { OrgData } from "@/types/interfaces";
+import { useToast } from "@/components/ui/use-toast";
+import { ButtonClipboard } from "@/components/button-clipboard";
+import { PopoverMessage } from "@/components/popover-message";
+import { Info } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const links = [
   {
@@ -28,22 +35,57 @@ const links = [
   },
 ];
 
-export default function OrgDetails(): JSX.Element {
+export default function OrgDetails({
+  orgData,
+}: {
+  orgData: OrgData;
+}): JSX.Element {
   const navigate = useNavigate();
   const { orgId } = useParams();
+  const { toast } = useToast();
   const { activities, isLoading } = useActivities(orgId);
-  const { takeAttendance, message } = useAttendances(orgId);
+  const { takeAttendance } = useAttendances(orgId);
   const [currActivity, setCurrActivity] = useState(0);
   const [inputState, setInputState] = useState("");
 
   const handleTakeAttendance = () => {
-    if (inputState === "") return;
+    if (inputState === "" || activities.length === 0) {
+      toast({
+        title: "Error al tomar asistencia",
+        description:
+          "Asegúrate de seleccionar una actividad y de ingresar un identificador de estudiante.",
+        variant: "destructive",
+      });
+      return;
+    }
     takeAttendance(activities[currActivity].slug, inputState);
     setInputState("");
   };
 
   return (
-    <div className="space-y-6 flex flex-col items-center px-4">
+    <div className="space-y-6 flex flex-col items-center px-4 pb-20">
+      <div className="flex flex-row items-center flex-wrap bg-slate-100 p-4 space-x-4">
+        <PopoverMessage
+          triggerComponent={
+            <button className="p-2 rounded-full hover:bg-slate-200">
+              <Info size={15} />
+            </button>
+          }
+          text="Este identificador se utiliza para ver la asistencia de los estudiantes en Excel o Google Sheets."
+        />
+        <span className="font-bold ">ID de Organización</span>
+        <div className="flex flex-row justify-center items-center">
+          <Input
+            value={orgId}
+            readOnly={true}
+            className="border border-slate-400 rounded-md"
+          />
+          <ButtonClipboard
+            text={orgId || ""}
+            alertDescription="ID de Organización copiado al portapapeles."
+          />
+        </div>
+      </div>
       <div className="w-full flex flex-row flex-wrap justify-center items-center md:space-x-4 space-x-0">
         {links.map((link, i: number) => (
           <Button
@@ -63,42 +105,48 @@ export default function OrgDetails(): JSX.Element {
         <ScrollArea className="h-96 border border-input-500 shadow-inner">
           {isLoading && <LoadingSpinner className="my-6" />}
           {activities.map((activity, i) => (
-            <div
-              className={cn(
-                "flex flex-row justify-start border-b-2 px-6 py-3 transition-all",
-                i === currActivity
-                  ? "bg-primary text-primary-foreground"
-                  : "cursor-pointer"
-              )}
-              key={i}
-              onClick={() => setCurrActivity(i)}
-            >
-              <span className="w-32">
-                {activity.date?.toLocaleDateString()}
-              </span>
-              <span>{activity.slug}</span>
+            <div className="flex flex-col border-b-2" key={i}>
+              <div
+                className={cn(
+                  "flex flex-row justify-start px-6 py-3 transition-all",
+                  i === currActivity
+                    ? "bg-primary text-primary-foreground"
+                    : "cursor-pointer"
+                )}
+                onClick={() => setCurrActivity(i)}
+              >
+                <span className="w-32">
+                  {activity.date?.toLocaleDateString()}
+                </span>
+                {i === currActivity ? (
+                  <div className="flex flex-col space-y-2">
+                    <span className="font-medium">{activity.slug}</span>
+                    <div className="flex flex-row text-sm text-primary-foreground">
+                      <span>{activity.name}</span>
+                      <Separator orientation="vertical" className="mx-2" />
+                      <span>{activity.description}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <span className="font-medium">{activity.slug}</span>
+                )}
+              </div>
             </div>
           ))}
         </ScrollArea>
       </div>
-      <div className="flex flex-row w-full relative">
-        <Input
-          placeholder="Identificador de Estudiante"
-          value={inputState}
-          onChange={(e) => setInputState(e.target.value)}
-        />
-        <Button className="w-64" onClick={handleTakeAttendance}>
-          Tomar Asistencia
-        </Button>
-      </div>
-      <span
-        className={cn(
-          message.type === "error" ? "text-red-500" : "text-primary",
-          "animate-fade-in-up"
-        )}
-      >
-        {message.message}
-      </span>
+      {orgData.userType === UserType.ADMIN && (
+        <div className="flex flex-row w-full relative">
+          <Input
+            placeholder="Identificador de Estudiante"
+            value={inputState}
+            onChange={(e) => setInputState(e.target.value)}
+          />
+          <Button className="w-64" onClick={handleTakeAttendance}>
+            Tomar Asistencia
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,11 +6,8 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Combobox } from "@/components/ui/combobox";
 import { Separator } from "@/components/ui/separator";
 import LoadingSpinner from "@/components/loading-spinner";
-import { SortingColumn, DataTable } from "@/components/data-table";
-
-interface Student {
-  attendance_id: string;
-}
+import { DataTable, SortingColumn, ArrayColumn } from "@/components/data-table";
+import { MultiSelect } from "@/components/multi-select";
 
 interface UploadedData {
   array: { [key: string]: string }[];
@@ -18,14 +15,22 @@ interface UploadedData {
   columns: ColumnDef<unknown>[];
 }
 
-const columnsSelectedColumn = [SortingColumn("Identificador", "attendance_id")];
+interface StudentRequest {
+  display_name?: string;
+  attendance_codes: string[];
+}
+
+const columnsSelected = [
+  SortingColumn("Nombre", "display_name"),
+  ArrayColumn("Identificadores", "attendance_codes"),
+];
 
 export default function ImportStudents({
   isLoadingStudents,
   createStudents,
 }: {
   isLoadingStudents: boolean;
-  createStudents: (studentCodes: string[]) => void;
+  createStudents: (students: StudentRequest[]) => Promise<void>;
 }): JSX.Element {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoadingUpload, setIsLoadingUpload] = useState(false);
@@ -34,16 +39,21 @@ export default function ImportStudents({
     headers: [],
     columns: [],
   });
-  const [selectedColumn, setSelectedColumn] = useState<string>("");
-  const [studentCodes, setStudentCodes] = useState<Student[]>([]);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [selectedDisplayColumn, setSelectedDisplayColumn] =
+    useState<string>("");
+  const [students, setStudents] = useState<StudentRequest[]>([]);
+
   useEffect(() => {
-    if (selectedColumn !== "") {
-      const studentCodes = uploadedData.array.map((row) => ({
-        attendance_id: row[selectedColumn],
+    if (selectedColumns.length > 0) {
+      const students = uploadedData.array.map((row) => ({
+        display_name: row[selectedDisplayColumn],
+        attendance_codes: selectedColumns.map((column) => row[column]),
       }));
-      setStudentCodes(studentCodes);
+      setStudents(students);
     }
-  }, [selectedColumn, uploadedData]);
+  }, [uploadedData, selectedColumns, selectedDisplayColumn]);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsLoadingUpload(true);
     if (e.target.files) {
@@ -88,7 +98,7 @@ export default function ImportStudents({
                   setCurrentStep(currentStep + 1);
                 }
               }}
-              disabled={currentStep === 2}
+              disabled={currentStep >= 2}
             >
               Siguiente
             </Button>
@@ -109,25 +119,44 @@ export default function ImportStudents({
             </div>
           )}
           {currentStep === 1 && (
-            <div className="flex flex-col items-center space-y-4 w-full">
-              <div className="flex flex-col lg:flex-row lg:space-y-0 space-y-4 justify-center items-center space-x-6">
-                <span className="text-sm lg:w-96 w-64">
-                  Selecciona la columna que deseas utilizar para medir la
-                  asistencia de los estudiantes.
+            <div className="flex flex-col items-center gap-6 w-full">
+              <div className="flex flex-col lg:flex-row gap-4 justify-between items-center w-full">
+                <span className="text-sm lg:w-80 w-64">
+                  Selecciona las columnas que deseas utilizar para medir la
+                  asistencia de los estudiantes, es decir, usarlas como
+                  identificadores únicos.
+                </span>
+                <MultiSelect
+                  options={uploadedData.headers.map((header) => ({
+                    label: header,
+                    value: header,
+                  }))}
+                  selected={selectedColumns}
+                  onChange={(value) => {
+                    setSelectedColumns(value);
+                  }}
+                />
+              </div>
+              <div className="flex flex-col lg:flex-row justify-between items-center w-full">
+                <span className="text-sm lg:w-80 w-64">
+                  Selecciona la columna que contiene el nombre de los
+                  estudiantes.
                 </span>
                 <Combobox
-                  placeholder="Seleccionar columna"
+                  className="w-[300px]"
+                  placeholder="Seleccionar columna de visualización"
                   searchPlaceholder="Buscar columna..."
                   items={uploadedData.headers.map((header) => ({
                     label: header,
                     value: header,
                   }))}
-                  value={selectedColumn}
+                  value={selectedDisplayColumn}
                   onChange={(value) => {
-                    setSelectedColumn(value);
+                    setSelectedDisplayColumn(value);
                   }}
                 />
               </div>
+
               <span className="text-sm text-slate-500 font-semibold mb-3">
                 Datos originales
               </span>
@@ -145,8 +174,8 @@ export default function ImportStudents({
                   Vista previa
                 </span>
                 <DataTable
-                  columns={columnsSelectedColumn}
-                  data={studentCodes}
+                  columns={columnsSelected}
+                  data={students}
                   className="bg-white lg:w-auto w-64"
                 />
               </div>
@@ -158,17 +187,23 @@ export default function ImportStudents({
                 <Button
                   className="w-64"
                   onClick={() => {
-                    if (studentCodes.length > 0)
-                      createStudents(
-                        studentCodes.map((student) => student.attendance_id)
-                      );
+                    if (students.length > 0) {
+                      createStudents(students).then(() => setCurrentStep(3));
+                    }
                   }}
                   isLoading={isLoadingStudents}
-                  disabled={studentCodes.length === 0}
+                  disabled={students.length === 0}
                 >
                   Añadir Estudiantes
                 </Button>
               </div>
+            </div>
+          )}
+          {currentStep === 3 && (
+            <div className="h-96 flex flex-col items-center justify-center">
+              <span className="text-xl text-primary font-medium text-center">
+                Se han añadido los estudiantes correctamente.
+              </span>
             </div>
           )}
         </div>

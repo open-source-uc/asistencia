@@ -1,40 +1,42 @@
-import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 import { clientHash } from "@/lib/hashFunctions";
 import client from "@/api/client";
 
-interface Message {
-  message: string;
-  type: "success" | "error";
-}
-
 export const useAttendances = (orgId: string = "") => {
-  const [message, setMessage] = useState<Message>({
-    message: "",
-    type: "success",
-  });
+  const { toast } = useToast();
   const takeAttendance = async (
     activitySlug: string,
     studentCode: string
   ): Promise<void> => {
-    try {
-      const studentId = await Promise.resolve(clientHash(studentCode, orgId));
-      const body = {
-        student_attendance_id: studentId,
-      };
-      await client.post(
-        `/courses/${orgId}/activities/${activitySlug}/attendances/`,
-        body
-      );
-      setMessage({
-        message: "Asistencia registrada correctamente",
-        type: "success",
+    const studentId = await Promise.resolve(clientHash(studentCode, orgId));
+    const body = {
+      attendance: {
+        activity_slug: activitySlug,
+        student_code: studentId,
+      },
+    };
+    return await client
+      .post(`/api/v1/courses/${orgId}/attendances/`, body)
+      .then((res) => {
+        const studentName = res.data.attendance.student.display_name;
+        const description = studentName
+          ? `La asistencia de ${studentName} en la actividad ${activitySlug} se ha tomado correctamente.`
+          : `La asistencia se ha tomado correctamente.`;
+
+        toast({
+          title: "Asistencia tomada",
+          description: description,
+          variant: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: "Error al tomar asistencia",
+          description: "Ha ocurrido un error al tomar la asistencia.",
+          variant: "destructive",
+        });
       });
-    } catch (err) {
-      setMessage({
-        message: "Error al registrar la asistencia",
-        type: "error",
-      });
-    }
   };
-  return { takeAttendance, message };
+  return { takeAttendance };
 };
