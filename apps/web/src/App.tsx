@@ -20,10 +20,13 @@ export default function App(): JSX.Element {
 
   if (!userSession.isLoggedIn)
     return (
-      <Routes>
-        <Route path={`/`} element={<LandingPage />} />
-        <Route path={`*`} element={<NotFound />} />
-      </Routes>
+      <>
+        <Routes>
+          <Route path={`/`} element={<LandingPage />} />
+          <Route path={`*`} element={<NotFound />} />
+        </Routes>
+        <Toaster />
+      </>
     );
 
   return (
