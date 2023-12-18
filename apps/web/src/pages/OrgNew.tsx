@@ -34,14 +34,6 @@ const FORM_FIELDS: Field[] = [
   },
 ];
 
-const generateRandomSlug = () => {
-  // with numbers and letters and -
-  const slug =
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15);
-  return slug;
-};
-
 export default function OrgNew() {
   const [isLoading, setIsLoading] = useState(false);
   const { createOrg } = useHandlerOrgs();
@@ -56,7 +48,7 @@ export default function OrgNew() {
     setIsLoading(true);
     await createOrg({
       ...values,
-      slug: generateRandomSlug(),
+      slug: crypto.randomUUID(),
     }).then(() => {
       setIsLoading(false);
       form.reset();
