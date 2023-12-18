@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 interface RowProps {
   getIsSelected: () => boolean;
   toggleSelected: (value?: boolean) => void;
-  getValue: (key: string) => string;
+  getValue: (key: string) => any;
 }
 
 export const SelectColumn = {
@@ -95,6 +95,23 @@ export const DateColumn = (header: string, accessorKey: string) => ({
   cell: ({ row }: { row: RowProps }) => {
     const date = new Date(row.getValue(accessorKey)).toLocaleDateString();
     return <div>{date}</div>;
+  },
+});
+// a column that has an array of strings as its value
+export const ArrayColumn = (header: string, accessorKey: string) => ({
+  accessorKey,
+  header,
+  cell: ({ row }: { row: RowProps }) => {
+    const value = row.getValue(accessorKey);
+    return (
+      <div className="flex flex-col gap-1">
+        {value.map((item: string) => (
+          <div key={item} className="px-2 py-1 bg-slate-100 rounded">
+            {item}
+          </div>
+        ))}
+      </div>
+    );
   },
 });
 

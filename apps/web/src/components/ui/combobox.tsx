@@ -26,8 +26,9 @@ export function Combobox({
   onChange = () => {},
   value: propValue = "",
   placeholder = "",
-  searchPlaceholder = "Search...",
-  emptyMessage = "No items found.",
+  searchPlaceholder = "Buscar...",
+  emptyMessage = "Ningún elemento encontrado.",
+  className,
 }: {
   items?: Item[];
   placeholder?: string;
@@ -35,6 +36,7 @@ export function Combobox({
   emptyMessage?: string;
   onChange?: (value: string) => void;
   value?: string;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(propValue);
@@ -53,7 +55,7 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className={cn("w-[200px] justify-between", className)}
         >
           {value
             ? items.find((item) => item.value === value)?.label

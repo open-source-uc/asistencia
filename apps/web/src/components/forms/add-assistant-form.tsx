@@ -92,6 +92,7 @@ export default function AddAssistantForm({
       </span>
       <div className="flex flex-row justify-center items-end">
         <InputPills
+          className="mt-4"
           placeholder="ejemplo@ejemplo.com"
           onChange={(value: Value) => {
             setInputState(value);

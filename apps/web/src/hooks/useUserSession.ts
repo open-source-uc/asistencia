@@ -100,9 +100,10 @@ export const useUserSession = (): {
 
   const editUser = async (body: UserEdit) => {
     return client
-      .patch(`/users/password`, {
+      .patch(`/users/me`, {
         user: {
-          ...body,
+          password: body.password,
+          password_confirmation: body.password,
         },
       })
       .then((res) => {

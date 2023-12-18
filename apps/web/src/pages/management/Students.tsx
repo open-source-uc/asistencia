@@ -1,20 +1,16 @@
-import { useState } from "react";
 import { useStudents } from "@/hooks/useStudents";
 import { useParams } from "react-router-dom";
-import { SortingColumn, DataTable } from "@/components/data-table";
+import { DataTable, SortingColumn, ArrayColumn } from "@/components/data-table";
 import LoadingSpinner from "@/components/loading-spinner";
 import ImportStudents from "@/components/forms/import-students";
-import InputPills from "@/components/input-pills";
-import { Button } from "@/components/ui/button";
 import type { OrgData } from "@/types/interfaces";
 import { UserType } from "@/types/enums";
+import { AddStudentsForm } from "@/components/forms/add-students-form";
 
-const columnsHash = [SortingColumn("Hash Estudiante", "attendance_id")];
-
-interface Value {
-  pills: Set<string>;
-  lastInputState: string;
-}
+const columnsHash = [
+  SortingColumn("Nombre", "display_name"),
+  ArrayColumn("Hashes Estudiante", "attendance_codes"),
+];
 
 export default function Students({
   orgData,
@@ -22,50 +18,23 @@ export default function Students({
   orgData: OrgData;
 }): JSX.Element {
   const { orgId } = useParams();
-  const { students, isLoading, createStudents } = useStudents(orgId);
-  const [inputState, setInputState] = useState<Value>({
-    pills: new Set(),
-    lastInputState: "",
-  });
+  const { students, isLoading, createStudent, createMultipleStudents } =
+    useStudents(orgId);
 
-  const addStudentsManually = () => {
-    if (inputState.pills.size === 0 && inputState.lastInputState === "") return;
-    const studentCodes = Array.from(inputState.pills);
-    if (inputState.lastInputState !== "")
-      studentCodes.push(inputState.lastInputState);
-    createStudents(studentCodes);
-    setInputState({ pills: new Set(), lastInputState: "" });
-  };
   return (
     <div className="space-y-6 flex flex-col items-center w-full">
       <h3 className="text-xl font-medium text-center">Gestionar Estudiantes</h3>
       {!(orgData.userType === UserType.VIEWER) && (
         <>
           <div className="flex flex-col p-6 bg-slate-50">
-            <span className="text-md font-medium mb-3">
-              Agregar estudiantes manualmente
-            </span>
+            <span className="text-md font-medium mb-3">Agregar estudiante</span>
             <span className="text-sm mb-2 max-w-lg">
-              Puedes agregar estudiantes manualmente ingresando su identificador
-              único. Este puede ser su número de alumno, correo institucional o
-              lo que estimes conveniente.
+              Para incorporar un estudiante manualmente, ingresa sus
+              identificadores únicos (puede ser más de uno separado por punto y
+              coma). Estos pueden ser su número de alumno, correo institucional
+              o lo que estimes conveniente.
             </span>
-            <div className="flex flex-row justify-center items-end relative mt-4">
-              <InputPills
-                placeholder="Identificador de estudiante 1, Identificador de Estudiante 2, ..."
-                onChange={(value: Value) => {
-                  setInputState(value);
-                }}
-                value={inputState}
-              />
-              <Button
-                onClick={addStudentsManually}
-                className="h-16"
-                isLoading={isLoading}
-              >
-                Añadir
-              </Button>
-            </div>
+            <AddStudentsForm createStudent={createStudent} />
           </div>
           <div className="flex flex-col p-6 bg-slate-50">
             <span className="text-md font-medium mb-6">
@@ -73,7 +42,7 @@ export default function Students({
             </span>
             <ImportStudents
               isLoadingStudents={isLoading}
-              createStudents={createStudents}
+              createStudents={createMultipleStudents}
             />
           </div>
         </>

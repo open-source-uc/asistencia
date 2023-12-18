@@ -3,9 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { X as TimesIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
-const formatInput = (input: string) => {
-  return input.replace(" ", "").replace(",", "").replace(";", "");
+const formatInput = (input: string, separators: string[]) => {
+  separators.forEach((separator) => {
+    input = input.replace(separator, " ");
+  });
+  return input;
 };
 
 const followsPattern = (pattern: RegExp, input: string) => {
@@ -30,6 +34,8 @@ export interface InputPillsProps {
   pattern?: RegExp;
   placeholder?: string;
   onPatternError?: (error: boolean) => void;
+  separators?: string[];
+  className?: string;
 }
 
 export const initialValue: Value = {
@@ -43,6 +49,8 @@ export default function InputPills({
   pattern = /.*?/, // default pattern that accepts all strings
   placeholder,
   onPatternError,
+  separators = [",", " ", ";"],
+  className,
 }: InputPillsProps): JSX.Element {
   const [lastInputState, setLastInputState] = useState(
     initialValue.lastInputState
@@ -57,7 +65,9 @@ export default function InputPills({
       return;
     }
     setPatternError(false);
-    setPills((prev) => new Set(prev).add(formatInput(lastInputState)));
+    setPills((prev) =>
+      new Set(prev).add(formatInput(lastInputState, separators))
+    );
     setLastInputState(initialValue.lastInputState);
   };
 
@@ -72,7 +82,7 @@ export default function InputPills({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setConfirmRemove(false);
     const text = e.target.value;
-    if (text.includes(" ") || text.includes(",") || text.includes(";")) {
+    if (separators.some((separator) => text.includes(separator))) {
       addPill();
       return;
     }
@@ -111,69 +121,70 @@ export default function InputPills({
   };
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="flex flex-row justify-center items-end relative mt-4">
-        <div
-          className={cn(
-            "flex flex-row flex-wrap items-center lg:min-w-lg lg:max-w-lg transition-all",
-            "border border-slate-300 p-2 bg-white",
-            "focus-within:border-primary focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50"
-          )}
-        >
-          {Array.from(pills).map((pill, i) => (
-            <div
-              key={i}
-              className={cn(
-                "flex flex-row items-center justify-center rounded-full p-2 m-1 transition-all",
-                "text-sm text-slate-500 border ",
-                isPillToBeRemoved(pill)
-                  ? "border-destructive bg-red-200 text-black"
-                  : "border-slate-300 bg-slate-50"
-              )}
+    <div
+      className={cn(
+        "flex flex-row justify-center items-end relative",
+        className
+      )}
+    >
+      <div
+        className={cn(
+          "flex flex-row flex-wrap items-center lg:min-w-lg lg:max-w-lg transition-all",
+          "border border-slate-300 p-2 bg-white",
+          "focus-within:border-primary focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50"
+        )}
+      >
+        {Array.from(pills).map((pill, i) => (
+          <Badge
+            key={i}
+            variant={isPillToBeRemoved(pill) ? "destructive" : "secondary"}
+            className={cn("p-1 px-2 m-1 transition-all")}
+          >
+            {pill}
+            <button
+              className="ml-2"
+              onClick={() => {
+                removePill(pill);
+              }}
             >
-              {pill}
-              <button
-                className="ml-2"
-                onClick={() => {
-                  removePill(pill);
-                }}
-              >
-                <TimesIcon size={15} />
-              </button>
-            </div>
-          ))}
-          <div className="flex flex-row items-center w-full">
-            <input
-              className="focus:outline-none inline-flex h-12 text-sm px-2 placeholder:text-muted-foreground lg:w-32 flex-auto"
-              placeholder={placeholder}
-              onChange={handleChange}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  addPill();
+              <TimesIcon
+                size={15}
+                className="text-muted-foreground hover:text-foreground"
+              />
+            </button>
+          </Badge>
+        ))}
+        <div className="flex flex-row items-center w-full">
+          <input
+            className="focus:outline-none inline-flex h-12 text-sm px-2 placeholder:text-muted-foreground lg:w-32 flex-auto"
+            placeholder={placeholder}
+            onChange={handleChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                addPill();
+              }
+            }}
+            spellCheck={false}
+            onKeyUp={(e) => {
+              if (
+                e.key === "Backspace" &&
+                lastInputState === "" &&
+                pills.size > 0
+              ) {
+                if (!confirmRemove) {
+                  setConfirmRemove(true);
+                  return;
                 }
-              }}
-              spellCheck={false}
-              onKeyUp={(e) => {
-                if (
-                  e.key === "Backspace" &&
-                  lastInputState === "" &&
-                  pills.size > 0
-                ) {
-                  if (!confirmRemove) {
-                    setConfirmRemove(true);
-                    return;
-                  }
-                  setPills((prev) => {
-                    const newPills = new Set(prev);
-                    newPills.delete(Array.from(prev).pop() || "");
-                    return newPills;
-                  });
-                  setConfirmRemove(false);
-                }
-              }}
-              value={lastInputState}
-            />
-          </div>
+                setPills((prev) => {
+                  const newPills = new Set(prev);
+                  newPills.delete(Array.from(prev).pop() || "");
+                  return newPills;
+                });
+                setConfirmRemove(false);
+              }
+            }}
+            value={lastInputState}
+          />
         </div>
       </div>
     </div>
