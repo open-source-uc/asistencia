@@ -85,43 +85,49 @@ function ATTENDANCE(
   const flattenHashes = flattenParticipants.map((code) => hashStudentCode(code, courseId));
 
   try {
-    // Obtener datos de la API
-    const response = makeAttendanceRequest(courseId, email, token, flattenActivities, flattenHashes);
-    const body = response.getContentText();
-    const data: Record<string, string[]> = JSON.parse(body);
+    // No se consulta si los elementos no son válidos
+    const validHashes = flattenHashes.filter((e) => e !== "");
+    const validActivities = flattenActivities.filter((e) => e !== "");
 
-    // Formato de matriz
+    // Consultar la API
+    const query = { email, token, courseId, participants: validHashes, activities: validActivities };
+    const data = getAssistance(query);
+
+    // Matcher matriz con respuestas
     return flattenHashes.map((student) =>
-      flattenActivities.map((activity) => {
-        if (!(student in data)) return "";
-        return data[student].includes(activity) ? true : "";
-      })
+      flattenActivities.map((activity) => (data[student]?.includes(activity) ? true : ""))
     );
   } catch (error) {
     return `Ha fallado la llamada a la API (${error})`;
   }
 }
 
-function makeAttendanceRequest(
-  courseId: string,
-  email: string,
-  token: string,
-  flattenActivities: string[],
-  flattenHashes: string[]
-) {
-  return UrlFetchApp.fetch(`${BASE_API_URL}courses/${courseId}/spreadsheets`, {
+type AssistanceQuery = {
+  email: string;
+  token: string;
+  courseId: string;
+  participants: string[];
+  activities: string[];
+};
+
+function getAssistance(query: AssistanceQuery): Record<string, Record<string, any>> {
+  const response = UrlFetchApp.fetch(`${BASE_API_URL}courses/${query.courseId}/spreadsheets`, {
     method: "post",
     contentType: "application/json",
     headers: {
-      "X-User-Email": email,
-      "X-User-Token": token,
+      "X-User-Email": query.email,
+      "X-User-Token": query.token,
       Accept: "application/json",
     },
     payload: JSON.stringify({
-      activity_slugs: flattenActivities,
-      student_codes: flattenHashes,
+      activity_slugs: query.activities,
+      student_codes: query.participants,
     }),
   });
+
+  const body = response.getContentText();
+  const data = JSON.parse(body);
+  return data;
 }
 
 /**
