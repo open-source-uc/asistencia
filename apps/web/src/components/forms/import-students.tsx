@@ -30,7 +30,7 @@ export default function ImportStudents({
   createStudents,
 }: {
   isLoadingStudents: boolean;
-  createStudents: (students: StudentRequest[]) => void;
+  createStudents: (students: StudentRequest[]) => Promise<void>;
 }): JSX.Element {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoadingUpload, setIsLoadingUpload] = useState(false);
@@ -98,7 +98,7 @@ export default function ImportStudents({
                   setCurrentStep(currentStep + 1);
                 }
               }}
-              disabled={currentStep === 2}
+              disabled={currentStep >= 2}
             >
               Siguiente
             </Button>
@@ -188,7 +188,7 @@ export default function ImportStudents({
                   className="w-64"
                   onClick={() => {
                     if (students.length > 0) {
-                      createStudents(students);
+                      createStudents(students).then(() => setCurrentStep(3));
                     }
                   }}
                   isLoading={isLoadingStudents}
@@ -197,6 +197,13 @@ export default function ImportStudents({
                   Añadir Estudiantes
                 </Button>
               </div>
+            </div>
+          )}
+          {currentStep === 3 && (
+            <div className="h-96 flex flex-col items-center justify-center">
+              <span className="text-xl text-primary font-medium text-center">
+                Se han añadido los estudiantes correctamente.
+              </span>
             </div>
           )}
         </div>

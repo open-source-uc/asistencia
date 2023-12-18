@@ -130,7 +130,7 @@ export default function InputPills({
       <div
         className={cn(
           "flex flex-row flex-wrap items-center lg:min-w-lg lg:max-w-lg transition-all",
-          "border border-slate-300 p-2 bg-white",
+          "border border-slate-200 p-2 bg-white",
           "focus-within:border-primary focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50"
         )}
       >

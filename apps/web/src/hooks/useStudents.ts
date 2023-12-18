@@ -79,7 +79,9 @@ export const useStudents = (
       });
   };
 
-  const createMultipleStudents = async (studentsRequest: Student[]) => {
+  const createMultipleStudents = async (
+    studentsRequest: Student[]
+  ): Promise<void> => {
     const studentsWithHash = await Promise.all(
       studentsRequest.map(
         async (student: Student): Promise<Student> => ({
@@ -95,7 +97,7 @@ export const useStudents = (
     );
     const body = { students: studentsWithHash };
     setIsLoading(true);
-    await client
+    return await client
       .post(`api/v1/courses/${orgId}/students/batch_create`, body)
       .then((res) => {
         setStudents([...res.data.students]);
@@ -105,6 +107,7 @@ export const useStudents = (
           description: "Los estudiantes se han agregado correctamente.",
           variant: "success",
         });
+        return Promise.resolve();
       })
       .catch(() => {
         setIsLoading(false);
@@ -113,6 +116,7 @@ export const useStudents = (
           description: "Ha ocurrido un error al agregar los estudiantes.",
           variant: "destructive",
         });
+        return Promise.reject();
       });
   };
 

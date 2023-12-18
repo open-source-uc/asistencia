@@ -17,10 +17,15 @@ export const useAttendances = (orgId: string = "") => {
     };
     return await client
       .post(`/api/v1/courses/${orgId}/attendances/`, body)
-      .then(() => {
+      .then((res) => {
+        const studentName = res.data.attendance.student.display_name;
+        const description = studentName
+          ? `La asistencia de ${studentName} en la actividad ${activitySlug} se ha tomado correctamente.`
+          : `La asistencia se ha tomado correctamente.`;
+
         toast({
           title: "Asistencia tomada",
-          description: "La asistencia se ha tomado correctamente.",
+          description: description,
           variant: "success",
         });
       })
