@@ -41,6 +41,24 @@ function ASSISTANCE(
   ATTENDANCE(email, token, courseId, participants, activities, _variableInput);
 }
 
+function sha512(str: string): string {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_512, str)
+    .map((e) => (e < 0 ? e + 256 : e).toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function hashStudentCode(code: string, courseId: string): string {
+  return sha512(`${sha512(`${code}${courseId}`)}${courseId}`);
+}
+
+/**
+ * Testea el hash
+ * @customfunction
+ */
+function GET_HASH(code: string, courseId: string) {
+  return hashStudentCode(code, courseId);
+}
+
 /**
  * Ve la asistencia de los participantes en las actividades
  * @param email Email del que se autentifica para consultar la asistencia
@@ -59,36 +77,57 @@ function ATTENDANCE(
   activities: AnySheetsInput,
   _variableInput?: any
 ) {
+  // Asegurarse del formato del input
   const flattenParticipants = asColumn(participants).map((e) => e?.toString() ?? "");
   const flattenActivities = asRow(activities).map((e) => e?.toString() ?? "");
 
+  // Hashear datos sensibles
+  const flattenHashes = flattenParticipants.map((code) => (code ? hashStudentCode(code, courseId) : ""));
+
   try {
-    const response = UrlFetchApp.fetch(`${BASE_API_URL}courses/${courseId}/spreadsheets`, {
-      method: "post",
-      contentType: "application/json",
-      headers: {
-        "X-User-Email": email,
-        "X-User-Token": token,
-        Accept: "application/json",
-      },
-      payload: JSON.stringify({
-        activity_slugs: flattenActivities,
-        student_codes: flattenParticipants,
-      }),
-    });
+    // No se consulta si los elementos no son válidos
+    const validHashes = flattenHashes.filter((e) => e !== "");
+    const validActivities = flattenActivities.filter((e) => e !== "");
 
-    const body = response.getContentText();
-    const data: Record<string, Record<string, any>> = JSON.parse(body);
+    // Consultar la API
+    const query = { email, token, courseId, participants: validHashes, activities: validActivities };
+    const data = getAssistance(query);
 
-    return flattenParticipants.map((student) =>
-      flattenActivities.map((activity) => {
-        if (!(student in data)) return "";
-        return data[student].includes(activity) ? true : "";
-      })
+    // Matcher matriz con respuestas
+    return flattenHashes.map((student) =>
+      flattenActivities.map((activity) => (data[student]?.includes(activity) ? true : ""))
     );
   } catch (error) {
     return `Ha fallado la llamada a la API (${error})`;
   }
+}
+
+type AssistanceQuery = {
+  email: string;
+  token: string;
+  courseId: string;
+  participants: string[];
+  activities: string[];
+};
+
+function getAssistance(query: AssistanceQuery): Record<string, Record<string, any>> {
+  const response = UrlFetchApp.fetch(`${BASE_API_URL}courses/${query.courseId}/spreadsheets`, {
+    method: "post",
+    contentType: "application/json",
+    headers: {
+      "X-User-Email": query.email,
+      "X-User-Token": query.token,
+      Accept: "application/json",
+    },
+    payload: JSON.stringify({
+      activity_slugs: query.activities,
+      student_codes: query.participants,
+    }),
+  });
+
+  const body = response.getContentText();
+  const data = JSON.parse(body);
+  return data;
 }
 
 /**
