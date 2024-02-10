@@ -1,2 +1,1 @@
-export const useQueryKey = () =>
-  ["orgs"] as const;
+export const useQueryKey = () => ["orgs"] as const;

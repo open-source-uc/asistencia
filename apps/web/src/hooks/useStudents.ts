@@ -1,7 +1,7 @@
 import {
   useStudentsQuery,
   useStudentsMutations,
-  CreateStudent,
+  type CreateStudent,
 } from "./queries/useStudents";
 import { useToast } from "@/components/ui/use-toast";
 

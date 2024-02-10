@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { useHandlerOrgs } from "@/hooks/useOrgs";
+import { useOrgs } from "@/hooks/useOrgs";
 
 interface Field {
   name: "name";
@@ -35,8 +34,7 @@ const FORM_FIELDS: Field[] = [
 ];
 
 export default function OrgNew() {
-  const [isLoading, setIsLoading] = useState(false);
-  const { createOrg } = useHandlerOrgs();
+  const orgs = useOrgs();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,14 +43,14 @@ export default function OrgNew() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    await createOrg({
-      ...values,
-      slug: crypto.randomUUID(),
-    }).then(() => {
-      setIsLoading(false);
-      form.reset();
-    });
+    await orgs
+      .createOrg({
+        ...values,
+        slug: crypto.randomUUID(),
+      })
+      .then(() => {
+        form.reset();
+      });
   }
 
   return (
@@ -83,7 +81,7 @@ export default function OrgNew() {
             )}
           />
         ))}
-        <Button type="submit" className="w-64" isLoading={isLoading}>
+        <Button type="submit" className="w-64" isLoading={orgs.orgs.isLoading}>
           Crear Organización
         </Button>
       </form>
