@@ -1,10 +1,9 @@
-import type { CreateStudent, Student } from "./types";
+import type { CreateStudent } from "@/types/interfaces";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useQueryKey } from "./queryKey";
 import { useStudentsRequests } from "./apiCalls";
 import { useQueryClient } from "@tanstack/react-query";
 
-export { CreateStudent, Student };
 
 export const useStudentsQuery = (orgId: string) => {
   const queryKey = useQueryKey(orgId);

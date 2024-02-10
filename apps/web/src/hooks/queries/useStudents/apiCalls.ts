@@ -1,5 +1,5 @@
 import client from "@/api/client";
-import type { CreateStudent, Student } from "./types";
+import type { CreateStudent, Student } from "@/types/interfaces";
 import { clientHash } from "@/lib/hashFunctions";
 
 const basePath = "api/v1/courses";
