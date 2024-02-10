@@ -4,8 +4,8 @@ import { UserType } from "@/types/enums";
 const basePath = "api/v1/courses";
 
 export const useOrgsRequests = () => {
-  const userPermissionsOrgQuery = async (slug: string): Promise<UserType> => {
-    const res = await client.get(`${basePath}/${slug}/user_courses/me`);
+  const userPermissionsOrgQuery = async (orgId: string): Promise<UserType> => {
+    const res = await client.get(`${basePath}/${orgId}/user_courses/me`);
     return (
       UserType[
         Object.keys(res.data)
@@ -20,17 +20,17 @@ export const useOrgsRequests = () => {
     return res.data.courses;
   };
 
-  const createOrg = async (name: string, slug: string) => {
+  const createOrg = async (name: string, orgId: string) => {
     const res = await client.post(`${basePath}/`, {
       name,
-      slug,
+      slug: orgId,
       enabled: true,
     });
     return res.data;
   };
 
-  const deleteOrg = async (orgSlug: string) => {
-    return await client.delete(`${basePath}/${orgSlug}`);
+  const deleteOrg = async (orgId: string) => {
+    return await client.delete(`${basePath}/${orgId}`);
   };
 
   return {

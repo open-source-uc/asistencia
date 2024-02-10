@@ -1,4 +1,4 @@
-export const useQueryKey = (slug: string) => ["orgs", slug] as const;
+export const useQueryKey = (orgId: string) => ["orgs", orgId] as const;
 
-export const useUserPermissionsOrgQueryKey = (slug: string) =>
-  ["userPermissionsOrgQuery", slug] as const;
+export const useUserPermissionsOrgQueryKey = (orgId: string) =>
+  ["userPermissionsOrgQuery", orgId] as const;

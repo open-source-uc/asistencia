@@ -4,9 +4,9 @@ import type { Org } from "@/types/interfaces";
 
 const basePath = "api/v1/courses";
 
-export const useOrgRequests = (slug: string) => {
+export const useOrgRequests = (orgId: string) => {
   const userPermissionsOrgQuery = async (): Promise<UserType> => {
-    const res = await client.get(`${basePath}/${slug}/user_courses/me`);
+    const res = await client.get(`${basePath}/${orgId}/user_courses/me`);
     return (
       UserType[
         Object.keys(res.data)
@@ -17,7 +17,7 @@ export const useOrgRequests = (slug: string) => {
   };
 
   const orgQuery = async (): Promise<Org> => {
-    const res = await client.get(`${basePath}/${slug}`);
+    const res = await client.get(`${basePath}/${orgId}`);
     return res.data.course;
   };
 
