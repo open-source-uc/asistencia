@@ -9,7 +9,8 @@ export { CreateStudent, Student };
 export const useStudentsQuery = (orgId: string) => {
   const queryKey = useQueryKey(orgId);
   const { studentsQuery } = useStudentsRequests(orgId);
-  return useQuery({ queryKey, queryFn: studentsQuery });
+  const query = useQuery({ queryKey, queryFn: studentsQuery });
+  return { ...query };
 };
 
 export const useStudentsMutations = (orgId: string) => {
