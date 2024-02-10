@@ -6,8 +6,15 @@ export const useOrg = (orgId: string = "") => {
   const userPermissionsOrg = useUserPermissionsOrgQuery(orgId);
   const org = useOrgQuery(orgId);
 
-  const getOrg = (): Org | undefined => {
-    return org.data;
+  const getOrg = (): Org => {
+    return (
+      org.data || {
+        id: "",
+        name: "",
+        slug: "",
+        enabled: false,
+      }
+    );
   };
 
   const getPermissions = () => {
