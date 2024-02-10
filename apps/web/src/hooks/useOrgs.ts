@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import client from "@/api/client";
-import type { Message } from "@/types/interfaces";
 import { UserType } from "@/types/enums";
 import { useToast } from "@/components/ui/use-toast";
 
