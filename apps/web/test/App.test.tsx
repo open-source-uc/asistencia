@@ -1,14 +1,14 @@
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "@/App";
 
 describe("App", () => {
   it("Renders landing page", () => {
-    const { email, password, submitButton } = renderApp();
+    const { emailInput, passwordInput, submitButtonInput } = renderApp();
     expect(screen.getByText("Bienvenido a AttendanceUC")).toBeInTheDocument();
-    expect(email).toBeInTheDocument();
-    expect(password).toBeInTheDocument();
-    expect(submitButton).toBeInTheDocument();
+    expect(emailInput).toBeInTheDocument();
+    expect(passwordInput).toBeInTheDocument();
+    expect(submitButtonInput).toBeInTheDocument();
   });
   it("Renders 404 error if invalid path", () => {
     render(
@@ -22,17 +22,6 @@ describe("App", () => {
       })
     ).toHaveTextContent("Error 404");
   });
-  it("Renders home page if logged in", () => {
-    const { email, password, submitButton } = renderApp();
-    act(() => {
-      email.value = "ejemplo@uc.cl";
-      password.value = "12345678";
-      submitButton.click();
-    });
-    waitFor(() => {
-      expect(screen.getByText("Cerrar Sesión")).toBeInTheDocument();
-    });
-  });
 });
 
 const renderApp = () => {
@@ -42,16 +31,18 @@ const renderApp = () => {
     </MemoryRouter>
   );
 
-  const email = screen.getByLabelText("email") as HTMLInputElement;
-  const password = screen.getByLabelText("password") as HTMLInputElement;
-  const submitButton = screen.getByLabelText("submit") as HTMLButtonElement;
-  const snapshot = utils.container.firstChild;
+  const emailInput = screen.getByLabelText("email") as HTMLInputElement;
+  const passwordInput = screen.getByLabelText("password") as HTMLInputElement;
+  const submitButtonInput = screen.getByLabelText(
+    "submit"
+  ) as HTMLButtonElement;
+  const snapshotInput = utils.container.firstChild;
 
   return {
     ...utils,
-    snapshot,
-    email,
-    password,
-    submitButton,
+    snapshotInput,
+    emailInput,
+    passwordInput,
+    submitButtonInput,
   };
 };

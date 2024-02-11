@@ -17,13 +17,14 @@ import { ASSISTANTS_ROLES } from "@/lib/constants/assistantsRoles";
 
 export default function AddAssistantForm({
   addMultipleAssistantsToOrg,
+  isLoadingUpload,
 }: {
   addMultipleAssistantsToOrg: (
     assistants: string[],
     role: UserType | undefined
-  ) => Promise<void>;
+  ) => void;
+  isLoadingUpload: boolean;
 }) {
-  const [isLoadingUpload, setIsLoadingUpload] = useState(false);
   const [inputState, setInputState] = useState<Value>(initialValue);
   const [error, setError] = useState<string>("");
   const [role, setRole] = useState<UserType | undefined>();
@@ -54,28 +55,10 @@ export default function AddAssistantForm({
     if (inputState.pills.size === 0 && inputState.lastInputState === "") {
       return;
     }
-    setIsLoadingUpload(true);
     const pills = new Set(inputState.pills);
     if (inputState.lastInputState !== "") pills.add(inputState.lastInputState);
     const assistantsToAdd = Array.from(pills);
-    addMultipleAssistantsToOrg(assistantsToAdd, role)
-      .then(() => {
-        setInputState(initialValue);
-        setIsLoadingUpload(false);
-        toast({
-          title: "Ayudantes añadidos",
-          description: "Los ayudantes han sido añadidos correctamente.",
-          variant: "success",
-        });
-      })
-      .catch(() => {
-        toast({
-          title: "Error",
-          description: "Ha ocurrido un error al añadir los ayudantes.",
-          variant: "destructive",
-        });
-        setIsLoadingUpload(false);
-      });
+    addMultipleAssistantsToOrg(assistantsToAdd, role);
   };
   return (
     <div className="flex flex-col justify-center relative mt-4 border border-slate-200 p-4">

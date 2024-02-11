@@ -1,133 +1,130 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
-import client from "@/api/client";
+import {
+  useAssistantsQuery,
+  useAssistantsMutations,
+} from "./queries/useAssistants";
+import { useToast } from "@/components/ui/use-toast";
+import type { Assistant } from "@/types/interfaces";
 import { UserType } from "@/types/enums";
 
-interface AssistantField {
-  email: string;
-  role: UserType | undefined;
-}
-
-interface Assistant extends AssistantField {
-  id: string;
-}
-
 export const useAssistants = (orgId: string = "") => {
-  const [assistants, setAssistants] = useState<Assistant[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const getAssistantsByOrg = async () => {
-    return await client
-      .get(`/api/v1/courses/${orgId}/user_courses`)
-      .then((res) => {
-        const assistants = [
-          ...res.data.admin.map((assistant: Assistant) => ({
-            ...assistant,
-            role: "admin",
-          })),
-          ...res.data.manager.map((assistant: Assistant) => ({
-            ...assistant,
-            role: "manager",
-          })),
-          ...res.data.viewer.map((assistant: Assistant) => ({
-            ...assistant,
-            role: "viewer",
-          })),
-        ];
-        return assistants;
-      })
-      .catch(() => {
-        return [];
-      });
+  const { toast } = useToast();
+  const assistants = useAssistantsQuery(orgId);
+
+  const getAssistants = () => {
+    return assistants.data || [];
   };
 
-  const addAssistantToOrg = async (
-    userEmail: string,
-    role: UserType = UserType.VIEWER
-  ): Promise<Assistant | undefined> => {
-    return await client
-      .post(`/api/v1/courses/${orgId}/user_courses`, {
-        email: userEmail,
-        role: role,
-      })
-      .then((res) => {
-        return res.data;
-      });
-  };
+  const assistantsMutations = useAssistantsMutations(orgId);
+  const {
+    addAssistant: addAssistantMutation,
+    addMultipleAssistants: addMultipleAssistantsMutation,
+    removeAssistant: removeAssistantMutation,
+    removeMultipleAssistants: removeMultipleAssistantsMutation,
+  } = assistantsMutations;
 
-  const addMultipleAssistantsToOrg = async (
-    userEmails: string[],
+  const addAssistant = (email: string, role: UserType = UserType.VIEWER) => {
+    addAssistantMutation.mutateAsync(
+      {
+        email,
+        role,
+      },
+      {
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Ha ocurrido un error inesperado al agregar ayudante.",
+            variant: "destructive",
+          });
+        },
+        onSuccess: () => {
+          toast({
+            title: "Ayudante agregado",
+            description: "El ayudante ha sido agregado correctamente.",
+            variant: "success",
+          });
+        },
+      }
+    );
+  };
+  const addMultipleAssistants = (
+    emails: string[],
     role: UserType | undefined
-  ): Promise<void> => {
-    if (!role) {
-      return Promise.reject();
-    }
-    return await client
-      .post(`/api/v1/courses/${orgId}/user_courses/batch_create`, {
-        emails: userEmails,
-        role: role,
-      })
-      .then(() => {
-        const usersToAdd = userEmails.filter(
-          (email) =>
-            !assistants.find(
-              (assistant) =>
-                assistant.email === email && assistant.role === role
-            )
-        );
-        const usersToAddWithId = usersToAdd.map((email) => ({
-          email,
-          role,
-          id: "",
-        }));
-        setAssistants((prevAssistants) => [
-          ...prevAssistants,
-          ...usersToAddWithId,
-        ]);
-      });
+  ) => {
+    addMultipleAssistantsMutation.mutateAsync(
+      {
+        emails,
+        role,
+      },
+      {
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Ha ocurrido un error al añadir los ayudantes.",
+            variant: "destructive",
+          });
+        },
+        onSuccess: () => {
+          toast({
+            title: "Ayudantes añadidos",
+            description: "Los ayudantes han sido añadidos correctamente.",
+            variant: "success",
+          });
+        },
+      }
+    );
   };
 
-  const removeAssistantFromOrg = async (
-    userEmail: string,
-    role: UserType = UserType.VIEWER
-  ): Promise<Assistant | undefined> => {
-    return await client
-      .delete(`/api/v1/courses/${orgId}/user_courses`, {
-        data: { email: userEmail, role: role },
-      })
-      .then((res) => {
-        setAssistants((prevAssistants) =>
-          prevAssistants.filter(
-            (assistant) =>
-              !(assistant.email === userEmail && assistant.role === role)
-          )
-        );
-        return res.data;
-      });
+  const removeAssistant = (email: string, role: UserType = UserType.VIEWER) => {
+    removeAssistantMutation.mutateAsync(
+      {
+        email,
+        role,
+      },
+      {
+        onError: () => {
+          toast({
+            title: "Error",
+            description:
+              "Ha ocurrido un error inesperado al remover el ayudante.",
+            variant: "destructive",
+          });
+        },
+        onSuccess: () => {
+          toast({
+            title: "Ayudante removido",
+            description: "El ayudante ha sido removido correctamente.",
+            variant: "success",
+          });
+        },
+      }
+    );
   };
 
-  const removeMultipleAssistantsFromOrg = async (
-    users: AssistantField[]
-  ): Promise<void> => {
-    users.map(async (user) => {
-      removeAssistantFromOrg(user.email, user.role);
+  const removeMultipleAssistants = (users: Assistant[]) => {
+    removeMultipleAssistantsMutation.mutateAsync(users, {
+      onError: () => {
+        toast({
+          title: "Error al remover ayudantes",
+          description: "Ha ocurrido un error al remover los asistentes.",
+          variant: "destructive",
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: "Ayudantes removidos de la organización",
+          description: "Los ayudantes han sido removidos correctamente.",
+          variant: "success",
+        });
+      },
     });
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setAssistants(await getAssistantsByOrg());
-      setIsLoading(false);
-    };
-    fetchData();
-  }, []);
-
   return {
     assistants,
-    isLoading,
-    addAssistantToOrg,
-    addMultipleAssistantsToOrg,
-    removeAssistantFromOrg,
-    removeMultipleAssistantsFromOrg,
+    assistantsMutations,
+    getAssistants,
+    addAssistant,
+    addMultipleAssistants,
+    removeAssistant,
+    removeMultipleAssistants,
   };
 };

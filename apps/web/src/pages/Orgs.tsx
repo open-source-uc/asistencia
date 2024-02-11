@@ -26,21 +26,43 @@ import { MoreHorizontalIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Orgs(): JSX.Element {
-  const { orgs, isLoading, deleteOrg } = useOrgs();
+  const orgs = useOrgs();
   const navigate = useNavigate();
   const [state, setState] = useState({
     orgSlugSelected: "",
     alertOpen: false,
   });
 
+  if (!orgs.getOrgs().length && !orgs.orgs.isLoading) {
+    return (
+      <div className="space-y-6 flex flex-col items-center">
+        <h2 className="text-3xl font-bold text-center">Organizaciones</h2>
+        <p>
+          Actualmente no tienes organizaciones para gestionar, sin embargo,
+          puedes
+          <span
+            className="text-primary font-medium cursor-pointer"
+            onClick={() => {
+              navigate("/orgs/new");
+            }}
+          >
+            {" "}
+            crear una nueva
+          </span>
+          .
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 flex flex-col items-center">
       <h2 className="text-3xl font-bold text-center">Organizaciones</h2>
       <p>Tienes permiso para gestionar las siguientes organizaciones</p>
-      {isLoading && <LoadingSpinner />}
-      {!isLoading && (
+      {orgs.orgs.isLoading && <LoadingSpinner />}
+      {!orgs.orgs.isLoading && (
         <div className="space-y-6 flex flex-col w-full max-x-2xl">
-          {orgs.map((course, i) => (
+          {orgs.getOrgs().map((course, i) => (
             <div key={i} className="relative group justify-center items-center">
               <Button
                 className="justify-center w-full py-6"
@@ -86,7 +108,7 @@ export default function Orgs(): JSX.Element {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                deleteOrg(state.orgSlugSelected);
+                orgs.deleteOrg(state.orgSlugSelected);
               }}
               className="bg-red-500 hover:bg-red-600"
             >

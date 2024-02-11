@@ -12,7 +12,7 @@ import LandingPage from "@/pages/LandingPage";
 import NotFound from "@/pages/404";
 import { NavBar } from "@/components/navbar";
 import { useUserSession } from "@/hooks/useUserSession";
-import { useOrg } from "@/hooks/useOrgs";
+import { useOrg } from "@/hooks/useOrg";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function App(): JSX.Element {
@@ -50,15 +50,15 @@ export default function App(): JSX.Element {
 
 const OrgGeneral = (): JSX.Element => {
   const { orgId } = useParams();
-  const { org, userType } = useOrg(orgId);
+  const org = useOrg(orgId);
   const orgData = {
-    ...org,
-    userType,
+    ...org.getOrg(),
+    userType: org.getPermissions(),
   };
 
   return (
     <div className="space-y-6 flex flex-col items-center px-4">
-      <h2 className="text-2xl font-bold text-center">{org.name}</h2>
+      <h2 className="text-2xl font-bold text-center">{orgData.name}</h2>
       <hr className="w-3/4 border-input border-1" />
       <Routes>
         <Route path={`/`} element={<OrgDetails orgData={orgData} />} />

@@ -18,8 +18,7 @@ export default function Students({
   orgData: OrgData;
 }): JSX.Element {
   const { orgId } = useParams();
-  const { students, isLoading, createStudent, createMultipleStudents } =
-    useStudents(orgId);
+  const students = useStudents(orgId);
 
   return (
     <div className="space-y-6 flex flex-col items-center w-full">
@@ -34,15 +33,20 @@ export default function Students({
               coma). Estos pueden ser su número de alumno, correo institucional
               o lo que estimes conveniente.
             </span>
-            <AddStudentsForm createStudent={createStudent} />
+            <AddStudentsForm
+              isLoading={students.studentsMutations.createStudent.isPending}
+              createStudent={students.createStudent}
+            />
           </div>
           <div className="flex flex-col p-6 bg-slate-50">
             <span className="text-md font-medium mb-6">
               Importar estudiantes desde un archivo
             </span>
             <ImportStudents
-              isLoadingStudents={isLoading}
-              createStudents={createMultipleStudents}
+              isLoadingStudents={
+                students.studentsMutations.createMultipleStudents.isPending
+              }
+              createStudents={students.createMultipleStudents}
             />
           </div>
         </>
@@ -51,8 +55,10 @@ export default function Students({
         Estudiantes Registrados
       </h3>
       <div className="my-6 max-w-2xl">
-        {isLoading && <LoadingSpinner />}
-        {!isLoading && <DataTable columns={columnsHash} data={students} />}
+        {students.students.isLoading && <LoadingSpinner />}
+        {!students.students.isLoading && (
+          <DataTable columns={columnsHash} data={students.getStudents()} />
+        )}
       </div>
     </div>
   );

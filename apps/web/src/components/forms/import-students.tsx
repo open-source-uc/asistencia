@@ -30,7 +30,7 @@ export default function ImportStudents({
   createStudents,
 }: {
   isLoadingStudents: boolean;
-  createStudents: (students: StudentRequest[]) => Promise<void>;
+  createStudents: (students: StudentRequest[]) => void;
 }): JSX.Element {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoadingUpload, setIsLoadingUpload] = useState(false);
@@ -188,7 +188,8 @@ export default function ImportStudents({
                   className="w-64"
                   onClick={() => {
                     if (students.length > 0) {
-                      createStudents(students).then(() => setCurrentStep(3));
+                      createStudents(students);
+                      setCurrentStep(3);
                     }
                   }}
                   isLoading={isLoadingStudents}

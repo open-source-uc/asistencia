@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { DatePicker } from "@/components/date-picker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -54,10 +53,11 @@ const formSchema = z.object({
 
 export default function AddActivityForm({
   addActivity,
+  isLoading,
 }: {
-  addActivity: (values: z.infer<typeof formSchema>) => Promise<void>;
+  addActivity: (values: z.infer<typeof formSchema>) => void;
+  isLoading: boolean;
 }): JSX.Element {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,16 +70,7 @@ export default function AddActivityForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-    addActivity(values).then(
-      () => {
-        setIsLoading(false);
-      },
-      (error) => {
-        setIsLoading(false);
-        console.error(error);
-      }
-    );
+    addActivity(values)
   }
   return (
     <Form {...form}>

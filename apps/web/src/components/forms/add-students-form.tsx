@@ -9,8 +9,10 @@ interface Student {
 }
 
 export const AddStudentsForm = ({
+  isLoading,
   createStudent,
 }: {
+  isLoading: boolean;
   createStudent: (code: string[], name: string) => void;
 }) => {
   const [formState, setFormState] = useState<Student>({
@@ -65,7 +67,11 @@ export const AddStudentsForm = ({
           }}
           value={formState.value}
         />
-        <Button className="mt-2 w-36" onClick={addStudent}>
+        <Button
+          className="mt-2 w-36"
+          onClick={addStudent}
+          isLoading={isLoading}
+        >
           Agregar
         </Button>
       </div>
