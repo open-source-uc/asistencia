@@ -43,14 +43,11 @@ export default function OrgNew() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await orgs
-      .createOrg({
-        ...values,
-        slug: crypto.randomUUID(),
-      })
-      .then(() => {
-        form.reset();
-      });
+    orgs.createOrg({
+      ...values,
+      slug: crypto.randomUUID(),
+    });
+    form.reset();
   }
 
   return (
@@ -81,7 +78,11 @@ export default function OrgNew() {
             )}
           />
         ))}
-        <Button type="submit" className="w-64" isLoading={orgs.orgs.isLoading}>
+        <Button
+          type="submit"
+          className="w-64"
+          isLoading={orgs.orgsMutations.createOrg.isPending}
+        >
           Crear Organización
         </Button>
       </form>

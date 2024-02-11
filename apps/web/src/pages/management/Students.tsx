@@ -33,14 +33,19 @@ export default function Students({
               coma). Estos pueden ser su número de alumno, correo institucional
               o lo que estimes conveniente.
             </span>
-            <AddStudentsForm createStudent={students.createStudent} />
+            <AddStudentsForm
+              isLoading={students.studentsMutations.createStudent.isPending}
+              createStudent={students.createStudent}
+            />
           </div>
           <div className="flex flex-col p-6 bg-slate-50">
             <span className="text-md font-medium mb-6">
               Importar estudiantes desde un archivo
             </span>
             <ImportStudents
-              isLoadingStudents={students.students.isLoading}
+              isLoadingStudents={
+                students.studentsMutations.createMultipleStudents.isPending
+              }
               createStudents={students.createMultipleStudents}
             />
           </div>

@@ -10,10 +10,12 @@ export const useStudents = (orgId: string = "") => {
     return students.data || [];
   };
 
+  const studentsMutations = useStudentsMutations(orgId);
+
   const {
     createStudent: createStudentMutation,
     createMultipleStudents: createMultipleStudentsMutation,
-  } = useStudentsMutations(orgId);
+  } = studentsMutations;
 
   const createStudent = (studentCodes: string[], displayName: string) => {
     createStudentMutation.mutateAsync(
@@ -60,6 +62,7 @@ export const useStudents = (orgId: string = "") => {
 
   return {
     students,
+    studentsMutations,
     getStudents,
     createStudent,
     createMultipleStudents,

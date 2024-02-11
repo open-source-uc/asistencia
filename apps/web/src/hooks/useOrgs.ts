@@ -11,8 +11,10 @@ export const useOrgs = () => {
     return orgs.data || [];
   };
 
+  const orgsMutations = useOrgsMutations();
+
   const { createOrg: createOrgMutation, deleteOrg: deleteOrgMutation } =
-    useOrgsMutations();
+    orgsMutations;
 
   const createOrg = ({ name, slug }: { name: string; slug: string }) => {
     createOrgMutation.mutateAsync(
@@ -60,6 +62,7 @@ export const useOrgs = () => {
 
   return {
     orgs,
+    orgsMutations,
     getOrgs,
     createOrg,
     deleteOrg,

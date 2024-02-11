@@ -33,6 +33,28 @@ export default function Orgs(): JSX.Element {
     alertOpen: false,
   });
 
+  if (!orgs.getOrgs().length && !orgs.orgs.isLoading) {
+    return (
+      <div className="space-y-6 flex flex-col items-center">
+        <h2 className="text-3xl font-bold text-center">Organizaciones</h2>
+        <p>
+          Actualmente no tienes organizaciones para gestionar, sin embargo,
+          puedes
+          <span
+            className="text-primary font-medium cursor-pointer"
+            onClick={() => {
+              navigate("/orgs/new");
+            }}
+          >
+            {" "}
+            crear una nueva
+          </span>
+          .
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 flex flex-col items-center">
       <h2 className="text-3xl font-bold text-center">Organizaciones</h2>
