@@ -1,5 +1,5 @@
 import client from "@/api/client";
-import type { Activity } from "./types";
+import type { Activity } from "@/types/interfaces";
 
 const basePath = "api/v1/courses";
 
@@ -20,26 +20,27 @@ export const useActivitiesRequests = (orgId: string) => {
     name: string,
     slug: string,
     description: string,
-    date: Date
+    date: string
   ): Promise<Activity> => {
-    return await client.post(`/api/v1/courses/${orgId}/activities/`, {
+    const res = await client.post(`${basePath}/${orgId}/activities/`, {
       name,
       slug,
       description,
       date,
     });
+    return res.data.activity;
   };
 
-  const deleteActivity = async (activitySlug: string): Promise<void> => {
-    await client.delete(`/api/v1/courses/${orgId}/activities/${activitySlug}`);
+  const deleteActivity = async (slug: string): Promise<void> => {
+    await client.delete(`${basePath}/${orgId}/activities/${slug}`);
   };
 
-  const deleteMultipleActivities = async (
-    activitySlugs: string[]
-  ): Promise<void> => {
-    activitySlugs.forEach((activitySlug) => {
-      deleteActivity(activitySlug);
-    });
+  const deleteMultipleActivities = async (slugs: string[]): Promise<void> => {
+    await Promise.all(
+      slugs.map(async (slug) => {
+        await deleteActivity(slug);
+      })
+    );
   };
 
   return {

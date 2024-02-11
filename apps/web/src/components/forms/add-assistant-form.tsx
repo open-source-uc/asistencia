@@ -22,7 +22,7 @@ export default function AddAssistantForm({
   addMultipleAssistantsToOrg: (
     assistants: string[],
     role: UserType | undefined
-  ) => Promise<void>;
+  ) => void;
   isLoadingUpload: boolean;
 }) {
   const [inputState, setInputState] = useState<Value>(initialValue);

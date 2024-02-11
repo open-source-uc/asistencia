@@ -53,8 +53,7 @@ export default function Assistants({
           <AddAssistantForm
             addMultipleAssistantsToOrg={assistants.addMultipleAssistants}
             isLoadingUpload={
-              assistants.assistants.isLoading ||
-              assistants.assistants.isRefetching
+              assistants.assistantsMutations.addMultipleAssistants.isPending
             }
           />
         )}

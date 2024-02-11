@@ -43,13 +43,14 @@ export default function OrgDetails({
   const navigate = useNavigate();
   const { orgId } = useParams();
   const { toast } = useToast();
-  const { activities, isLoading } = useActivities(orgId);
+  const activities = useActivities(orgId);
+  const activitiesArray = activities.getActivities();
   const { takeAttendance } = useAttendances(orgId);
   const [currActivity, setCurrActivity] = useState(0);
   const [inputState, setInputState] = useState("");
 
   const handleTakeAttendance = () => {
-    if (inputState === "" || activities.length === 0) {
+    if (inputState === "" || activitiesArray.length === 0) {
       toast({
         title: "Error al tomar asistencia",
         description:
@@ -58,7 +59,7 @@ export default function OrgDetails({
       });
       return;
     }
-    takeAttendance(activities[currActivity].slug, inputState);
+    takeAttendance(activitiesArray[currActivity].slug, inputState);
     setInputState("");
   };
 
@@ -103,8 +104,10 @@ export default function OrgDetails({
       <div className="py-6 space-y-4 w-full">
         <h3 className="text-xl font-medium text-center">Tomar Asistencia</h3>
         <ScrollArea className="h-96 border border-input-500 shadow-inner">
-          {isLoading && <LoadingSpinner className="my-6" />}
-          {activities.map((activity, i) => (
+          {activities.activities.isLoading && (
+            <LoadingSpinner className="my-6" />
+          )}
+          {activitiesArray.map((activity, i) => (
             <div className="flex flex-col border-b-2" key={i}>
               <div
                 className={cn(

@@ -14,7 +14,7 @@ export const useOrgs = () => {
   const { createOrg: createOrgMutation, deleteOrg: deleteOrgMutation } =
     useOrgsMutations();
 
-  const createOrg = async ({ name, slug }: { name: string; slug: string }) => {
+  const createOrg = ({ name, slug }: { name: string; slug: string }) => {
     createOrgMutation.mutateAsync(
       {
         name,
@@ -39,7 +39,7 @@ export const useOrgs = () => {
     );
   };
 
-  const deleteOrg = async (orgSlug: string) => {
+  const deleteOrg = (orgSlug: string) => {
     deleteOrgMutation.mutateAsync(orgSlug, {
       onError: () => {
         toast({

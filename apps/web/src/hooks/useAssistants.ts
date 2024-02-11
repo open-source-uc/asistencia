@@ -14,17 +14,15 @@ export const useAssistants = (orgId: string = "") => {
     return assistants.data || [];
   };
 
+  const assistantsMutations = useAssistantsMutations(orgId);
   const {
     addAssistant: addAssistantMutation,
     addMultipleAssistants: addMultipleAssistantsMutation,
     removeAssistant: removeAssistantMutation,
     removeMultipleAssistants: removeMultipleAssistantsMutation,
-  } = useAssistantsMutations(orgId);
+  } = assistantsMutations;
 
-  const addAssistant = async (
-    email: string,
-    role: UserType = UserType.VIEWER
-  ) => {
+  const addAssistant = (email: string, role: UserType = UserType.VIEWER) => {
     addAssistantMutation.mutateAsync(
       {
         email,
@@ -48,7 +46,7 @@ export const useAssistants = (orgId: string = "") => {
       }
     );
   };
-  const addMultipleAssistants = async (
+  const addMultipleAssistants = (
     emails: string[],
     role: UserType | undefined
   ) => {
@@ -76,10 +74,7 @@ export const useAssistants = (orgId: string = "") => {
     );
   };
 
-  const removeAssistant = async (
-    email: string,
-    role: UserType = UserType.VIEWER
-  ) => {
+  const removeAssistant = (email: string, role: UserType = UserType.VIEWER) => {
     removeAssistantMutation.mutateAsync(
       {
         email,
@@ -105,7 +100,7 @@ export const useAssistants = (orgId: string = "") => {
     );
   };
 
-  const removeMultipleAssistants = async (users: Assistant[]) => {
+  const removeMultipleAssistants = (users: Assistant[]) => {
     removeMultipleAssistantsMutation.mutateAsync(users, {
       onError: () => {
         toast({
@@ -125,6 +120,7 @@ export const useAssistants = (orgId: string = "") => {
   };
   return {
     assistants,
+    assistantsMutations,
     getAssistants,
     addAssistant,
     addMultipleAssistants,

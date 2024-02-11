@@ -15,7 +15,7 @@ export const useStudents = (orgId: string = "") => {
     createMultipleStudents: createMultipleStudentsMutation,
   } = useStudentsMutations(orgId);
 
-  const createStudent = async (studentCodes: string[], displayName: string) => {
+  const createStudent = (studentCodes: string[], displayName: string) => {
     createStudentMutation.mutateAsync(
       {
         attendance_codes: studentCodes,
@@ -39,7 +39,7 @@ export const useStudents = (orgId: string = "") => {
       }
     );
   };
-  const createMultipleStudents = async (studentsRequest: CreateStudent[]) => {
+  const createMultipleStudents = (studentsRequest: CreateStudent[]) => {
     createMultipleStudentsMutation.mutateAsync(studentsRequest, {
       onError: () => {
         toast({
