@@ -31,20 +31,17 @@ export default function Assistants({
   orgData: OrgData;
 }): JSX.Element {
   const { orgId } = useParams();
-  const {
-    assistants,
-    isLoading,
-    addMultipleAssistantsToOrg,
-    removeMultipleAssistantsFromOrg,
-  } = useAssistants(orgId);
+  const assistants = useAssistants(orgId);
   const [checkedAssistants, setCheckedAssistants] = useState<RowSelection>({});
 
   const removeAssistants = (assistantsIndexes: RowSelection) => {
     const arrayIndexes = Object.keys(assistantsIndexes).map((key) =>
       parseInt(key)
     );
-    const assistantsToRemove = arrayIndexes.map((index) => assistants[index]);
-    removeMultipleAssistantsFromOrg(assistantsToRemove);
+    const assistantsToRemove = arrayIndexes.map(
+      (index) => assistants.getAssistants()[index]
+    );
+    assistants.removeMultipleAssistants(assistantsToRemove);
   };
 
   return (
@@ -54,13 +51,17 @@ export default function Assistants({
         <h3 className="text-lg font-medium">Añadir a la Organización</h3>
         {!(orgData.userType === UserType.VIEWER) && (
           <AddAssistantForm
-            addMultipleAssistantsToOrg={addMultipleAssistantsToOrg}
+            addMultipleAssistantsToOrg={assistants.addMultipleAssistants}
+            isLoadingUpload={
+              assistants.assistants.isLoading ||
+              assistants.assistants.isRefetching
+            }
           />
         )}
 
         <div className="border border-slate-200 p-4 mt-6">
-          {isLoading && <LoadingSpinner />}
-          {!isLoading && (
+          {assistants.assistants.isLoading && <LoadingSpinner />}
+          {!assistants.assistants.isLoading && (
             <DataTable
               searchColumn={"email"}
               {...(!(orgData.userType === UserType.VIEWER) && {
@@ -71,7 +72,7 @@ export default function Assistants({
                   text: "Esta acción eliminará los ayudantes seleccionados de la organización. No se podrá deshacer.",
                 }),
               })}
-              data={assistants}
+              data={assistants.getAssistants()}
               columns={columns}
               rowSelection={checkedAssistants}
               setRowSelection={setCheckedAssistants}

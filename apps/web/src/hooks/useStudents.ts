@@ -1,8 +1,5 @@
-import {
-  useStudentsQuery,
-  useStudentsMutations,
-  type CreateStudent,
-} from "./queries/useStudents";
+import { useStudentsQuery, useStudentsMutations } from "./queries/useStudents";
+import type { CreateStudent } from "@/types/interfaces";
 import { useToast } from "@/components/ui/use-toast";
 
 export const useStudents = (orgId: string = "") => {

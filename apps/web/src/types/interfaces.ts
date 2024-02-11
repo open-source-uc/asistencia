@@ -32,3 +32,12 @@ export interface CreateStudent {
   display_name?: string;
   attendance_codes: string[];
 }
+
+export interface CreateAssistant {
+  email: string;
+  role: UserType | undefined;
+}
+
+export interface Assistant extends CreateAssistant {
+  id: string;
+}
