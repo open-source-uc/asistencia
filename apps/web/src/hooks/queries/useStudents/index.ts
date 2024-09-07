@@ -4,7 +4,6 @@ import { useQueryKey } from "./queryKey";
 import { useStudentsRequests } from "./apiCalls";
 import { useCacheModifiers } from "./cacheModifiers";
 
-
 export const useStudentsQuery = (orgId: string) => {
   const queryKey = useQueryKey(orgId);
   const { studentsQuery } = useStudentsRequests(orgId);

@@ -28,10 +28,13 @@ export const useAssistantsRequests = (orgId: string) => {
     email: string,
     role: UserType = UserType.VIEWER
   ) => {
-    const res = await client.post<Assistant>(`${basePath}/${orgId}/user_courses`, {
-      email,
-      role,
-    });
+    const res = await client.post<Assistant>(
+      `${basePath}/${orgId}/user_courses`,
+      {
+        email,
+        role,
+      }
+    );
     return res.data;
   };
 
