@@ -6,7 +6,7 @@ export const useOrgQuery = (orgId: string) => {
   const queryKey = useQueryKey(orgId);
   const { orgQuery } = useOrgRequests(orgId);
   const query = useQuery({ queryKey, queryFn: orgQuery });
-  return { ...query };
+  return query;
 };
 
 export const useUserPermissionsOrgQuery = (orgId: string) => {
@@ -16,5 +16,5 @@ export const useUserPermissionsOrgQuery = (orgId: string) => {
     queryKey,
     queryFn: () => userPermissionsOrgQuery(),
   });
-  return { ...query };
+  return query;
 };

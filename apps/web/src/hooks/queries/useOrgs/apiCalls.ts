@@ -1,5 +1,6 @@
 import client from "@/api/client";
 import { UserType } from "@/types/enums";
+import type { Org } from "@/types/interfaces";
 
 const basePath = "api/v1/courses";
 
@@ -16,7 +17,7 @@ export const useOrgsRequests = () => {
   };
 
   const orgsQuery = async () => {
-    const res = await client.get(`${basePath}/`);
+    const res = await client.get<{ courses: Org[] }>(`${basePath}/`);
     return res.data.courses;
   };
 

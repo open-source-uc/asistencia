@@ -13,7 +13,7 @@ export const useStudentsRequests = (orgId: string) => {
   const createStudent = async (
     studentCodes: string[],
     displayName: string | undefined
-  ): Promise<Student> => {
+  ) => {
     const studentIds = await Promise.all(
       studentCodes.map(
         (studentCode: string): Promise<string> => clientHash(studentCode, orgId)
@@ -23,13 +23,14 @@ export const useStudentsRequests = (orgId: string) => {
     if (displayName !== "") {
       body = { ...body, display_name: displayName };
     }
-    const res = await client.post(`${basePath}/${orgId}/students/`, body);
+    const res = await client.post<{ student: Student }>(
+      `${basePath}/${orgId}/students/`,
+      body
+    );
     return res.data.student;
   };
 
-  const createMultipleStudents = async (
-    students: CreateStudent[]
-  ): Promise<Student[]> => {
+  const createMultipleStudents = async (students: CreateStudent[]) => {
     const studentsWithHash = await Promise.all(
       students.map(
         async (student: CreateStudent): Promise<CreateStudent> => ({
@@ -43,7 +44,7 @@ export const useStudentsRequests = (orgId: string) => {
         })
       )
     );
-    const res = await client.post(
+    const res = await client.post<{ students: Student[] }>(
       `${basePath}/${orgId}/students/batch_create`,
       {
         students: studentsWithHash,

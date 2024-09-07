@@ -1,18 +1,24 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useQueryKey } from "./queryKey";
 import { useActivitiesRequests } from "./apiCalls";
-import { useQueryClient } from "@tanstack/react-query";
+import { useDataTransforms } from "./dataTransforms";
+import { useCacheModifiers } from "./cacheModifiers";
 
 export const useActivitiesQuery = (orgId: string) => {
   const queryKey = useQueryKey(orgId);
+  const { mapActivities } = useDataTransforms();
   const { activitiesQuery } = useActivitiesRequests(orgId);
-  const query = useQuery({ queryKey, queryFn: activitiesQuery });
-  return { ...query };
+  const query = useQuery({
+    queryKey,
+    queryFn: () => activitiesQuery().then(mapActivities),
+  });
+  return query;
 };
 
 export const useActivitiesMutations = (orgId: string) => {
-  const queryClient = useQueryClient();
   const queryKey = useQueryKey(orgId);
+  const { addActivitiesToCache, removeMultipleActivitiesFromCache } =
+    useCacheModifiers(queryKey);
   const {
     createActivity: createActivityRequest,
     deleteActivity: deleteActivityRequest,
@@ -31,17 +37,19 @@ export const useActivitiesMutations = (orgId: string) => {
       description: string;
       date: string;
     }) => createActivityRequest(name, slug, description, date),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: (activity) => addActivitiesToCache([activity]),
   });
 
   const deleteActivity = useMutation({
     mutationFn: deleteActivityRequest,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: (_, slug) =>
+      removeMultipleActivitiesFromCache([slug]),
   });
 
   const deleteMultipleActivities = useMutation({
     mutationFn: deleteMultipleActivitiesRequest,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: (_, slugs) =>
+      removeMultipleActivitiesFromCache(slugs),
   });
 
   return {

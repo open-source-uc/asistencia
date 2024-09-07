@@ -1,19 +1,20 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useQueryKey } from "./queryKey";
 import { useAssistantsRequests } from "./apiCalls";
-import { useQueryClient } from "@tanstack/react-query";
 import { UserType } from "@/types/enums";
+import { useCacheModifiers } from "./cacheModifiers";
 
 export const useAssistantsQuery = (orgId: string) => {
   const queryKey = useQueryKey(orgId);
   const { assistantsQuery } = useAssistantsRequests(orgId);
   const query = useQuery({ queryKey, queryFn: assistantsQuery });
-  return { ...query };
+  return query;
 };
 
 export const useAssistantsMutations = (orgId: string) => {
-  const queryClient = useQueryClient();
   const queryKey = useQueryKey(orgId);
+  const { addAssistantsToCache, removeMultipleAssistantsFromCache } =
+    useCacheModifiers(queryKey);
   const {
     addAssistant: addAssistantRequest,
     addMultipleAssistants: addMultipleAssistantsRequest,
@@ -29,7 +30,7 @@ export const useAssistantsMutations = (orgId: string) => {
       email: string;
       role: UserType | undefined;
     }) => addAssistantRequest(email, role),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: (assistant) => addAssistantsToCache([assistant]),
   });
 
   const addMultipleAssistants = useMutation({
@@ -40,7 +41,7 @@ export const useAssistantsMutations = (orgId: string) => {
       emails: string[];
       role: UserType | undefined;
     }) => addMultipleAssistantsRequest(emails, role),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: (assistants) => addAssistantsToCache(assistants),
   });
 
   const removeAssistant = useMutation({
@@ -51,12 +52,13 @@ export const useAssistantsMutations = (orgId: string) => {
       email: string;
       role: UserType | undefined;
     }) => removeAssistantRequest(email, role),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: (_, { email }) => removeMultipleAssistantsFromCache([email]),
   });
 
   const removeMultipleAssistants = useMutation({
     mutationFn: removeMultipleAssistantsRequest,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+    onSuccess: (_, users) =>
+      removeMultipleAssistantsFromCache(users.map((user) => user.email)),
   });
 
   return {
