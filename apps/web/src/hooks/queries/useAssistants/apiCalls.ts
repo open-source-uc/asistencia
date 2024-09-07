@@ -27,8 +27,8 @@ export const useAssistantsRequests = (orgId: string) => {
   const addAssistant = async (
     email: string,
     role: UserType = UserType.VIEWER
-  ): Promise<Assistant | undefined> => {
-    const res = await client.post(`${basePath}/${orgId}/user_courses`, {
+  ) => {
+    const res = await client.post<Assistant>(`${basePath}/${orgId}/user_courses`, {
       email,
       role,
     });
@@ -38,7 +38,7 @@ export const useAssistantsRequests = (orgId: string) => {
   const addMultipleAssistants = async (
     emails: string[],
     role: UserType | undefined
-  ): Promise<Assistant[] | undefined> => {
+  ): Promise<Assistant[]> => {
     if (!role) {
       throw new Error("Role is required");
     }
@@ -56,7 +56,7 @@ export const useAssistantsRequests = (orgId: string) => {
   const removeAssistant = async (
     email: string,
     role: UserType = UserType.VIEWER
-  ): Promise<Assistant | undefined> => {
+  ): Promise<Assistant> => {
     return await client.delete(`/api/v1/courses/${orgId}/user_courses`, {
       data: { email, role },
     });
